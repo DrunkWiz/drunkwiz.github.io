@@ -146,6 +146,7 @@ h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005e
 .vk-num{width:24px;height:24px;border-radius:50%;background:#1E5A4C;color:#fff;display:grid;place-items:center;font-weight:700;font-size:.72rem}
 .vk-card b{display:block;font-size:.84rem}
 .vk-card span{color:#646B6E}
+.vk-card .vk-num{color:#fff}
 .vk-tag{display:inline-block;margin-top:.25rem;background:#EEF0EC;border-radius:6px;padding:.05rem .4rem;font-size:.68rem;color:#3E4446}
 
 /* Recall screen */
@@ -169,6 +170,78 @@ h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005e
 .rc-btns button:hover{background:#E8ECF3;color:#1B2230}
 .rc-btns button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .rc-result{margin:0 .9rem;min-height:3.2em;color:#C8D1E2;font-size:.76rem}
+
+/* ---------- work carousel ---------- */
+.work{border-top:1px solid var(--rule);padding:clamp(3.5rem,8vw,5.5rem) 0 clamp(3rem,7vw,5rem)}
+.work-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.25rem;flex-wrap:wrap;margin-bottom:2rem}
+.work-head h2{margin:0}
+.work-sub{color:var(--muted);margin:.5rem 0 0;font-size:1.05rem}
+.work-controls{display:flex;align-items:center;gap:.6rem}
+.nav-btn{
+  width:48px;height:48px;border-radius:50%;border:2px solid var(--rule);background:transparent;color:var(--chalk);
+  display:grid;place-items:center;cursor:pointer;padding:0;
+}
+.nav-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.nav-btn:hover:not(:disabled){border-color:var(--chalk)}
+.nav-btn:disabled{opacity:.35;cursor:default}
+.all-btn{
+  display:inline-flex;align-items:center;gap:.6rem;margin-left:.4rem;
+  background:var(--chalk);color:var(--table);text-decoration:none;font-weight:800;font-size:1rem;
+  padding:.8rem .8rem .8rem 1.3rem;border-radius:999px;border:2px solid var(--chalk);
+}
+.all-btn .count{
+  background:var(--table);color:var(--chalk);border-radius:999px;min-width:1.8rem;height:1.8rem;
+  display:inline-grid;place-items:center;font-size:.85rem;padding:0 .45rem;
+}
+.all-btn:hover{background:var(--paper);border-color:var(--paper)}
+
+.track{
+  --edge:max(clamp(1.25rem,4vw,3rem), calc((100% - 1160px) / 2 + clamp(1.25rem,4vw,3rem)));
+  list-style:none;margin:0;display:flex;gap:1.25rem;overflow-x:auto;
+  padding:.25rem var(--edge) 1.25rem;scroll-padding-inline:var(--edge);
+  scroll-snap-type:x mandatory;scroll-behavior:smooth;overscroll-behavior-x:contain;
+  scrollbar-width:none;cursor:grab;
+}
+.track::-webkit-scrollbar{display:none}
+.track.dragging{scroll-snap-type:none;scroll-behavior:auto;cursor:grabbing;user-select:none}
+.track:focus-visible{outline-offset:-3px}
+.card{
+  flex:0 0 auto;width:min(860px,82vw);scroll-snap-align:start;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(1.5rem,4vw,3rem);align-items:center;
+  background:#1D4840;border:1px solid var(--rule);border-radius:24px;
+  padding:clamp(1.5rem,3.5vw,2.75rem);
+}
+.card-meta{color:var(--muted);font-size:.95rem;margin:0 0 .5rem}
+.card-title{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1;letter-spacing:-.02em;margin:0 0 1rem}
+.card-sum{margin:0 0 1rem;max-width:46ch}
+.card-decision{margin:0 0 1.5rem;max-width:46ch;color:var(--muted)}
+.card-decision b{color:var(--chalk)}
+.card-links{display:flex;flex-wrap:wrap;gap:.6rem}
+.card-shot .phone{zoom:.72;margin:0;box-shadow:0 24px 40px -18px rgba(0,0,0,.6),inset 0 0 0 2px #3A3E46}
+.rc-btns span{font:600 .78rem/1.2 var(--sans);border-radius:12px;padding:.7rem .4rem;border:1.5px solid #E8ECF3;text-align:center}
+.card.more{
+  width:min(320px,72vw);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+  background:transparent;border:2px dashed var(--rule);
+}
+.more-title{font-size:1.6rem;font-weight:800;margin:0 0 .5rem;letter-spacing:-.01em}
+.more-sub{color:var(--muted);margin:0 0 1.5rem}
+
+.work-foot{display:flex;align-items:center;gap:1rem;margin-top:.5rem}
+.counter{margin:0;color:var(--muted);font-size:.95rem;white-space:nowrap}
+.progress{flex:1;max-width:240px;height:3px;background:var(--rule);border-radius:3px;overflow:hidden}
+.progress span{display:block;height:100%;width:50%;background:var(--chalk);border-radius:3px;transition:width .3s}
+
+@media (max-width:720px){
+  .work-head{align-items:center}
+  .work-head > div:first-child{flex:1}
+  .work-sub{display:none}
+  .nav-btn{display:none}
+  .all-btn{margin-left:0;font-size:.95rem}
+  .card{width:86vw;grid-template-columns:1fr;align-items:start}
+  .card-shot{order:-1;height:210px;overflow:hidden;border-radius:16px;margin:-.25rem -.25rem 0;background:#163B34;display:flex;justify-content:center;padding-top:16px}
+  .card-shot .phone{zoom:.62}
+  .card.more{width:70vw}
+}
 
 /* ---------- principles + about ---------- */
 .band{border-top:1px solid var(--rule);padding:clamp(3.5rem,9vw,6rem) 0}
@@ -208,7 +281,7 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
     <h1>I build for the people software tends to forget.</h1>
     <p class="lede">An older person on a small phone looking for one dish near home. A card member staring at a charge they can't place. <span>I build mostly at hackathons, in Python and React, and I like things that keep working when something breaks and say plainly what they can't do.</span></p>
     <div class="actions">
-      <a class="btn solid" href="#voucher-kaki">See the work</a>
+      <a class="btn solid" href="#work">See the work</a>
       <a class="btn" href="https://github.com/drunkwiz">GitHub</a>
     </div>
   </div>
@@ -251,71 +324,97 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
 </header>
 
 <main>
-  <section class="project" id="voucher-kaki" aria-labelledby="vk-title">
-    <div class="wrap">
+  <section class="work" id="work" aria-labelledby="work-title">
+    <div class="wrap work-head">
       <div>
-        <h2 id="vk-title">Voucher Kaki</h2>
-        <p class="meta">Finalist, SimplifyNext IGNITE Agentic AI Hackathon 2026. Built with a team of four.</p>
-        <p>Say or type what you feel like eating, in English, 中文, Bahasa Melayu or தமிழ், and Voucher Kaki finds CDC-voucher eateries near you. Results are ranked by relevance and walking distance, with a deliberate nudge toward independent shops over chains. When it has to widen the search to fill the list, it tells you what it gave up instead of quietly showing worse matches.</p>
-        <h3>The best decision was a deletion</h3>
-        <p>We built Google ratings into every result, then took them out. Many of the small shops in our data have no Google listing at all, so a ratings line would put a 4.5 with 800 reviews next to a blank. Someone choosing lunch on a phone picks the number. The whole point of the app is to surface the places people overlook, and a half-empty ratings column would have pushed them straight back to the famous ones.</p>
-        <a class="btn" href="https://simplify-ai-hackathon.vercel.app">Try Voucher Kaki</a>
+        <h2 id="work-title">Work</h2>
+        <p class="work-sub">Hackathon builds, and the decision that shaped each one.</p>
       </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen vk">
-            <div class="notch"></div>
-            <div class="vk-bar">
-              <div class="vk-search">dim sum supper</div>
-              <span class="vk-loc">Yishun</span>
-            </div>
-            <p class="vk-answer">Here are dim sum places near Yishun that take CDC vouchers.</p>
-            <div class="vk-fill">To fill this list I:
-              <ul><li>widened to 1.5 km</li><li>widened to 3 km</li><li>included places not tagged for supper</li></ul>
-            </div>
-            <div class="vk-card"><span class="vk-num">1</span><div><b>Dim Sum Corner</b><span>6 min walk, 420 m</span><br><span class="vk-tag">Independent</span></div></div>
-            <div class="vk-card"><span class="vk-num">2</span><div><b>Supper House Kopitiam</b><span>14 min walk, 1.1 km</span><br><span class="vk-tag">Independent</span></div></div>
-            <div class="vk-card"><span class="vk-num">3</span><div><b>Golden Bamboo Eating House</b><span>Bus or 28 min walk, 2.2 km</span></div></div>
-          </div>
-        </div>
-        <figcaption class="caption">Illustration of a late-night search in Yishun.</figcaption>
-      </figure>
+      <div class="work-controls">
+        <button class="nav-btn" type="button" data-dir="-1" aria-label="Previous project" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <button class="nav-btn" type="button" data-dir="1" aria-label="Next project">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <a class="all-btn" href="projects.html">View all projects <span class="count">2</span></a>
+      </div>
     </div>
-  </section>
 
-  <section class="project" id="recall" aria-labelledby="rc-title">
-    <div class="wrap">
-      <div>
-        <h2 id="rc-title">Recall</h2>
-        <p class="meta">2nd place, American Express AI Hackathon 2026.</p>
-        <p>When a card member doesn't recognise a charge and the merchant shares nothing about it, Recall rebuilds the memory from their own card history: the flight, the hotel, the trip that charge belongs to. It picks up where merchant-supplied details run out, which is most of the long tail of small shops.</p>
-        <h3>The model is never allowed to be sure</h3>
-        <p>The worst thing Recall could do is talk someone out of reporting real fraud. So the model only proposes. Every claim has to cite a real transaction, a second model from a different family checks it, and plain rules code makes every decision that touches money. When the history is too thin, Recall shows the raw details and says nothing at all. Silence is always an acceptable answer.</p>
-      </div>
-      <figure style="margin:0">
-        <div class="phone">
-          <div class="screen rc">
-            <div class="notch" aria-hidden="true"></div>
-            <div class="rc-top">Transaction details</div>
-            <div class="rc-charge">
-              <b>SATS PARK PTE</b>
-              <div class="rc-amt">$14.50 <small>SGD, 14 Jun</small></div>
-              <span class="rc-flag">Unfamiliar merchant</span>
-            </div>
-            <div class="rc-ai">
-              <div class="rc-ai-h"><span>Possible match</span><span class="rc-conf">Moderate confidence</span></div>
-              This looks like airport parking at Changi T3, the same trip as your flight booking on 12 Jun and your hotel charge in Bangkok.
-              <div class="rc-chips"><span>Flight, 12 Jun</span><span>Hotel, Bangkok</span></div>
-            </div>
-            <div class="rc-btns">
-              <button type="button" data-answer="yes">Yes, this was me</button>
-              <button type="button" data-answer="no">This isn't mine</button>
-            </div>
-            <p class="rc-result" role="status" aria-live="polite"></p>
+    <!-- To add a project: copy one <li class="card"> below, edit it, and add a full write-up to projects.html. -->
+    <ul class="track" tabindex="0" aria-label="Projects, scroll sideways">
+      <li class="card">
+        <div class="card-text">
+          <p class="card-meta">Finalist, SimplifyNext IGNITE Agentic AI Hackathon 2026</p>
+          <h3 class="card-title">Voucher Kaki</h3>
+          <p class="card-sum">Say or type what you feel like eating, in four languages, and it finds CDC-voucher eateries near you, with a nudge toward independent shops over chains.</p>
+          <p class="card-decision"><b>The best decision was a deletion.</b> Google ratings were built in, then taken out, so small shops with no listing don't lose to famous ones.</p>
+          <div class="card-links">
+            <a class="btn solid" href="projects.html#voucher-kaki">Read the story</a>
+            <a class="btn" href="https://simplify-ai-hackathon.vercel.app">Try it</a>
           </div>
         </div>
-        <figcaption class="caption">The card member's view. Try both buttons: they carry equal weight on purpose.</figcaption>
-      </figure>
+        <div class="card-shot" aria-hidden="true">
+          <div class="phone">
+            <div class="screen vk">
+              <div class="notch"></div>
+              <div class="vk-bar">
+                <div class="vk-search">dim sum supper</div>
+                <span class="vk-loc">Yishun</span>
+              </div>
+              <p class="vk-answer">Here are dim sum places near Yishun that take CDC vouchers.</p>
+              <div class="vk-fill">To fill this list I:
+                <ul><li>widened to 1.5 km</li><li>widened to 3 km</li><li>included places not tagged for supper</li></ul>
+              </div>
+              <div class="vk-card"><span class="vk-num">1</span><div><b>Dim Sum Corner</b><span>6 min walk, 420 m</span><br><span class="vk-tag">Independent</span></div></div>
+              <div class="vk-card"><span class="vk-num">2</span><div><b>Supper House Kopitiam</b><span>14 min walk, 1.1 km</span><br><span class="vk-tag">Independent</span></div></div>
+              <div class="vk-card"><span class="vk-num">3</span><div><b>Golden Bamboo Eating House</b><span>Bus or 28 min walk, 2.2 km</span></div></div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="card">
+        <div class="card-text">
+          <p class="card-meta">2nd place, American Express AI Hackathon 2026</p>
+          <h3 class="card-title">Recall</h3>
+          <p class="card-sum">When a card member doesn't recognise a charge, Recall rebuilds the memory from their own card history: the flight, the hotel, the trip that charge belongs to.</p>
+          <p class="card-decision"><b>The model is never allowed to be sure.</b> Every claim cites a real transaction, a second model checks it, and when in doubt it says nothing.</p>
+          <div class="card-links">
+            <a class="btn solid" href="projects.html#recall">Read the story</a>
+          </div>
+        </div>
+        <div class="card-shot" aria-hidden="true">
+          <div class="phone">
+            <div class="screen rc">
+              <div class="notch"></div>
+              <div class="rc-top">Transaction details</div>
+              <div class="rc-charge">
+                <b>SATS PARK PTE</b>
+                <div class="rc-amt">$14.50 <small>SGD, 14 Jun</small></div>
+                <span class="rc-flag">Unfamiliar merchant</span>
+              </div>
+              <div class="rc-ai">
+                <div class="rc-ai-h"><span>Possible match</span><span class="rc-conf">Moderate confidence</span></div>
+                This looks like airport parking at Changi T3, the same trip as your flight booking on 12 Jun and your hotel charge in Bangkok.
+                <div class="rc-chips"><span>Flight, 12 Jun</span><span>Hotel, Bangkok</span></div>
+              </div>
+              <div class="rc-btns"><span>Yes, this was me</span><span>This isn't mine</span></div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="card more">
+        <p class="more-title">That's the latest.</p>
+        <p class="more-sub">Every project, with the full write-up, is on one page.</p>
+        <a class="btn solid" href="projects.html">View all projects</a>
+      </li>
+    </ul>
+
+    <div class="wrap work-foot">
+      <p class="counter" aria-live="polite"><span class="c-now">1</span> of <span class="c-total">2</span></p>
+      <div class="progress" aria-hidden="true"><span></span></div>
     </div>
   </section>
 
@@ -348,14 +447,6 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
 </footer>
 
 <script>
-document.querySelectorAll('.rc-btns button').forEach(function (b) {
-  b.addEventListener('click', function () {
-    var out = document.querySelector('.rc-result');
-    out.textContent = b.dataset.answer === 'yes'
-      ? 'Thanks. The charge stays on your statement and nothing else changes.'
-      : 'Dispute started and timestamped. Nothing you saw above affects your rights.';
-  });
-});
 
 /* Tear-off receipt.
    Mouse: grab the receipt and drag sideways. The tear starts at the edge behind
@@ -582,6 +673,74 @@ document.querySelectorAll('.rc-btns button').forEach(function (b) {
   });
 
   hint.textContent = HINT;
+})();
+
+/* Work carousel: arrows, counter, progress, and drag-to-scroll with a mouse. */
+(function () {
+  var track = document.querySelector('.track');
+  if (!track) return;
+  var cards = Array.prototype.slice.call(track.querySelectorAll('.card:not(.more)'));
+  var all = track.querySelectorAll('.card');
+  var prev = document.querySelector('.nav-btn[data-dir="-1"]');
+  var next = document.querySelector('.nav-btn[data-dir="1"]');
+  var now = document.querySelector('.c-now');
+  var bar = document.querySelector('.progress span');
+  document.querySelectorAll('.all-btn .count, .c-total').forEach(function (el) { el.textContent = cards.length; });
+
+  function step() {
+    var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    return all[0].getBoundingClientRect().width + gap;
+  }
+  function update() {
+    var max = track.scrollWidth - track.clientWidth;
+    var i = Math.round(track.scrollLeft / step());
+    now.textContent = Math.min(i + 1, cards.length);
+    bar.style.width = (max > 0 ? Math.max(track.clientWidth / track.scrollWidth, track.scrollLeft / max) * 100 : 100) + '%';
+    prev.disabled = track.scrollLeft <= 2;
+    next.disabled = track.scrollLeft >= max - 2;
+  }
+  [prev, next].forEach(function (b) {
+    b.addEventListener('click', function () { track.scrollBy({ left: Number(b.dataset.dir) * step() }); });
+  });
+  var ticking = false;
+  track.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { ticking = false; update(); });
+  });
+  window.addEventListener('resize', update);
+
+  // Mouse drag. Touch already swipes natively.
+  var drag = null, suppress = false;
+  track.addEventListener('pointerdown', function (e) {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    drag = { x: e.clientX, left: track.scrollLeft, moved: false, id: e.pointerId };
+  });
+  track.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    var dx = e.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) < 6) return;
+    if (!drag.moved) { drag.moved = true; track.classList.add('dragging'); track.setPointerCapture(drag.id); }
+    track.scrollLeft = drag.left - dx;
+  });
+  function end() {
+    if (!drag) return;
+    suppress = drag.moved;
+    drag = null;
+    if (track.classList.contains('dragging')) {
+      track.classList.remove('dragging');
+      var i = Math.round(track.scrollLeft / step());
+      track.scrollTo({ left: i * step() });
+    }
+  }
+  track.addEventListener('pointerup', end);
+  track.addEventListener('pointercancel', end);
+  track.addEventListener('click', function (e) {
+    if (suppress) { e.preventDefault(); e.stopPropagation(); suppress = false; }
+  }, true);
+  track.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+  update();
 })();
 </script>
 </body>
