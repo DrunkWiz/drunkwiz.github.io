@@ -65,19 +65,33 @@ h1{
   height:22px;border-radius:12px;background:var(--table-deep);
   box-shadow:inset 0 4px 6px rgba(0,0,0,.45);position:relative;z-index:2;
 }
-.feed{overflow:hidden;margin:-11px 14px 0;padding-bottom:30px}
+.feed{margin:-11px 14px 0;padding-bottom:30px;clip-path:inset(0 -80px -100vh -80px)}
 .receipt{
   background:var(--paper);color:var(--ink);
   font:400 .8rem/1.55 var(--mono);
   padding:2.2rem 1.4rem 2.6rem;position:relative;
   -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%;
           mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%;
-  animation:print 2.2s steps(22,end) .35s both;
+  user-select:none;-webkit-user-select:none;
 }
+.receipt.printing{animation:print 2.2s steps(22,end) .35s both}
+.receipt:focus-visible{outline:3px solid var(--chalk);outline-offset:4px}
+/* tearing */
+.sheet{position:relative;cursor:grab;touch-action:pan-y}
+.sheet.grabbing{cursor:grabbing}
+.sheet.tearing{filter:drop-shadow(0 1px 1.2px rgba(0,0,0,.35))}
+.stub{position:absolute;left:0;top:0;width:100%;pointer-events:none}
+.fringe{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3}
+.f-hi{fill:none;stroke:#FFFFFF;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.f-shade{fill:none;stroke:rgba(70,60,50,.18);stroke-width:1;stroke-linejoin:round}
+.fall{position:fixed;z-index:50;pointer-events:none;filter:drop-shadow(0 14px 18px rgba(0,0,0,.35))}
+.tear-hint{margin:0 14px .6rem;color:var(--muted);font-size:.9rem;text-align:center;min-height:1.4em}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @keyframes print{from{transform:translateY(-102%)}to{transform:translateY(0)}}
 .r-head{text-align:center;margin-bottom:1.1rem}
 .r-head strong{display:block;font-size:1.35rem;font-weight:600;letter-spacing:.04em}
-.r-head span{color:var(--ink-soft)}
+.r-head > span{display:block;color:var(--ink-soft)}
+.r-no{font-weight:400}
 .r-rule{border:0;border-top:1.5px dashed #B9B7BE;margin:.9rem 0}
 .r-list{list-style:none;margin:0;padding:0}
 .r-list li{display:flex;justify-content:space-between;gap:1rem}
@@ -181,7 +195,7 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
   .phone{width:100%}
 }
 @media (prefers-reduced-motion:reduce){
-  .receipt{animation:none}
+  .receipt.printing{animation:none}
   html{scroll-behavior:auto}
 }
 </style>
@@ -200,12 +214,15 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
   </div>
 
   <div class="printer" aria-label="A receipt summarising Nathan's projects">
+    <p class="tear-hint" aria-hidden="true"></p>
     <div class="slot" aria-hidden="true"></div>
     <div class="feed">
-      <div class="receipt">
+      <div class="sheet">
+      <div class="receipt printing" tabindex="0" role="button" aria-label="Tear off the receipt">
         <div class="r-head">
           <strong>drunkwiz</strong>
           <span>Singapore</span>
+          <span>Receipt no. <b class="r-no">0001</b></span>
         </div>
         <div class="stamp" aria-hidden="true">SHIPPED</div>
         <ul class="r-list">
@@ -227,7 +244,9 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
         <div class="barcode" aria-hidden="true"></div>
         <p class="r-foot">Thank you. Come again.</p>
       </div>
+      </div>
     </div>
+    <p class="sr-only" role="status" aria-live="polite"></p>
   </div>
 </header>
 
@@ -337,6 +356,233 @@ document.querySelectorAll('.rc-btns button').forEach(function (b) {
       : 'Dispute started and timestamped. Nothing you saw above affects your rights.';
   });
 });
+
+/* Tear-off receipt.
+   Mouse: grab the receipt and drag sideways. The tear starts at the edge behind
+   your drag and follows the cursor, rising and dipping as you move.
+   Touch, pen and keyboard: a tap (or Enter) rips it across at that height.
+   A new receipt prints a few seconds after a full tear. */
+(function () {
+  var sheet = document.querySelector('.sheet');
+  var receipt = sheet.querySelector('.receipt');
+  var hint = document.querySelector('.tear-hint');
+  var status = document.querySelector('.printer [role="status"]');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var HINT = fine ? 'Grab the receipt and drag sideways to tear it off.' : 'Tap the receipt to tear it off.';
+
+  var REPRINT_AFTER = 3500; // ms after a full tear before a new receipt prints
+  var STEP = 3;             // px between points on the torn edge
+  var SPEED = 18;           // max px the tear advances per frame
+  var NS = 'http://www.w3.org/2000/svg';
+
+  var state = reduce ? 'idle' : 'printing'; // printing | idle | gone
+  var count = 1, tear = null, drag = null, auto = null, raf = 0, lastType = 'mouse';
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function poly(pts) {
+    return 'polygon(' + pts.map(function (p) { return p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px'; }).join(',') + ')';
+  }
+  function strip(el) {
+    ['tabindex', 'role', 'aria-label'].forEach(function (a) { el.removeAttribute(a); });
+    el.setAttribute('aria-hidden', 'true');
+    el.classList.remove('printing');
+  }
+  function fringe() {
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'fringe');
+    svg.setAttribute('aria-hidden', 'true');
+    ['f-shade', 'f-hi'].forEach(function (c) {
+      var line = document.createElementNS(NS, 'polyline');
+      line.setAttribute('class', c);
+      svg.appendChild(line);
+    });
+    return svg;
+  }
+  function setFringe(svg, pts, off) {
+    var lines = svg.querySelectorAll('polyline');
+    lines[0].setAttribute('points', pts.map(function (p) { return p[0] + ',' + (p[1] + off * 2.4); }).join(' '));
+    lines[1].setAttribute('points', pts.map(function (p) { return p[0] + ',' + (p[1] + off); }).join(' '));
+  }
+
+  receipt.addEventListener('animationend', function (e) {
+    if (e.animationName !== 'print') return;
+    receipt.classList.remove('printing');
+    state = 'idle';
+    hint.textContent = HINT;
+  });
+
+  function begin(dir, y) {
+    var W = receipt.offsetWidth, H = receipt.offsetHeight;
+    var stub = receipt.cloneNode(true);       // the part that stays in the printer
+    strip(stub);
+    stub.classList.add('stub');
+    var sf = fringe(); stub.appendChild(sf);
+    var pf = fringe(); receipt.appendChild(pf);
+    sheet.appendChild(stub);
+    sheet.classList.add('tearing');
+    var x0 = dir > 0 ? 0 : W;
+    y = clamp(y, 16, H - 36);
+    tear = { dir: dir, W: W, H: H, tipX: x0, tipY: y, wob: 0, pts: [[x0, y]], stub: stub, sf: sf, pf: pf };
+    draw();
+  }
+
+  // Move the tip of the tear toward (tx, ty). Returns true once it reaches the far edge.
+  function extend(tx, ty) {
+    var t = tear, moved = 0;
+    ty = clamp(ty, 16, t.H - 36);
+    while (moved < SPEED) {
+      var left = t.dir > 0 ? tx - t.tipX : t.tipX - tx;
+      if (left < STEP) break;
+      t.tipX = clamp(t.tipX + t.dir * STEP, 0, t.W);
+      moved += STEP;
+      t.tipY += (ty - t.tipY) * 0.2;                         // the tear lags the hand
+      t.wob = clamp(t.wob + (Math.random() - 0.5) * 1.7, -2.8, 2.8); // slow wander of the fibres
+      t.pts.push([t.tipX, t.tipY + t.wob + (Math.random() - 0.5) * 1.5]);
+      if (t.tipX === 0 || t.tipX === t.W) break;
+    }
+    draw();
+    return t.tipX === (t.dir > 0 ? t.W : 0);
+  }
+
+  function draw() {
+    var t = tear, start = t.dir > 0 ? 0 : t.W, far = t.dir > 0 ? t.W : 0;
+    var done = t.tipX === far;
+    var lower = [], upper = [];
+    t.pts.forEach(function (p) {
+      var gap = Math.min(5, Math.abs(t.tipX - p[0]) * 0.03); // the tear opens wider behind the tip
+      lower.push([p[0], p[1] + gap * 0.75]);
+      upper.push([p[0], p[1] - gap * 0.25]);
+    });
+    var bottom = lower.concat(done ? [] : [[far, t.tipY]]).concat([[far, t.H + 30], [start, t.H + 30]]);
+    var top = [[start, -30], [far, -30]].concat(done ? [] : [[far, t.tipY]]).concat(upper.slice().reverse());
+    receipt.style.clipPath = poly(bottom);
+    t.stub.style.clipPath = poly(top);
+    setFringe(t.pf, lower, 1.1);
+    setFringe(t.sf, upper, -1.1);
+  }
+
+  function loop() {
+    if (raf) return;
+    raf = requestAnimationFrame(function step() {
+      raf = 0;
+      if (!tear) return;
+      var target = drag ? drag : auto;
+      if (!target) return;
+      if (auto) { auto.x = tear.dir > 0 ? tear.W + 10 : -10; auto.y += (Math.random() - 0.5) * 6; }
+      if (extend(target.x, target.y)) { finish(); return; }
+      raf = requestAnimationFrame(step);
+    });
+  }
+
+  function finish() {
+    var t = tear;
+    tear = null; drag = null; auto = null; state = 'gone';
+    sheet.classList.remove('grabbing');
+
+    var r = receipt.getBoundingClientRect();
+    var wrap = document.createElement('div');
+    wrap.className = 'fall';
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px';
+    var piece = receipt.cloneNode(true);
+    strip(piece);
+    wrap.appendChild(piece);
+    document.body.appendChild(wrap);
+
+    receipt.style.visibility = 'hidden';
+    receipt.style.clipPath = '';
+    t.pf.remove();
+    hint.textContent = 'Printing a new one…';
+    status.textContent = 'Receipt torn off. A new one prints in a few seconds.';
+
+    var last = t.pts[t.pts.length - 1];
+    wrap.style.transformOrigin = last[0] + 'px ' + last[1] + 'px';
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (reduce) {
+          wrap.style.transition = 'opacity .4s';
+          wrap.style.opacity = '0';
+        } else {
+          var dx = t.dir * (30 + Math.random() * 70);
+          var rot = -t.dir * (12 + Math.random() * 22);
+          wrap.style.transition = 'transform 1.3s cubic-bezier(.45,0,.9,.55)';
+          wrap.style.transform = 'translate(' + dx.toFixed(0) + 'px,' + (window.innerHeight + r.height).toFixed(0) + 'px) rotate(' + rot.toFixed(0) + 'deg)';
+        }
+      });
+    });
+    setTimeout(function () { wrap.remove(); }, 1500);
+
+    setTimeout(function () {
+      t.stub.style.transition = 'opacity .35s';
+      t.stub.style.opacity = '0';
+      setTimeout(function () { t.stub.remove(); sheet.classList.remove('tearing'); }, 400);
+      count += 1;
+      receipt.querySelector('.r-no').textContent = String(count).padStart(4, '0');
+      receipt.style.visibility = '';
+      status.textContent = 'New receipt printed.';
+      if (reduce) {
+        state = 'idle';
+        hint.textContent = HINT;
+      } else {
+        state = 'printing';
+        receipt.classList.remove('printing');
+        void receipt.offsetWidth; // restart the print animation
+        receipt.classList.add('printing');
+      }
+    }, REPRINT_AFTER);
+  }
+
+  function rip(localY, dir) {
+    if (state !== 'idle') return;
+    if (!tear) begin(dir || (Math.random() < 0.5 ? 1 : -1), localY);
+    if (reduce) { while (!extend(tear.dir > 0 ? tear.W + 10 : -10, tear.tipY)) {} finish(); return; }
+    auto = { x: 0, y: tear.tipY };
+    loop();
+  }
+
+  function local(e) {
+    var r = receipt.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  sheet.addEventListener('pointerdown', function (e) {
+    lastType = e.pointerType;
+    if (state !== 'idle' || auto || e.pointerType !== 'mouse' || e.button !== 0) return;
+    e.preventDefault();
+    sheet.setPointerCapture(e.pointerId);
+    var p = local(e);
+    drag = { sx: e.clientX, x: p.x, y: p.y, downY: p.y, moved: false };
+    sheet.classList.add('grabbing');
+  });
+  sheet.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    var p = local(e);
+    if (!drag.moved && Math.abs(e.clientX - drag.sx) < 5) return;
+    drag.moved = true;
+    if (!tear) begin(e.clientX >= drag.sx ? 1 : -1, drag.downY);
+    drag.x = p.x; drag.y = p.y;
+    loop();
+  });
+  function release() {
+    if (!drag) return;
+    var d = drag;
+    drag = null;
+    sheet.classList.remove('grabbing');
+    if (!d.moved) rip(d.downY);   // a plain click rips it across at that height
+  }
+  sheet.addEventListener('pointerup', release);
+  sheet.addEventListener('pointercancel', function () { drag = null; sheet.classList.remove('grabbing'); });
+  sheet.addEventListener('click', function (e) {
+    if (lastType === 'mouse') return;   // mouse is handled above
+    rip(local(e).y);
+  });
+  receipt.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rip(receipt.offsetHeight * 0.12); }
+  });
+
+  hint.textContent = HINT;
+})();
 </script>
 </body>
 </html>
