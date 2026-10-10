@@ -147,6 +147,31 @@ h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005e
 .vk-card .vk-num{color:#fff}
 .vk-tag{display:inline-block;margin-top:.25rem;background:#EEF0EC;border-radius:6px;padding:.05rem .4rem;font-size:.68rem;color:#3E4446}
 
+/* Lead Time screen */
+.lt{background:#FFFBF4;color:#2B2622;font-size:.78rem;line-height:1.4}
+.lt-top{padding:.85rem .95rem .5rem;display:flex;justify-content:space-between;align-items:baseline}
+.lt-top b{font-size:.95rem}
+.lt-top span{color:#857A70;font-size:.7rem}
+.lt-shop{margin:0 .95rem .6rem;color:#857A70;font-size:.72rem}
+.lt-card{margin:0 .8rem .55rem;background:#fff;border:1px solid #EFE6DA;border-radius:14px;padding:.7rem .75rem}
+.lt-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.lt-row b{font-size:.86rem}
+.lt-v{border-radius:999px;padding:.12rem .5rem;font-size:.68rem;font-weight:700;white-space:nowrap}
+.lt-go{background:#DCEFE2;color:#1F6B3B}
+.lt-late{background:#FCEBD0;color:#8A5410}
+.lt-wait{background:#ECE8F4;color:#54477A}
+.lt-why{color:#6E655D;font-size:.7rem;margin-top:.3rem}
+.lt-spark{display:block;width:100%;height:34px;margin-top:.45rem}
+.lt-spark .abroad{fill:none;stroke:#C9A27A;stroke-width:1.6}
+.lt-spark .sg{fill:none;stroke:#2B2622;stroke-width:1.8}
+.lt-key{display:flex;gap:.7rem;color:#857A70;font-size:.64rem;margin-top:.2rem}
+.lt-fit{margin:.55rem 0 0;font-size:.68rem;color:#6E655D}
+.lt-fit .lt-v{margin-right:.3rem}
+.lt-sub{margin:.4rem .95rem .35rem;color:#857A70;font-size:.68rem}
+.lt-chips{display:flex;flex-wrap:wrap;gap:.3rem;margin:0 .8rem}
+.lt-chips span{background:#F3ECE2;border-radius:6px;padding:.1rem .45rem;font-size:.66rem;color:#6E655D}
+.lt-key i{display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:.25rem}
+
 /* Recall screen */
 .rc{background:#1B2230;color:#E8ECF3;font-size:.8rem;line-height:1.45;padding-bottom:1rem}
 .rc-top{padding:.9rem 1rem .4rem;color:#AEB7C7;font-size:.78rem;text-align:center}
@@ -284,6 +309,7 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
 .ledger td{padding:1rem 1rem 1rem 0;border-bottom:1px solid var(--rule);vertical-align:baseline}
 .ledger td a{font-weight:800;font-size:1.25rem;text-decoration:none}
 .ledger td a:hover{text-decoration:underline}
+.note{color:var(--muted);font-size:.85rem;margin:.6rem 0 0}
 .ledger .num{font-family:var(--mono);color:var(--muted);font-size:.9rem}
 @media (max-width:640px){
   .ledger thead{position:absolute;left:-999px}
@@ -307,6 +333,7 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
   <table class="ledger">
     <thead><tr><th scope="col">Year</th><th scope="col">Project</th><th scope="col">Event</th><th scope="col">Result</th></tr></thead>
     <tbody>
+      <tr><td class="num">2026</td><td><a href="#lead-time">Lead Time</a></td><td>ForgeHacks Online</td><td>Submitted</td></tr>
       <tr><td class="num">2026</td><td><a href="#voucher-kaki">Voucher Kaki</a></td><td>SimplifyNext IGNITE Agentic AI Hackathon</td><td>Finalist</td></tr>
       <tr><td class="num">2026</td><td><a href="#recall">Recall</a></td><td>American Express AI Hackathon</td><td>2nd place</td></tr>
     </tbody>
@@ -314,6 +341,41 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
 </header>
 
 <main>
+  <section class="project" id="lead-time" aria-labelledby="lt-title">
+    <div class="wrap">
+      <div>
+        <h2 id="lt-title">Lead Time</h2>
+        <p class="meta">Submitted to ForgeHacks Online 2026. Solo build.</p>
+        <p>Food trends usually blow up overseas first. Lead Time watches weekly search interest for 22 foods across seven markets, works out how long each one has historically taken to reach Singapore, and tells a small food business which trends are heading its way. For each food it gives a verdict (Go, Go but late, Wait and watch, or Skip), checks whether the kitchen can actually make it, and then helps with the launch: a suggested price and margin, when to bulk order, a launch offer with its break-even, and a dated posting plan.</p>
+        <h3>It grades its own forecasts</h3>
+        <p>Every calculation takes an "as of" date, and a test makes sure no future data leaks in, so the app can be rewound to any past week and checked against what really happened. The results aren't flattering, and the app shows them anyway. Of 4 arrival forecasts that could be strictly checked, 1 fell inside its window. For Korean yogurt ice cream, the window was 19 weeks too early. When past arrivals are too uneven, it says "Wait and watch" instead of inventing a date.</p>
+        <h3>The model doesn't get the last word</h3>
+        <p>An open model judges what the kitchen can make and drafts the launch copy, but every answer is schema-checked. Anything with dates, links, quantities or popularity claims the data doesn't support is rejected and rewritten. All the numbers come from plain Python, and if every model is down, labelled offline rules take over.</p>
+        <a class="btn" href="https://lead-time-cjnn.onrender.com">Try Lead Time</a>
+        <p class="note">Runs on a free server, so the first load can take up to a minute.</p>
+      </div>
+      <figure style="margin:0">
+        <div class="phone" aria-hidden="true">
+          <div class="screen lt">
+              <div class="notch"></div>
+              <div class="lt-top"><b>Heading your way</b><span>as of 3 Oct</span></div>
+              <p class="lt-shop">Example: Block 216 Dessert Café</p>
+              <div class="lt-card">
+                <div class="lt-row"><b>Sea salt coffee</b><span class="lt-v lt-late">Coming soon</span></div>
+                <p class="lt-why">Taking off in the US since March. Past foods reached Singapore 3 weeks to 14 months later, so watch it rather than bet on a date.</p>
+                <svg class="lt-spark" viewBox="0 0 200 34" preserveAspectRatio="none"><polyline class="abroad" points="0,31 40,30 70,29 90,22 110,14 135,9 160,7 200,6"/><polyline class="sg" points="0,32 50,32 100,31 150,31 200,30"/></svg>
+                <div class="lt-key"><span><i style="background:#C9A27A"></i>US</span><span><i style="background:#2B2622"></i>Singapore</span></div>
+                <p class="lt-fit"><span class="lt-v lt-go">You can make it</span> Espresso machine, fridge, blender.</p>
+              </div>
+              <p class="lt-sub">Already peaked here</p>
+              <div class="lt-chips"><span>Dubai chocolate</span><span>Dubai chewy cookie</span><span>Tanghulu</span><span>Korean salt bread</span></div>
+            </div>
+        </div>
+        <figcaption class="caption">The overview for the app's example dessert café, from the 3 Oct 2026 data snapshot.</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <section class="project" id="voucher-kaki" aria-labelledby="vk-title">
     <div class="wrap">
       <div>

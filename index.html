@@ -165,6 +165,31 @@ h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005e
 .vk-card .vk-num{color:#fff}
 .vk-tag{display:inline-block;margin-top:.25rem;background:#EEF0EC;border-radius:6px;padding:.05rem .4rem;font-size:.68rem;color:#3E4446}
 
+/* Lead Time screen */
+.lt{background:#FFFBF4;color:#2B2622;font-size:.78rem;line-height:1.4}
+.lt-top{padding:.85rem .95rem .5rem;display:flex;justify-content:space-between;align-items:baseline}
+.lt-top b{font-size:.95rem}
+.lt-top span{color:#857A70;font-size:.7rem}
+.lt-shop{margin:0 .95rem .6rem;color:#857A70;font-size:.72rem}
+.lt-card{margin:0 .8rem .55rem;background:#fff;border:1px solid #EFE6DA;border-radius:14px;padding:.7rem .75rem}
+.lt-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.lt-row b{font-size:.86rem}
+.lt-v{border-radius:999px;padding:.12rem .5rem;font-size:.68rem;font-weight:700;white-space:nowrap}
+.lt-go{background:#DCEFE2;color:#1F6B3B}
+.lt-late{background:#FCEBD0;color:#8A5410}
+.lt-wait{background:#ECE8F4;color:#54477A}
+.lt-why{color:#6E655D;font-size:.7rem;margin-top:.3rem}
+.lt-spark{display:block;width:100%;height:34px;margin-top:.45rem}
+.lt-spark .abroad{fill:none;stroke:#C9A27A;stroke-width:1.6}
+.lt-spark .sg{fill:none;stroke:#2B2622;stroke-width:1.8}
+.lt-key{display:flex;gap:.7rem;color:#857A70;font-size:.64rem;margin-top:.2rem}
+.lt-fit{margin:.55rem 0 0;font-size:.68rem;color:#6E655D}
+.lt-fit .lt-v{margin-right:.3rem}
+.lt-sub{margin:.4rem .95rem .35rem;color:#857A70;font-size:.68rem}
+.lt-chips{display:flex;flex-wrap:wrap;gap:.3rem;margin:0 .8rem}
+.lt-chips span{background:#F3ECE2;border-radius:6px;padding:.1rem .45rem;font-size:.66rem;color:#6E655D}
+.lt-key i{display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:.25rem}
+
 /* Recall screen */
 .rc{background:#1B2230;color:#E8ECF3;font-size:.8rem;line-height:1.45;padding-bottom:1rem}
 .rc-top{padding:.9rem 1rem .4rem;color:#AEB7C7;font-size:.78rem;text-align:center}
@@ -315,6 +340,7 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
         </div>
         <div class="stamp" aria-hidden="true">SHIPPED</div>
         <ul class="r-list">
+          <li><span class="r-item">Lead Time<small>ForgeHacks Online 2026</small></span><span>Submitted</span></li>
           <li><span class="r-item">Voucher Kaki<small>SimplifyNext IGNITE 2026</small></span><span>Finalist</span></li>
           <li><span class="r-item">Recall<small>Amex AI Hackathon 2026</small></span><span>2nd</span></li>
         </ul>
@@ -325,10 +351,11 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
           <li><span>Python dependencies</span><span>0</span></li>
           <li><span>Map API keys</span><span>0</span></li>
           <li><span>Google ratings shipped</span><span>0</span></li>
+          <li><span>Foods tracked</span><span>22</span></li>
         </ul>
         <hr class="r-rule">
         <ul class="r-list">
-          <li class="r-total"><span>Total</span><span>2 projects</span></li>
+          <li class="r-total"><span>Total</span><span>3 projects</span></li>
         </ul>
         <div class="barcode" aria-hidden="true"></div>
         <p class="r-foot">Thank you. Come again.</p>
@@ -369,6 +396,37 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
 
     <!-- To add a project: copy one <li class="card"> below, edit it, and add a full write-up to projects.html. -->
     <ul class="track" tabindex="0" aria-label="Projects, scroll sideways">
+      <li class="card">
+        <div class="card-text">
+          <p class="card-meta">Submitted, ForgeHacks Online 2026. Solo build.</p>
+          <h3 class="card-title">Lead Time</h3>
+          <p class="card-sum">Shows small Singapore food businesses which overseas food trends are heading their way, whether their kitchen can make them, and how to price, stock and launch them first.</p>
+          <p class="card-decision"><b>It grades its own forecasts.</b> Of 4 arrival dates it could strictly check, 1 landed in its window, and the app says so instead of hiding it.</p>
+          <div class="card-links">
+            <a class="btn solid" href="projects.html#lead-time">Read the story</a>
+            <a class="btn" href="https://lead-time-cjnn.onrender.com">Try it</a>
+          </div>
+        </div>
+        <div class="card-shot" aria-hidden="true">
+          <div class="phone">
+            <div class="screen lt">
+              <div class="notch"></div>
+              <div class="lt-top"><b>Heading your way</b><span>as of 3 Oct</span></div>
+              <p class="lt-shop">Example: Block 216 Dessert Café</p>
+              <div class="lt-card">
+                <div class="lt-row"><b>Sea salt coffee</b><span class="lt-v lt-late">Coming soon</span></div>
+                <p class="lt-why">Taking off in the US since March. Past foods reached Singapore 3 weeks to 14 months later, so watch it rather than bet on a date.</p>
+                <svg class="lt-spark" viewBox="0 0 200 34" preserveAspectRatio="none"><polyline class="abroad" points="0,31 40,30 70,29 90,22 110,14 135,9 160,7 200,6"/><polyline class="sg" points="0,32 50,32 100,31 150,31 200,30"/></svg>
+                <div class="lt-key"><span><i style="background:#C9A27A"></i>US</span><span><i style="background:#2B2622"></i>Singapore</span></div>
+                <p class="lt-fit"><span class="lt-v lt-go">You can make it</span> Espresso machine, fridge, blender.</p>
+              </div>
+              <p class="lt-sub">Already peaked here</p>
+              <div class="lt-chips"><span>Dubai chocolate</span><span>Dubai chewy cookie</span><span>Tanghulu</span><span>Korean salt bread</span></div>
+            </div>
+          </div>
+        </div>
+      </li>
+
       <li class="card">
         <div class="card-text">
           <p class="card-meta">Finalist, SimplifyNext IGNITE Agentic AI Hackathon 2026</p>
