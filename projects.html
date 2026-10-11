@@ -172,6 +172,21 @@ h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005e
 .lt-chips span{background:#F3ECE2;border-radius:6px;padding:.1rem .45rem;font-size:.66rem;color:#6E655D}
 .lt-key i{display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:.25rem}
 
+/* Pinch screen */
+.pn{background:#FAF6EE;color:#3A2E25;font-size:.78rem;line-height:1.42}
+.pn-card{margin:.6rem .7rem;background:#FFFDF8;border:1px solid #EADFCC;border-radius:6px;padding:.8rem .85rem;
+  background-image:repeating-linear-gradient(#FFFDF8 0 21px,#EFE6D6 21px 22px);background-position:0 46px}
+.pn-title{font-family:Georgia,serif;font-size:1.05rem;font-weight:700;margin:0 0 .55rem;line-height:1.2}
+.pn-h{font-size:.64rem;color:#8C7A66;text-transform:uppercase;letter-spacing:.06em;margin:.5rem 0 .2rem}
+.pn-ing{list-style:none;margin:0;padding:0}
+.pn-ing li{display:flex;justify-content:space-between;gap:.5rem;padding:.08rem 0}
+.pn-ing .ok{color:#3C6B45;font-weight:700}
+.pn-ing .unk{color:#A0522D;font-style:italic}
+.pn-quote{margin:.35rem 0 0;padding:.35rem .5rem;border-left:3px solid #D9B77E;background:#FBF3E3;font-family:Georgia,serif;font-style:italic;font-size:.74rem}
+.pn-quote small{display:block;font-style:normal;font-family:inherit;color:#8C7A66;font-size:.62rem;margin-top:.1rem}
+.pn-unknown{margin:.5rem 0 0;padding:.45rem .5rem;border:1.5px dashed #C9A07A;border-radius:6px;font-size:.72rem}
+.pn-unknown b{display:block;color:#A0522D;font-size:.68rem;margin-bottom:.1rem}
+
 /* Recall screen */
 .rc{background:#1B2230;color:#E8ECF3;font-size:.8rem;line-height:1.45;padding-bottom:1rem}
 .rc-top{padding:.9rem 1rem .4rem;color:#AEB7C7;font-size:.78rem;text-align:center}
@@ -333,6 +348,7 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
   <table class="ledger">
     <thead><tr><th scope="col">Year</th><th scope="col">Project</th><th scope="col">Event</th><th scope="col">Result</th></tr></thead>
     <tbody>
+      <tr><td class="num">2026</td><td><a href="#pinch">Pinch</a></td><td>Build With AI: Basics (Devpost)</td><td>Submitted</td></tr>
       <tr><td class="num">2026</td><td><a href="#lead-time">Lead Time</a></td><td>ForgeHacks Online</td><td>Submitted</td></tr>
       <tr><td class="num">2026</td><td><a href="#voucher-kaki">Voucher Kaki</a></td><td>SimplifyNext IGNITE Agentic AI Hackathon</td><td>Finalist</td></tr>
       <tr><td class="num">2026</td><td><a href="#recall">Recall</a></td><td>American Express AI Hackathon</td><td>2nd place</td></tr>
@@ -341,6 +357,43 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
 </header>
 
 <main>
+  <section class="project" id="pinch" aria-labelledby="pn-title">
+    <div class="wrap">
+      <div>
+        <h2 id="pn-title">Pinch</h2>
+        <p class="meta">Submitted to Build With AI: Basics 2026 on Devpost. Solo build.</p>
+        <p>Family recipes often live only in someone&rsquo;s head, written down as &ldquo;a pinch&rdquo; or &ldquo;until it smells right&rdquo;. Most recipe apps record first and sort it out afterwards, and by the time they notice an amount is vague, the cook has left the kitchen. Pinch asks during the cooking. After each step, it either stays quiet because the step is clear, or asks one follow-up question, out loud and in big text. At the end you get a printable, notebook-style card with her words, her reasons, and an honest &ldquo;Still unknown&rdquo; list.</p>
+        <h3>It never guesses an amount</h3>
+        <p>Gemini decides what to ask. Plain server code checks every amount, number and quote on the card against what the cook actually said. Anything it can&rsquo;t trace back to her words becomes &ldquo;amount unknown&rdquo; and goes on the Still unknown list, so the card never invents a measurement she didn&rsquo;t give.</p>
+        <h3>Questions are rationed on purpose</h3>
+        <p>Nobody wants to be interrupted every ten seconds while cooking. Pinch allows at most one question per step and three per session, and that limit is enforced by the app, not left to the model. If the AI service is down, it falls back to notes mode, which still saves her exact words without filling anything in.</p>
+        <a class="btn" href="https://pinch-htpl.onrender.com">Try Pinch</a>
+        <p class="note">Runs on a free server, so the first load can take up to a minute. The built-in demo works without a microphone.</p>
+      </div>
+      <figure style="margin:0">
+        <div class="phone" aria-hidden="true">
+          <div class="screen pn">
+              <div class="notch"></div>
+              <div class="pn-card">
+                <p class="pn-title">Betty&rsquo;s Sunday pancakes</p>
+                <p class="pn-h">Ingredients</p>
+                <ul class="pn-ing">
+                  <li><span>Flour</span><span>1 cup</span></li>
+                  <li><span>Egg</span><span>1</span></li>
+                  <li><span>Milk</span><span class="ok">about &frac34; cup &#10003;</span></li>
+                  <li><span>Butter, for the pan</span><span class="unk">amount unknown</span></li>
+                </ul>
+                <p class="pn-quote">&ldquo;About &frac34; cup. Just enough so it runs off the spoon.&rdquo;<small>She clarified, when asked how much a splash is</small></p>
+                <p class="pn-quote">&ldquo;The first one is always for the cook.&rdquo;<small>Her words</small></p>
+                <div class="pn-unknown"><b>Still unknown</b>Butter amount. She said &ldquo;a little butter in the pan&rdquo;. Ask Betty next time.</div>
+              </div>
+            </div>
+        </div>
+        <figcaption class="caption">The app&rsquo;s example card. The butter amount was never said, so it stays unknown.</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <section class="project" id="lead-time" aria-labelledby="lt-title">
     <div class="wrap">
       <div>
