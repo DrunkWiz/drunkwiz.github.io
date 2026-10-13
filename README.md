@@ -16,16 +16,12 @@
  Voucher Kaki              Finalist
  Recall                         2nd
  ----------------------------------
- Python dependencies              0
- Google ratings shipped           0
- Amounts guessed                  0
- ----------------------------------
  TOTAL                   5 projects
 
       Thank you. Come again.
 ```
 
-Every visit starts with a thermal receipt printing out of a slot. It lists what I've built and how each one placed, and then it's yours to tear off. The site is one hand-written HTML page plus a projects page: no framework, no build step, nothing to install.
+Every visit starts with a thermal receipt printing out of a slot. It lists my hackathon builds and how each one placed, and then it's yours to tear off. The site is one hand-written HTML page plus a projects page: no framework, no build step, nothing to install.
 
 ---
 
@@ -88,11 +84,11 @@ To make it easier or harder, change `FIT` near the top of the tear script in `in
 
 ## ➕ Adding a project
 
-Three places, all marked with comments in the HTML:
+The carousel and the projects page hold everything. The receipt is the highlight reel, so it only gets projects that placed or reached finals, which keeps it short enough to tear.
 
-1. **`index.html`, the receipt:** add a line to the first list and bump the total.
-2. **`index.html`, the carousel:** copy one `<li class="card">` block. The counters update themselves.
-3. **`projects.html`:** add a row to the ledger table and a `<section class="project">` with the full story.
+1. **`index.html`, the carousel:** copy one `<li class="card">` block. The counters update themselves.
+2. **`projects.html`:** add a row to the ledger table and a `<section class="project">` with the full story.
+3. **`index.html`, the receipt (placed or finalist only):** add a line to the list and bump the total.
 
 Push to `main` and [the workflow](.github/workflows/static.yml) publishes it in about 20 seconds.
 
