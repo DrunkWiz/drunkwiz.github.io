@@ -187,6 +187,23 @@ h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005e
 .pn-unknown{margin:.5rem 0 0;padding:.45rem .5rem;border:1.5px dashed #C9A07A;border-radius:6px;font-size:.72rem}
 .pn-unknown b{display:block;color:#A0522D;font-size:.68rem;margin-bottom:.1rem}
 
+/* AgentShopper screen */
+.as{background:#F5F6FA;color:#1E2233;font-size:.74rem;line-height:1.4}
+.as-q{margin:.6rem .7rem .5rem;background:#fff;border:1px solid #DDE1EC;border-radius:12px;padding:.55rem .65rem;font-size:.72rem}
+.as-q small{display:block;color:#6B7189;font-size:.62rem;margin-bottom:.15rem}
+.as-cols{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:0 .7rem}
+.as-col{background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.45rem .45rem .35rem}
+.as-col.after{border-color:#5B6CF0;box-shadow:0 0 0 1px #5B6CF0 inset}
+.as-h{font-size:.6rem;font-weight:700;color:#6B7189;margin:0 0 .3rem;text-transform:uppercase;letter-spacing:.04em}
+.as-col.after .as-h{color:#3D4BD1}
+.as-col ol{margin:0;padding-left:1rem}
+.as-col li{margin-bottom:.3rem;font-size:.66rem}
+.as-col li span{display:block;color:#6B7189;font-size:.58rem}
+.as-new{color:#3D4BD1;font-weight:700}
+.as-moved{margin:.5rem .7rem 0;background:#E7EAFE;color:#2C3699;border-radius:8px;padding:.4rem .55rem;font-size:.68rem;font-weight:600}
+.as-score{display:flex;justify-content:space-between;align-items:center;margin:.45rem .7rem 0;background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.4rem .55rem;font-size:.66rem}
+.as-score b{font-size:.9rem}
+
 /* Recall screen */
 .rc{background:#1B2230;color:#E8ECF3;font-size:.8rem;line-height:1.45;padding-bottom:1rem}
 .rc-top{padding:.9rem 1rem .4rem;color:#AEB7C7;font-size:.78rem;text-align:center}
@@ -350,6 +367,7 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
     <tbody>
       <tr><td class="num">2026</td><td><a href="#pinch">Pinch</a></td><td>Build With AI: Basics (Devpost)</td><td>Submitted</td></tr>
       <tr><td class="num">2026</td><td><a href="#lead-time">Lead Time</a></td><td>ForgeHacks Online</td><td>Submitted</td></tr>
+      <tr><td class="num">2026</td><td><a href="#agentshopper">AgentShopper</a></td><td>NUS LifeHack (Rezolve AI challenge)</td><td>Submitted</td></tr>
       <tr><td class="num">2026</td><td><a href="#voucher-kaki">Voucher Kaki</a></td><td>SimplifyNext IGNITE Agentic AI Hackathon</td><td>Finalist</td></tr>
       <tr><td class="num">2026</td><td><a href="#recall">Recall</a></td><td>American Express AI Hackathon</td><td>2nd place</td></tr>
     </tbody>
@@ -425,6 +443,38 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
             </div>
         </div>
         <figcaption class="caption">The overview for the app's example dessert café, from the 3 Oct 2026 data snapshot.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="project" id="agentshopper" aria-labelledby="as-title">
+    <div class="wrap">
+      <div>
+        <h2 id="as-title">AgentShopper</h2>
+        <p class="meta">NUS LifeHack 2026, Rezolve AI challenge. Built with a team of three; I led the engineering and AI reasoning.</p>
+        <p>People are starting to shop by asking an AI assistant instead of typing into a search box. A question like &ldquo;lightweight shoes for a half marathon in humid weather, under S$200&rdquo; needs facts most product pages never state, so those products quietly never get recommended. AgentShopper takes a catalogue file (CSV, Excel, Shopify JSON or even a scanned PDF), scores how ready it is for AI shoppers, lists exactly which facts are missing, and writes content for each product: who it suits, who it doesn&rsquo;t, and how it compares with the real products beside it.</p>
+        <h3>It has to prove it worked</h3>
+        <p>Instead of claiming the new content is better, the app searches the catalogue twice, once with the original content and once with the new, over exactly the same products, and puts the two result lists side by side. Hard requirements like a S$200 budget are enforced in code, so the AI can&rsquo;t talk a S$219 shoe into the results.</p>
+        <h3>A made-up spec can&rsquo;t get in</h3>
+        <p>Every fact the AI extracts has to appear word for word in that product&rsquo;s own text, or it&rsquo;s thrown away. Every claim in the written content has to cite a real fact, a second, stricter pass checks the evidence actually supports it, and anything that fails is flagged for human review instead of published. If a product has no verified facts at all, the app writes nothing and says so.</p>
+        <a class="btn" href="https://agentshopper.streamlit.app/">Try AgentShopper</a>
+        <p class="note">The two built-in demo catalogues, running shoes and facial skincare, work without uploading anything.</p>
+      </div>
+      <figure style="margin:0">
+        <div class="phone" aria-hidden="true">
+          <div class="screen as">
+              <div class="notch"></div>
+              <div class="as-q"><small>Ask like a shopper</small>&ldquo;Training for a half marathon in Singapore&rsquo;s humid weather. Lightweight shoes under S$200.&rdquo;</div>
+              <div class="as-cols">
+                <div class="as-col"><p class="as-h">Original content</p>
+                  <ol><li>Terrafirma Anchor Daily<span>S$149</span></li><li>Halcyon Crossover Gym<span>S$159</span></li><li>Terrafirma Loop Indoor<span>S$139</span></li></ol></div>
+                <div class="as-col after"><p class="as-h">AgentShopper</p>
+                  <ol><li>Kestrel Drift 3<span>S$179</span></li><li><b class="as-new">Vela Aero 9</b><span>S$199</span></li><li>Vela Halo Breeze<span>S$189</span></li></ol></div>
+              </div>
+              <div class="as-moved">Vela Aero 9: not surfaced at all &rarr; #2</div>
+            </div>
+        </div>
+        <figcaption class="caption">Illustration built from the app&rsquo;s demo shoe catalogue. A real run&rsquo;s ranking may differ.</figcaption>
       </figure>
     </div>
   </section>

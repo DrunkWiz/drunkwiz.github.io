@@ -205,6 +205,23 @@ h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005e
 .pn-unknown{margin:.5rem 0 0;padding:.45rem .5rem;border:1.5px dashed #C9A07A;border-radius:6px;font-size:.72rem}
 .pn-unknown b{display:block;color:#A0522D;font-size:.68rem;margin-bottom:.1rem}
 
+/* AgentShopper screen */
+.as{background:#F5F6FA;color:#1E2233;font-size:.74rem;line-height:1.4}
+.as-q{margin:.6rem .7rem .5rem;background:#fff;border:1px solid #DDE1EC;border-radius:12px;padding:.55rem .65rem;font-size:.72rem}
+.as-q small{display:block;color:#6B7189;font-size:.62rem;margin-bottom:.15rem}
+.as-cols{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:0 .7rem}
+.as-col{background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.45rem .45rem .35rem}
+.as-col.after{border-color:#5B6CF0;box-shadow:0 0 0 1px #5B6CF0 inset}
+.as-h{font-size:.6rem;font-weight:700;color:#6B7189;margin:0 0 .3rem;text-transform:uppercase;letter-spacing:.04em}
+.as-col.after .as-h{color:#3D4BD1}
+.as-col ol{margin:0;padding-left:1rem}
+.as-col li{margin-bottom:.3rem;font-size:.66rem}
+.as-col li span{display:block;color:#6B7189;font-size:.58rem}
+.as-new{color:#3D4BD1;font-weight:700}
+.as-moved{margin:.5rem .7rem 0;background:#E7EAFE;color:#2C3699;border-radius:8px;padding:.4rem .55rem;font-size:.68rem;font-weight:600}
+.as-score{display:flex;justify-content:space-between;align-items:center;margin:.45rem .7rem 0;background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.4rem .55rem;font-size:.66rem}
+.as-score b{font-size:.9rem}
+
 /* Recall screen */
 .rc{background:#1B2230;color:#E8ECF3;font-size:.8rem;line-height:1.45;padding-bottom:1rem}
 .rc-top{padding:.9rem 1rem .4rem;color:#AEB7C7;font-size:.78rem;text-align:center}
@@ -357,6 +374,7 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
         <ul class="r-list">
           <li><span class="r-item">Pinch<small>Build With AI: Basics 2026</small></span><span>Submitted</span></li>
           <li><span class="r-item">Lead Time<small>ForgeHacks Online 2026</small></span><span>Submitted</span></li>
+          <li><span class="r-item">AgentShopper<small>NUS LifeHack 2026</small></span><span>Submitted</span></li>
           <li><span class="r-item">Voucher Kaki<small>SimplifyNext IGNITE 2026</small></span><span>Finalist</span></li>
           <li><span class="r-item">Recall<small>Amex AI Hackathon 2026</small></span><span>2nd</span></li>
         </ul>
@@ -372,7 +390,7 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
         </ul>
         <hr class="r-rule">
         <ul class="r-list">
-          <li class="r-total"><span>Total</span><span>4 projects</span></li>
+          <li class="r-total"><span>Total</span><span>5 projects</span></li>
         </ul>
         <div class="barcode" aria-hidden="true"></div>
         <p class="r-foot">Thank you. Come again.</p>
@@ -472,6 +490,34 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
               </div>
               <p class="lt-sub">Already peaked here</p>
               <div class="lt-chips"><span>Dubai chocolate</span><span>Dubai chewy cookie</span><span>Tanghulu</span><span>Korean salt bread</span></div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="card">
+        <div class="card-text">
+          <p class="card-meta">NUS LifeHack 2026, Rezolve AI challenge. Team of three.</p>
+          <h3 class="card-title">AgentShopper</h3>
+          <p class="card-sum">Turns an ordinary product catalogue into content AI shopping assistants can understand, trust and recommend, then shows a product moving from &ldquo;never showed up&rdquo; to the top of the list.</p>
+          <p class="card-decision"><b>It has to prove it worked.</b> It searches your catalogue twice, once with the original content and once with the new, and shows both result lists side by side.</p>
+          <div class="card-links">
+            <a class="btn solid" href="projects.html#agentshopper">Read the story</a>
+            <a class="btn" href="https://agentshopper.streamlit.app/">Try it</a>
+          </div>
+        </div>
+        <div class="card-shot" aria-hidden="true">
+          <div class="phone">
+            <div class="screen as">
+              <div class="notch"></div>
+              <div class="as-q"><small>Ask like a shopper</small>&ldquo;Training for a half marathon in Singapore&rsquo;s humid weather. Lightweight shoes under S$200.&rdquo;</div>
+              <div class="as-cols">
+                <div class="as-col"><p class="as-h">Original content</p>
+                  <ol><li>Terrafirma Anchor Daily<span>S$149</span></li><li>Halcyon Crossover Gym<span>S$159</span></li><li>Terrafirma Loop Indoor<span>S$139</span></li></ol></div>
+                <div class="as-col after"><p class="as-h">AgentShopper</p>
+                  <ol><li>Kestrel Drift 3<span>S$179</span></li><li><b class="as-new">Vela Aero 9</b><span>S$199</span></li><li>Vela Halo Breeze<span>S$189</span></li></ol></div>
+              </div>
+              <div class="as-moved">Vela Aero 9: not surfaced at all &rarr; #2</div>
             </div>
           </div>
         </div>
