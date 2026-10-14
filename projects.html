@@ -360,63 +360,26 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
 
 <header class="wrap intro">
   <h1>All projects</h1>
-  <p class="lede">Everything I've built so far, newest first, each with the decision that shaped it.</p>
+  <p class="lede">Everything I've built so far, results first, each with the decision that shaped it.</p>
   <!-- To add a project: add a row here, and a <section class="project"> below. -->
   <table class="ledger">
     <thead><tr><th scope="col">Year</th><th scope="col">Project</th><th scope="col">Event</th><th scope="col">Result</th></tr></thead>
     <tbody>
-      <tr><td class="num">2026</td><td><a href="#pinch">Pinch</a></td><td>Build With AI: Basics (Devpost)</td><td>Submitted</td></tr>
-      <tr><td class="num">2026</td><td><a href="#lead-time">Lead Time</a></td><td>ForgeHacks Online</td><td>Submitted</td></tr>
-      <tr><td class="num">2026</td><td><a href="#agentshopper">AgentShopper</a></td><td>NUS LifeHack (Rezolve AI challenge)</td><td>Submitted</td></tr>
-      <tr><td class="num">2026</td><td><a href="#voucher-kaki">Voucher Kaki</a></td><td>SimplifyNext IGNITE Agentic AI Hackathon</td><td>Finalist</td></tr>
+      <tr><td class="num">2026</td><td><a href="#lead-time">Lead Time</a></td><td>ForgeHacks Online, Business + AI track</td><td>Track winner</td></tr>
       <tr><td class="num">2026</td><td><a href="#recall">Recall</a></td><td>American Express AI Hackathon</td><td>2nd place</td></tr>
+      <tr><td class="num">2026</td><td><a href="#voucher-kaki">Voucher Kaki</a></td><td>SimplifyNext IGNITE Agentic AI Hackathon</td><td>Finalist</td></tr>
+      <tr><td class="num">2026</td><td><a href="#pinch">Pinch</a></td><td>Build With AI: Basics (Devpost)</td><td>Submitted</td></tr>
+      <tr><td class="num">2026</td><td><a href="#agentshopper">AgentShopper</a></td><td>NUS LifeHack (Rezolve AI challenge)</td><td>Submitted</td></tr>
     </tbody>
   </table>
 </header>
 
 <main>
-  <section class="project" id="pinch" aria-labelledby="pn-title">
-    <div class="wrap">
-      <div>
-        <h2 id="pn-title">Pinch</h2>
-        <p class="meta">Submitted to Build With AI: Basics 2026 on Devpost. Solo build.</p>
-        <p>Family recipes often live only in someone&rsquo;s head, written down as &ldquo;a pinch&rdquo; or &ldquo;until it smells right&rdquo;. Most recipe apps record first and sort it out afterwards, and by the time they notice an amount is vague, the cook has left the kitchen. Pinch asks during the cooking. After each step, it either stays quiet because the step is clear, or asks one follow-up question, out loud and in big text. At the end you get a printable, notebook-style card with her words, her reasons, and an honest &ldquo;Still unknown&rdquo; list.</p>
-        <h3>It never guesses an amount</h3>
-        <p>Gemini decides what to ask. Plain server code checks every amount, number and quote on the card against what the cook actually said. Anything it can&rsquo;t trace back to her words becomes &ldquo;amount unknown&rdquo; and goes on the Still unknown list, so the card never invents a measurement she didn&rsquo;t give.</p>
-        <h3>Questions are rationed on purpose</h3>
-        <p>Nobody wants to be interrupted every ten seconds while cooking. Pinch allows at most one question per step and three per session, and that limit is enforced by the app, not left to the model. If the AI service is down, it falls back to notes mode, which still saves her exact words without filling anything in.</p>
-        <a class="btn" href="https://pinch-htpl.onrender.com">Try Pinch</a>
-        <p class="note">Runs on a free server, so the first load can take up to a minute. The built-in demo works without a microphone.</p>
-      </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen pn">
-              <div class="notch"></div>
-              <div class="pn-card">
-                <p class="pn-title">Betty&rsquo;s Sunday pancakes</p>
-                <p class="pn-h">Ingredients</p>
-                <ul class="pn-ing">
-                  <li><span>Flour</span><span>1 cup</span></li>
-                  <li><span>Egg</span><span>1</span></li>
-                  <li><span>Milk</span><span class="ok">about &frac34; cup &#10003;</span></li>
-                  <li><span>Butter, for the pan</span><span class="unk">amount unknown</span></li>
-                </ul>
-                <p class="pn-quote">&ldquo;About &frac34; cup. Just enough so it runs off the spoon.&rdquo;<small>She clarified, when asked how much a splash is</small></p>
-                <p class="pn-quote">&ldquo;The first one is always for the cook.&rdquo;<small>Her words</small></p>
-                <div class="pn-unknown"><b>Still unknown</b>Butter amount. She said &ldquo;a little butter in the pan&rdquo;. Ask Betty next time.</div>
-              </div>
-            </div>
-        </div>
-        <figcaption class="caption">The app&rsquo;s example card. The butter amount was never said, so it stays unknown.</figcaption>
-      </figure>
-    </div>
-  </section>
-
   <section class="project" id="lead-time" aria-labelledby="lt-title">
     <div class="wrap">
       <div>
         <h2 id="lt-title">Lead Time</h2>
-        <p class="meta">Submitted to ForgeHacks Online 2026. Solo build.</p>
+        <p class="meta">Winner of the Business + AI track at ForgeHacks Online 2026. Solo build.</p>
         <p>Food trends usually blow up overseas first. Lead Time watches weekly search interest for 22 foods across seven markets, works out how long each one has historically taken to reach Singapore, and tells a small food business which trends are heading its way. For each food it gives a verdict (Go, Go but late, Wait and watch, or Skip), checks whether the kitchen can actually make it, and then helps with the launch: a suggested price and margin, when to bulk order, a launch offer with its break-even, and a dated posting plan.</p>
         <h3>It grades its own forecasts</h3>
         <p>Every calculation takes an "as of" date, and a test makes sure no future data leaks in, so the app can be rewound to any past week and checked against what really happened. The results aren't flattering, and the app shows them anyway. Of 4 arrival forecasts that could be strictly checked, 1 fell inside its window. For Korean yogurt ice cream, the window was 19 weeks too early. When past arrivals are too uneven, it says "Wait and watch" instead of inventing a date.</p>
@@ -443,70 +406,6 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
             </div>
         </div>
         <figcaption class="caption">The overview for the app's example dessert café, from the 3 Oct 2026 data snapshot.</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="project" id="agentshopper" aria-labelledby="as-title">
-    <div class="wrap">
-      <div>
-        <h2 id="as-title">AgentShopper</h2>
-        <p class="meta">NUS LifeHack 2026, Rezolve AI challenge. Built with a team of three; I led the engineering and AI reasoning.</p>
-        <p>People are starting to shop by asking an AI assistant instead of typing into a search box. A question like &ldquo;lightweight shoes for a half marathon in humid weather, under S$200&rdquo; needs facts most product pages never state, so those products quietly never get recommended. AgentShopper takes a catalogue file (CSV, Excel, Shopify JSON or even a scanned PDF), scores how ready it is for AI shoppers, lists exactly which facts are missing, and writes content for each product: who it suits, who it doesn&rsquo;t, and how it compares with the real products beside it.</p>
-        <h3>It has to prove it worked</h3>
-        <p>Instead of claiming the new content is better, the app searches the catalogue twice, once with the original content and once with the new, over exactly the same products, and puts the two result lists side by side. Hard requirements like a S$200 budget are enforced in code, so the AI can&rsquo;t talk a S$219 shoe into the results.</p>
-        <h3>A made-up spec can&rsquo;t get in</h3>
-        <p>Every fact the AI extracts has to appear word for word in that product&rsquo;s own text, or it&rsquo;s thrown away. Every claim in the written content has to cite a real fact, a second, stricter pass checks the evidence actually supports it, and anything that fails is flagged for human review instead of published. If a product has no verified facts at all, the app writes nothing and says so.</p>
-        <a class="btn" href="https://agentshopper.streamlit.app/">Try AgentShopper</a>
-        <p class="note">The two built-in demo catalogues, running shoes and facial skincare, work without uploading anything.</p>
-      </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen as">
-              <div class="notch"></div>
-              <div class="as-q"><small>Ask like a shopper</small>&ldquo;Training for a half marathon in Singapore&rsquo;s humid weather. Lightweight shoes under S$200.&rdquo;</div>
-              <div class="as-cols">
-                <div class="as-col"><p class="as-h">Original content</p>
-                  <ol><li>Terrafirma Anchor Daily<span>S$149</span></li><li>Halcyon Crossover Gym<span>S$159</span></li><li>Terrafirma Loop Indoor<span>S$139</span></li></ol></div>
-                <div class="as-col after"><p class="as-h">AgentShopper</p>
-                  <ol><li>Kestrel Drift 3<span>S$179</span></li><li><b class="as-new">Vela Aero 9</b><span>S$199</span></li><li>Vela Halo Breeze<span>S$189</span></li></ol></div>
-              </div>
-              <div class="as-moved">Vela Aero 9: not surfaced at all &rarr; #2</div>
-            </div>
-        </div>
-        <figcaption class="caption">Illustration built from the app&rsquo;s demo shoe catalogue. A real run&rsquo;s ranking may differ.</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="project" id="voucher-kaki" aria-labelledby="vk-title">
-    <div class="wrap">
-      <div>
-        <h2 id="vk-title">Voucher Kaki</h2>
-        <p class="meta">Finalist, SimplifyNext IGNITE Agentic AI Hackathon 2026. Built with a team of four.</p>
-        <p>Say or type what you feel like eating, in English, 中文, Bahasa Melayu or தமிழ், and Voucher Kaki finds CDC-voucher eateries near you. Results are ranked by relevance and walking distance, with a deliberate nudge toward independent shops over chains. When it has to widen the search to fill the list, it tells you what it gave up instead of quietly showing worse matches.</p>
-        <h3>The best decision was a deletion</h3>
-        <p>We built Google ratings into every result, then took them out. Many of the small shops in our data have no Google listing at all, so a ratings line would put a 4.5 with 800 reviews next to a blank. Someone choosing lunch on a phone picks the number. The whole point of the app is to surface the places people overlook, and a half-empty ratings column would have pushed them straight back to the famous ones.</p>
-        <a class="btn" href="https://simplify-ai-hackathon.vercel.app">Try Voucher Kaki</a>
-      </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen vk">
-            <div class="notch"></div>
-            <div class="vk-bar">
-              <div class="vk-search">dim sum supper</div>
-              <span class="vk-loc">Yishun</span>
-            </div>
-            <p class="vk-answer">Here are dim sum places near Yishun that take CDC vouchers.</p>
-            <div class="vk-fill">To fill this list I:
-              <ul><li>widened to 1.5 km</li><li>widened to 3 km</li><li>included places not tagged for supper</li></ul>
-            </div>
-            <div class="vk-card"><span class="vk-num">1</span><div><b>Dim Sum Corner</b><span>6 min walk, 420 m</span><br><span class="vk-tag">Independent</span></div></div>
-            <div class="vk-card"><span class="vk-num">2</span><div><b>Supper House Kopitiam</b><span>14 min walk, 1.1 km</span><br><span class="vk-tag">Independent</span></div></div>
-            <div class="vk-card"><span class="vk-num">3</span><div><b>Golden Bamboo Eating House</b><span>Bus or 28 min walk, 2.2 km</span></div></div>
-          </div>
-        </div>
-        <figcaption class="caption">Illustration of a late-night search in Yishun.</figcaption>
       </figure>
     </div>
   </section>
@@ -547,6 +446,106 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
     </div>
   </section>
 
+  <section class="project" id="voucher-kaki" aria-labelledby="vk-title">
+    <div class="wrap">
+      <div>
+        <h2 id="vk-title">Voucher Kaki</h2>
+        <p class="meta">Finalist, SimplifyNext IGNITE Agentic AI Hackathon 2026. Built with a team of four.</p>
+        <p>Say or type what you feel like eating, in English, 中文, Bahasa Melayu or தமிழ், and Voucher Kaki finds CDC-voucher eateries near you. Results are ranked by relevance and walking distance, with a deliberate nudge toward independent shops over chains. When it has to widen the search to fill the list, it tells you what it gave up instead of quietly showing worse matches.</p>
+        <h3>The best decision was a deletion</h3>
+        <p>We built Google ratings into every result, then took them out. Many of the small shops in our data have no Google listing at all, so a ratings line would put a 4.5 with 800 reviews next to a blank. Someone choosing lunch on a phone picks the number. The whole point of the app is to surface the places people overlook, and a half-empty ratings column would have pushed them straight back to the famous ones.</p>
+        <a class="btn" href="https://simplify-ai-hackathon.vercel.app">Try Voucher Kaki</a>
+      </div>
+      <figure style="margin:0">
+        <div class="phone" aria-hidden="true">
+          <div class="screen vk">
+            <div class="notch"></div>
+            <div class="vk-bar">
+              <div class="vk-search">dim sum supper</div>
+              <span class="vk-loc">Yishun</span>
+            </div>
+            <p class="vk-answer">Here are dim sum places near Yishun that take CDC vouchers.</p>
+            <div class="vk-fill">To fill this list I:
+              <ul><li>widened to 1.5 km</li><li>widened to 3 km</li><li>included places not tagged for supper</li></ul>
+            </div>
+            <div class="vk-card"><span class="vk-num">1</span><div><b>Dim Sum Corner</b><span>6 min walk, 420 m</span><br><span class="vk-tag">Independent</span></div></div>
+            <div class="vk-card"><span class="vk-num">2</span><div><b>Supper House Kopitiam</b><span>14 min walk, 1.1 km</span><br><span class="vk-tag">Independent</span></div></div>
+            <div class="vk-card"><span class="vk-num">3</span><div><b>Golden Bamboo Eating House</b><span>Bus or 28 min walk, 2.2 km</span></div></div>
+          </div>
+        </div>
+        <figcaption class="caption">Illustration of a late-night search in Yishun.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="project" id="pinch" aria-labelledby="pn-title">
+    <div class="wrap">
+      <div>
+        <h2 id="pn-title">Pinch</h2>
+        <p class="meta">Submitted to Build With AI: Basics 2026 on Devpost. Solo build.</p>
+        <p>Family recipes often live only in someone&rsquo;s head, written down as &ldquo;a pinch&rdquo; or &ldquo;until it smells right&rdquo;. Most recipe apps record first and sort it out afterwards, and by the time they notice an amount is vague, the cook has left the kitchen. Pinch asks during the cooking. After each step, it either stays quiet because the step is clear, or asks one follow-up question, out loud and in big text. At the end you get a printable, notebook-style card with her words, her reasons, and an honest &ldquo;Still unknown&rdquo; list.</p>
+        <h3>It never guesses an amount</h3>
+        <p>Gemini decides what to ask. Plain server code checks every amount, number and quote on the card against what the cook actually said. Anything it can&rsquo;t trace back to her words becomes &ldquo;amount unknown&rdquo; and goes on the Still unknown list, so the card never invents a measurement she didn&rsquo;t give.</p>
+        <h3>Questions are rationed on purpose</h3>
+        <p>Nobody wants to be interrupted every ten seconds while cooking. Pinch allows at most one question per step and three per session, and that limit is enforced by the app, not left to the model. If the AI service is down, it falls back to notes mode, which still saves her exact words without filling anything in.</p>
+        <a class="btn" href="https://pinch-htpl.onrender.com">Try Pinch</a>
+        <p class="note">Runs on a free server, so the first load can take up to a minute. The built-in demo works without a microphone.</p>
+      </div>
+      <figure style="margin:0">
+        <div class="phone" aria-hidden="true">
+          <div class="screen pn">
+              <div class="notch"></div>
+              <div class="pn-card">
+                <p class="pn-title">Betty&rsquo;s Sunday pancakes</p>
+                <p class="pn-h">Ingredients</p>
+                <ul class="pn-ing">
+                  <li><span>Flour</span><span>1 cup</span></li>
+                  <li><span>Egg</span><span>1</span></li>
+                  <li><span>Milk</span><span class="ok">about &frac34; cup &#10003;</span></li>
+                  <li><span>Butter, for the pan</span><span class="unk">amount unknown</span></li>
+                </ul>
+                <p class="pn-quote">&ldquo;About &frac34; cup. Just enough so it runs off the spoon.&rdquo;<small>She clarified, when asked how much a splash is</small></p>
+                <p class="pn-quote">&ldquo;The first one is always for the cook.&rdquo;<small>Her words</small></p>
+                <div class="pn-unknown"><b>Still unknown</b>Butter amount. She said &ldquo;a little butter in the pan&rdquo;. Ask Betty next time.</div>
+              </div>
+            </div>
+        </div>
+        <figcaption class="caption">The app&rsquo;s example card. The butter amount was never said, so it stays unknown.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="project" id="agentshopper" aria-labelledby="as-title">
+    <div class="wrap">
+      <div>
+        <h2 id="as-title">AgentShopper</h2>
+        <p class="meta">NUS LifeHack 2026, Rezolve AI challenge. Built with a team of three; I led the engineering and AI reasoning.</p>
+        <p>People are starting to shop by asking an AI assistant instead of typing into a search box. A question like &ldquo;lightweight shoes for a half marathon in humid weather, under S$200&rdquo; needs facts most product pages never state, so those products quietly never get recommended. AgentShopper takes a catalogue file (CSV, Excel, Shopify JSON or even a scanned PDF), scores how ready it is for AI shoppers, lists exactly which facts are missing, and writes content for each product: who it suits, who it doesn&rsquo;t, and how it compares with the real products beside it.</p>
+        <h3>It has to prove it worked</h3>
+        <p>Instead of claiming the new content is better, the app searches the catalogue twice, once with the original content and once with the new, over exactly the same products, and puts the two result lists side by side. Hard requirements like a S$200 budget are enforced in code, so the AI can&rsquo;t talk a S$219 shoe into the results.</p>
+        <h3>A made-up spec can&rsquo;t get in</h3>
+        <p>Every fact the AI extracts has to appear word for word in that product&rsquo;s own text, or it&rsquo;s thrown away. Every claim in the written content has to cite a real fact, a second, stricter pass checks the evidence actually supports it, and anything that fails is flagged for human review instead of published. If a product has no verified facts at all, the app writes nothing and says so.</p>
+        <a class="btn" href="https://agentshopper.streamlit.app/">Try AgentShopper</a>
+        <p class="note">The two built-in demo catalogues, running shoes and facial skincare, work without uploading anything.</p>
+      </div>
+      <figure style="margin:0">
+        <div class="phone" aria-hidden="true">
+          <div class="screen as">
+              <div class="notch"></div>
+              <div class="as-q"><small>Ask like a shopper</small>&ldquo;Training for a half marathon in Singapore&rsquo;s humid weather. Lightweight shoes under S$200.&rdquo;</div>
+              <div class="as-cols">
+                <div class="as-col"><p class="as-h">Original content</p>
+                  <ol><li>Terrafirma Anchor Daily<span>S$149</span></li><li>Halcyon Crossover Gym<span>S$159</span></li><li>Terrafirma Loop Indoor<span>S$139</span></li></ol></div>
+                <div class="as-col after"><p class="as-h">AgentShopper</p>
+                  <ol><li>Kestrel Drift 3<span>S$179</span></li><li><b class="as-new">Vela Aero 9</b><span>S$199</span></li><li>Vela Halo Breeze<span>S$189</span></li></ol></div>
+              </div>
+              <div class="as-moved">Vela Aero 9: not surfaced at all &rarr; #2</div>
+            </div>
+        </div>
+        <figcaption class="caption">Illustration built from the app&rsquo;s demo shoe catalogue. A real run&rsquo;s ranking may differ.</figcaption>
+      </figure>
+    </div>
+  </section>
 </main>
 
 <footer>

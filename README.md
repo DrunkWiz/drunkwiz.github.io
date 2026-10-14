@@ -10,11 +10,11 @@
            Singapore
         Receipt no. 0001
  ----------------------------------
- Pinch                    Submitted
- Lead Time                Submitted
- AgentShopper             Submitted
- Voucher Kaki              Finalist
+ Lead Time                Track win
  Recall                         2nd
+ Voucher Kaki              Finalist
+ Pinch                    Submitted
+ AgentShopper             Submitted
  ----------------------------------
  TOTAL                   5 projects
 
@@ -72,13 +72,13 @@ To make it easier or harder, change `FIT` near the top of the tear script in `in
 
 | Result | Project | What it is |
 | :---: | :--- | :--- |
+| 🏆 | [Lead Time](https://lead-time-cjnn.onrender.com) | Tells small food businesses which overseas food trends are heading to Singapore. *ForgeHacks Online 2026, Business + AI track winner* |
 | 🥈 | **Recall** | Helps card members recognise charges they've forgotten, without ever being sure on their behalf. *American Express AI Hackathon 2026* |
 | 🏁 | [Voucher Kaki](https://simplify-ai-hackathon.vercel.app) | Finds CDC-voucher eateries near you, in four languages. *SimplifyNext IGNITE 2026, finalist* |
 | 📮 | [AgentShopper](https://agentshopper.streamlit.app/) | Makes a product catalogue readable to AI shopping assistants, then proves it worked. *NUS LifeHack 2026* |
-| 📮 | [Lead Time](https://lead-time-cjnn.onrender.com) | Tells small food businesses which overseas food trends are heading to Singapore. *ForgeHacks Online 2026* |
 | 📮 | [Pinch](https://pinch-htpl.onrender.com) | Interviews your grandparent while they cook and never guesses an amount. *Build With AI: Basics 2026* |
 
-🥈 placed · 🏁 finalist · 📮 submitted
+🏆 track winner · 🥈 placed · 🏁 finalist · 📮 submitted
 
 ---
 
