@@ -77,6 +77,9 @@ To make it easier or harder, change `FIT` near the top of the tear script in `in
 | 🏁 | [Voucher Kaki](https://simplify-ai-hackathon.vercel.app) | Finds CDC-voucher eateries near you, in four languages. *SimplifyNext IGNITE 2026, finalist* |
 | 📮 | [AgentShopper](https://agentshopper.streamlit.app/) | Makes a product catalogue readable to AI shopping assistants, then proves it worked. *NUS LifeHack 2026* |
 | 📮 | [Pinch](https://pinch-htpl.onrender.com) | Interviews your grandparent while they cook and never guesses an amount. *Build With AI: Basics 2026* |
+| 📮 | [ChainCheck](https://chaincheck-dxj5.onrender.com) | Checks an investment offer against the scam playbook and never calls anything safe. *WarriorHacks 2.0* |
+| 📮 | [Clause](https://clause-p7uk.onrender.com) | Drafts a health insurance appeal where every sentence quotes the plan it rests on. *ML Build Challenge 3* |
+| 📮 | [Fridge Rescue](https://drunkwiz.github.io/fridge-rescue/) | A food-waste app with a pixel pet that sends surplus to a food bank. *RevenueCat Shipaton 2026* |
 
 🏆 track winner · 🥈 placed · 🏁 finalist · 📮 submitted
 

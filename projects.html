@@ -204,6 +204,58 @@ h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005e
 .as-score{display:flex;justify-content:space-between;align-items:center;margin:.45rem .7rem 0;background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.4rem .55rem;font-size:.66rem}
 .as-score b{font-size:.9rem}
 
+/* ChainCheck screen */
+.cc{background:#F6F5F2;color:#22252A;font-size:.76rem;line-height:1.4}
+.cc-verdict{margin:.7rem .75rem .5rem;background:#B3261E;color:#fff;border-radius:12px;padding:.7rem .8rem}
+.cc-verdict b{display:block;font-size:1.25rem;letter-spacing:.08em}
+.cc-verdict span{font-size:.7rem;opacity:.92}
+.cc-stage{margin:0 .75rem .5rem;background:#fff;border:1px solid #E2E0DA;border-radius:10px;padding:.5rem .6rem}
+.cc-stage small{display:block;color:#6C6A64;font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
+.cc-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.cc-steps i{height:6px;border-radius:3px;background:#E2E0DA}
+.cc-steps i.on{background:#B3261E}
+.cc-stage p{margin:.35rem 0 0;font-size:.7rem}
+.cc-flag{display:grid;grid-template-columns:auto 1fr;gap:.45rem;margin:0 .75rem .35rem;background:#fff;border:1px solid #E2E0DA;border-radius:10px;padding:.45rem .55rem;font-size:.68rem}
+.cc-dot{width:9px;height:9px;border-radius:50%;margin-top:.25rem;background:#B3261E}
+.cc-dot.amber{background:#D99A1E}
+.cc-flag b{display:block;font-size:.72rem}
+.cc-next{margin:.45rem .75rem 0;border:1.5px dashed #B3261E;border-radius:10px;padding:.45rem .55rem;font-size:.68rem;color:#7A1A14}
+.cc-next b{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.05em}
+
+/* Clause screen */
+.cl{background:#F4F6F8;color:#1D2733;font-size:.74rem;line-height:1.42}
+.cl-top{display:flex;justify-content:space-between;align-items:baseline;padding:.75rem .85rem .45rem}
+.cl-top b{font-size:.88rem}
+.cl-due{background:#FDECC8;color:#7A4B00;border-radius:999px;padding:.12rem .5rem;font-size:.64rem;font-weight:700}
+.cl-sent{margin:0 .7rem .4rem;background:#fff;border:1px solid #DCE2E8;border-radius:10px;padding:.5rem .6rem}
+.cl-sent mark{background:#DDEBFF;color:inherit;border-radius:3px;padding:0 .1rem}
+.cl-cite{display:block;margin-top:.3rem;color:#2D5FA8;font-size:.62rem;font-weight:600}
+.cl-src{margin:0 .7rem .4rem;background:#FCFCF9;border:1px solid #DCE2E8;border-radius:6px;padding:.5rem .6rem;font-family:Georgia,serif;font-size:.68rem;color:#444C55}
+.cl-src small{display:block;font-family:var(--sans);color:#6A7480;font-size:.58rem;margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.04em}
+.cl-src mark{background:#FFE7A3;color:inherit}
+.cl-fail{margin:0 .7rem;border:1.5px dashed #AEB7C2;border-radius:10px;padding:.45rem .55rem;color:#8A939E;font-size:.68rem}
+.cl-fail s{color:#8A939E}
+.cl-fail b{display:block;color:#A3352B;font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.1rem}
+
+/* Fridge Rescue screen */
+.fr{background:#fff;color:#141414;font:400 .72rem/1.4 var(--mono)}
+.fr-pet{margin:.6rem .7rem .45rem;border:2px solid #141414;padding:.55rem;text-align:center}
+.fr-sprite{display:grid;grid-template-columns:repeat(8,7px);gap:0;justify-content:center;margin:.1rem auto .35rem}
+.fr-sprite i{width:7px;height:7px}
+.fr-sprite i.g{background:#3E8E41}
+.fr-sprite i.d{background:#141414}
+.fr-sprite i.b{background:#8B5A2B}
+.fr-status{font-size:.7rem}
+.fr-xp{font-size:.62rem;color:#555;margin-top:.15rem}
+.fr-box{margin:0 .7rem .4rem;border:2px solid #141414;padding:.45rem .55rem}
+.fr-box b{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem}
+.fr-box ul{list-style:none;margin:0;padding:0}
+.fr-box li{display:flex;justify-content:space-between;font-size:.66rem}
+.fr-box li span:last-child{color:#B3261E}
+.fr-box.donate{background:#F1F7EE}
+.fr-box p{margin:0;font-size:.66rem}
+.fr-act{display:inline-block;margin-top:.35rem;background:#141414;color:#fff;padding:.12rem .45rem;font-size:.62rem}
+
 /* Recall screen */
 .rc{background:#1B2230;color:#E8ECF3;font-size:.8rem;line-height:1.45;padding-bottom:1rem}
 .rc-top{padding:.9rem 1rem .4rem;color:#AEB7C7;font-size:.78rem;text-align:center}
@@ -370,6 +422,9 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
       <tr><td class="num">2026</td><td><a href="#voucher-kaki">Voucher Kaki</a></td><td>SimplifyNext IGNITE Agentic AI Hackathon</td><td>Finalist</td></tr>
       <tr><td class="num">2026</td><td><a href="#pinch">Pinch</a></td><td>Build With AI: Basics (Devpost)</td><td>Submitted</td></tr>
       <tr><td class="num">2026</td><td><a href="#agentshopper">AgentShopper</a></td><td>NUS LifeHack (Rezolve AI challenge)</td><td>Submitted</td></tr>
+      <tr><td class="num">2026</td><td><a href="#chaincheck">ChainCheck</a></td><td>WarriorHacks 2.0</td><td>Submitted</td></tr>
+      <tr><td class="num">2026</td><td><a href="#clause">Clause</a></td><td>ML Build Challenge 3 (Devpost)</td><td>Submitted</td></tr>
+      <tr><td class="num">2026</td><td><a href="#fridge-rescue">Fridge Rescue</a></td><td>RevenueCat Shipaton</td><td>Submitted</td></tr>
     </tbody>
   </table>
 </header>
@@ -543,6 +598,93 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
             </div>
         </div>
         <figcaption class="caption">Illustration built from the app&rsquo;s demo shoe catalogue. A real run&rsquo;s ranking may differ.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="project" id="chaincheck" aria-labelledby="cc-title">
+    <div class="wrap">
+      <div>
+        <h2 id="cc-title">ChainCheck</h2>
+        <p class="meta">Submitted to WarriorHacks 2.0, 2026. React and Vite on the front, a small Python API behind it, Gemini for reading.</p>
+        <p>Investment scams were the biggest single source of scam losses in Singapore in the first half of 2026. They rarely start with an obvious lie. They start with a friendly &ldquo;personal manager&rdquo;, a group chat full of people posting profits, and a small first deposit. ChainCheck takes what the offer showed you, as pasted text or screenshots, and checks it: is the firm on the MAS register, is the website a week old, do the promised returns make sense over a year, is there a fee to get your own money out. Then it shows which stage of the playbook you&rsquo;re in and what usually comes next.</p>
+        <h3>The model reads. Code decides.</h3>
+        <p>Gemini only pulls names, links and numbers out of the text into a fixed shape. Code pulls the hard facts out itself too and merges them in, so the model can add things but never remove them. Every check, the verdict and the stage are plain rules with their thresholds in one file. A pasted message that tries to talk to the AI (&ldquo;ignore your instructions&rdquo;) is itself a red flag, and the tests run it against a hijacked fake model to prove the verdict doesn&rsquo;t move.</p>
+        <h3>It never says safe</h3>
+        <p>There&rsquo;s no green tick. Any red or amber flag means stop, and the best possible result is &ldquo;no red flags found, verify these yourself before you pay&rdquo;. Screenshots are read in the browser, so they never leave your phone.</p>
+        <a class="btn" href="https://chaincheck-dxj5.onrender.com">Try ChainCheck</a>
+        <p class="note">The MAS register on the demo uses invented firms and is labelled as demo data on screen, so a real firm is never called unlicensed. Free server, so the first load can take up to a minute.</p>
+      </div>
+      <figure style="margin:0">
+        <div class="phone" aria-hidden="true">
+          <div class="screen cc">
+              <div class="notch"></div>
+              <div class="cc-verdict"><b>STOP</b><span>3 red flags. Don&rsquo;t send money yet.</span></div>
+              <div class="cc-stage"><small>Where you are in the playbook</small>
+                <div class="cc-steps"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+                <p>Stage 3 of 5: trust building</p></div>
+              <div class="cc-flag"><span class="cc-dot"></span><div><b>Returns of 8% a week</b>That&rsquo;s over 5,000% a year. Real funds don&rsquo;t promise this.</div></div>
+              <div class="cc-flag"><span class="cc-dot"></span><div><b>App from a link</b>Not from an app store.</div></div>
+              <div class="cc-flag"><span class="cc-dot amber"></span><div><b>&ldquo;Senior analyst&rdquo;</b>A title you can&rsquo;t check.</div></div>
+              <div class="cc-next"><b>What they&rsquo;ll ask next</b>A small &ldquo;test deposit&rdquo;, then a fee to withdraw it.</div>
+            </div>
+        </div>
+        <figcaption class="caption">Illustration of a result. The flags come from the app&rsquo;s real rules.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="project" id="clause" aria-labelledby="cl-title">
+    <div class="wrap">
+      <div>
+        <h2 id="cl-title">Clause</h2>
+        <p class="meta">Submitted to ML Build Challenge 3, 2026. Solo build. React, Vite and pdf.js, a Python back end, Gemini Flash.</p>
+        <p>When a US health insurer denies a claim, the answer is usually buried somewhere in a long plan document and a set of federal rules, and the appeal clock is already running. Clause reads your own plan and denial letter. It works out your appeal deadline, checks whether the denial notice included everything the law says it must, checks your bill against the plan, and drafts the appeal letter.</p>
+        <h3>Every sentence has to point</h3>
+        <p>Every plan, letter and regulation is split into numbered clauses with their page and position. The model may only make claims that quote one of them. Code then checks each quote: the clause exists, the words are really in it, the quote is long enough to mean something, and every number in the claim appears in the quote. A sentence that fails is greyed out with the reason. Click any sentence that passed and the source page opens with the words highlighted.</p>
+        <h3>Rules are code, not model</h3>
+        <p>Deadlines and notice checks follow the regulations directly, and the rules cite the regulation text, which goes through the same checker. The README also says what this can&rsquo;t prove: a real quote doesn&rsquo;t always mean the claim follows from it.</p>
+        <a class="btn" href="https://clause-p7uk.onrender.com">Try Clause</a>
+        <p class="note">The plan documents and regulations are real. The denial letters are synthetic and say so on every page. Free server, so the first load can take up to a minute.</p>
+      </div>
+      <figure style="margin:0">
+        <div class="phone" aria-hidden="true">
+          <div class="screen cl">
+              <div class="notch"></div>
+              <div class="cl-top"><b>Your appeal</b><span class="cl-due">164 days left</span></div>
+              <div class="cl-sent">The plan covers medically necessary <mark>outpatient physical therapy, up to 20 visits</mark> a year, and I had used 6.<span class="cl-cite">&#10003; Plan, p. 41, &sect;3.2</span></div>
+              <div class="cl-src"><small>Plan, page 41</small>&hellip;covered services include <mark>outpatient physical therapy, up to 20 visits</mark> per calendar year when medically necessary&hellip;</div>
+              <div class="cl-fail"><b>Not shown as fact</b><s>The denial was sent after the 30-day limit.</s> The quote doesn&rsquo;t contain &ldquo;30&rdquo;.</div>
+            </div>
+        </div>
+        <figcaption class="caption">Illustration of a drafted sentence, its source, and one that failed the check.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="project" id="fridge-rescue" aria-labelledby="fr-title">
+    <div class="wrap">
+      <div>
+        <h2 id="fr-title">Fridge Rescue</h2>
+        <p class="meta">Submitted to RevenueCat Shipaton 2026. React Native and Expo, RevenueCat for Pro, OpenStreetMap for food banks, Claude for Pro recipes.</p>
+        <p>Most food waste at home isn&rsquo;t one big mistake. It&rsquo;s the yoghurt found three days late, and the fourth tin of chickpeas bought because you forgot the other three. Fridge Rescue treats those as two problems. Perishables close to their date go into one recipe that uses all of them. Unopened, long-life surplus goes into a donation box, with the nearest drop-off point. Sprout, a pixel pet on the home screen, thrives when you rescue food and wilts when it goes in the bin.</p>
+        <h3>A food bank can&rsquo;t take Thursday&rsquo;s yoghurt</h3>
+        <p>Food banks need weeks to sort and hand out donations, so only shelf-stable, unopened food with more than 60 days left can ever be suggested. On top of that it needs a sign you won&rsquo;t eat it: more than two of the same thing, a duplicate, or a month untouched. Expired food is never put in a recipe, and the app asks &ldquo;did you eat it?&rdquo; before counting anything as wasted.</p>
+        <h3>A reason to open it before food goes off</h3>
+        <p>The app only works if you check it in time, so the game is built around that one habit: a waste-free streak, a pet that grows, outfits you earn and can&rsquo;t buy, and a weekly challenge. Adding food stays free, with typed or pasted lists parsed on the phone with no AI.</p>
+        <a class="btn" href="https://drunkwiz.github.io/fridge-rescue/">Try it in the browser</a>
+        <p class="note">The Android APK and a 1:34 demo video are linked from the repo. In the browser, the purchase screen is a preview.</p>
+      </div>
+      <figure style="margin:0">
+        <div class="phone" aria-hidden="true">
+          <div class="screen fr">
+              <div class="notch"></div>
+              <div class="fr-pet"><div class="fr-sprite"><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="d"></i><i class="d"></i><i></i><i></i><i></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="d"></i><i class="b"></i><i class="b"></i><i class="d"></i><i class="b"></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="d"></i><i class="d"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i></i><i></i><i class="b"></i><i></i><i></i></div><div class="fr-status">sprout is hungry.</div><div class="fr-xp">[&#9632;&#9632;&#9632;&#9632;&#9632;&nbsp;&nbsp;&nbsp;] sapling &middot; &#128293; 6 days</div></div>
+              <div class="fr-box"><b>Rescue tonight</b><ul><li><span>spinach</span><span>1 day</span></li><li><span>chicken thighs</span><span>2 days</span></li><li><span>greek yoghurt</span><span>3 days</span></li></ul><span class="fr-act">make one recipe &rarr;</span></div>
+              <div class="fr-box donate"><b>Donate</b><p>7 items you&rsquo;ll probably never eat. That&rsquo;s about 5 meals for someone.</p><span class="fr-act">find a food bank &rarr;</span></div>
+            </div>
+        </div>
+        <figcaption class="caption">Illustration of the home screen.</figcaption>
       </figure>
     </div>
   </section>

@@ -222,6 +222,58 @@ h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005e
 .as-score{display:flex;justify-content:space-between;align-items:center;margin:.45rem .7rem 0;background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.4rem .55rem;font-size:.66rem}
 .as-score b{font-size:.9rem}
 
+/* ChainCheck screen */
+.cc{background:#F6F5F2;color:#22252A;font-size:.76rem;line-height:1.4}
+.cc-verdict{margin:.7rem .75rem .5rem;background:#B3261E;color:#fff;border-radius:12px;padding:.7rem .8rem}
+.cc-verdict b{display:block;font-size:1.25rem;letter-spacing:.08em}
+.cc-verdict span{font-size:.7rem;opacity:.92}
+.cc-stage{margin:0 .75rem .5rem;background:#fff;border:1px solid #E2E0DA;border-radius:10px;padding:.5rem .6rem}
+.cc-stage small{display:block;color:#6C6A64;font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
+.cc-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.cc-steps i{height:6px;border-radius:3px;background:#E2E0DA}
+.cc-steps i.on{background:#B3261E}
+.cc-stage p{margin:.35rem 0 0;font-size:.7rem}
+.cc-flag{display:grid;grid-template-columns:auto 1fr;gap:.45rem;margin:0 .75rem .35rem;background:#fff;border:1px solid #E2E0DA;border-radius:10px;padding:.45rem .55rem;font-size:.68rem}
+.cc-dot{width:9px;height:9px;border-radius:50%;margin-top:.25rem;background:#B3261E}
+.cc-dot.amber{background:#D99A1E}
+.cc-flag b{display:block;font-size:.72rem}
+.cc-next{margin:.45rem .75rem 0;border:1.5px dashed #B3261E;border-radius:10px;padding:.45rem .55rem;font-size:.68rem;color:#7A1A14}
+.cc-next b{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.05em}
+
+/* Clause screen */
+.cl{background:#F4F6F8;color:#1D2733;font-size:.74rem;line-height:1.42}
+.cl-top{display:flex;justify-content:space-between;align-items:baseline;padding:.75rem .85rem .45rem}
+.cl-top b{font-size:.88rem}
+.cl-due{background:#FDECC8;color:#7A4B00;border-radius:999px;padding:.12rem .5rem;font-size:.64rem;font-weight:700}
+.cl-sent{margin:0 .7rem .4rem;background:#fff;border:1px solid #DCE2E8;border-radius:10px;padding:.5rem .6rem}
+.cl-sent mark{background:#DDEBFF;color:inherit;border-radius:3px;padding:0 .1rem}
+.cl-cite{display:block;margin-top:.3rem;color:#2D5FA8;font-size:.62rem;font-weight:600}
+.cl-src{margin:0 .7rem .4rem;background:#FCFCF9;border:1px solid #DCE2E8;border-radius:6px;padding:.5rem .6rem;font-family:Georgia,serif;font-size:.68rem;color:#444C55}
+.cl-src small{display:block;font-family:var(--sans);color:#6A7480;font-size:.58rem;margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.04em}
+.cl-src mark{background:#FFE7A3;color:inherit}
+.cl-fail{margin:0 .7rem;border:1.5px dashed #AEB7C2;border-radius:10px;padding:.45rem .55rem;color:#8A939E;font-size:.68rem}
+.cl-fail s{color:#8A939E}
+.cl-fail b{display:block;color:#A3352B;font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.1rem}
+
+/* Fridge Rescue screen */
+.fr{background:#fff;color:#141414;font:400 .72rem/1.4 var(--mono)}
+.fr-pet{margin:.6rem .7rem .45rem;border:2px solid #141414;padding:.55rem;text-align:center}
+.fr-sprite{display:grid;grid-template-columns:repeat(8,7px);gap:0;justify-content:center;margin:.1rem auto .35rem}
+.fr-sprite i{width:7px;height:7px}
+.fr-sprite i.g{background:#3E8E41}
+.fr-sprite i.d{background:#141414}
+.fr-sprite i.b{background:#8B5A2B}
+.fr-status{font-size:.7rem}
+.fr-xp{font-size:.62rem;color:#555;margin-top:.15rem}
+.fr-box{margin:0 .7rem .4rem;border:2px solid #141414;padding:.45rem .55rem}
+.fr-box b{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem}
+.fr-box ul{list-style:none;margin:0;padding:0}
+.fr-box li{display:flex;justify-content:space-between;font-size:.66rem}
+.fr-box li span:last-child{color:#B3261E}
+.fr-box.donate{background:#F1F7EE}
+.fr-box p{margin:0;font-size:.66rem}
+.fr-act{display:inline-block;margin-top:.35rem;background:#141414;color:#fff;padding:.12rem .45rem;font-size:.62rem}
+
 /* Recall screen */
 .rc{background:#1B2230;color:#E8ECF3;font-size:.8rem;line-height:1.45;padding-bottom:1rem}
 .rc-top{padding:.9rem 1rem .4rem;color:#AEB7C7;font-size:.78rem;text-align:center}
@@ -571,6 +623,81 @@ footer .bye{font-family:var(--mono);color:var(--chalk)}
                   <ol><li>Kestrel Drift 3<span>S$179</span></li><li><b class="as-new">Vela Aero 9</b><span>S$199</span></li><li>Vela Halo Breeze<span>S$189</span></li></ol></div>
               </div>
               <div class="as-moved">Vela Aero 9: not surfaced at all &rarr; #2</div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="card">
+        <div class="card-text">
+          <p class="card-meta">Submitted, WarriorHacks 2.0, 2026</p>
+          <h3 class="card-title">ChainCheck</h3>
+          <p class="card-sum">Paste what an investment offer showed you and it tells you which claims can&rsquo;t be checked, where you are in the scam playbook, and what the scammer will ask for next.</p>
+          <p class="card-decision"><b>It never says &ldquo;safe&rdquo;.</b> Any flag means stop. The best you can get is &ldquo;no red flags found, check these yourself&rdquo;.</p>
+          <div class="card-links">
+            <a class="btn solid" href="projects.html#chaincheck">Read the story</a>
+            <a class="btn" href="https://chaincheck-dxj5.onrender.com">Try it</a>
+          </div>
+        </div>
+        <div class="card-shot" aria-hidden="true">
+          <div class="phone">
+            <div class="screen cc">
+              <div class="notch"></div>
+              <div class="cc-verdict"><b>STOP</b><span>3 red flags. Don&rsquo;t send money yet.</span></div>
+              <div class="cc-stage"><small>Where you are in the playbook</small>
+                <div class="cc-steps"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+                <p>Stage 3 of 5: trust building</p></div>
+              <div class="cc-flag"><span class="cc-dot"></span><div><b>Returns of 8% a week</b>That&rsquo;s over 5,000% a year. Real funds don&rsquo;t promise this.</div></div>
+              <div class="cc-flag"><span class="cc-dot"></span><div><b>App from a link</b>Not from an app store.</div></div>
+              <div class="cc-flag"><span class="cc-dot amber"></span><div><b>&ldquo;Senior analyst&rdquo;</b>A title you can&rsquo;t check.</div></div>
+              <div class="cc-next"><b>What they&rsquo;ll ask next</b>A small &ldquo;test deposit&rdquo;, then a fee to withdraw it.</div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="card">
+        <div class="card-text">
+          <p class="card-meta">Submitted, ML Build Challenge 3, 2026. Solo build.</p>
+          <h3 class="card-title">Clause</h3>
+          <p class="card-sum">Reads your own health insurance plan and drafts an appeal for a denied claim, with your deadline, what the denial letter left out, and whether your bill adds up.</p>
+          <p class="card-decision"><b>Every sentence has to point.</b> Each one quotes the plan text it rests on. Code checks the quote is really there, and a sentence that fails is greyed out.</p>
+          <div class="card-links">
+            <a class="btn solid" href="projects.html#clause">Read the story</a>
+            <a class="btn" href="https://clause-p7uk.onrender.com">Try it</a>
+          </div>
+        </div>
+        <div class="card-shot" aria-hidden="true">
+          <div class="phone">
+            <div class="screen cl">
+              <div class="notch"></div>
+              <div class="cl-top"><b>Your appeal</b><span class="cl-due">164 days left</span></div>
+              <div class="cl-sent">The plan covers medically necessary <mark>outpatient physical therapy, up to 20 visits</mark> a year, and I had used 6.<span class="cl-cite">&#10003; Plan, p. 41, &sect;3.2</span></div>
+              <div class="cl-src"><small>Plan, page 41</small>&hellip;covered services include <mark>outpatient physical therapy, up to 20 visits</mark> per calendar year when medically necessary&hellip;</div>
+              <div class="cl-fail"><b>Not shown as fact</b><s>The denial was sent after the 30-day limit.</s> The quote doesn&rsquo;t contain &ldquo;30&rdquo;.</div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="card">
+        <div class="card-text">
+          <p class="card-meta">Submitted, RevenueCat Shipaton 2026</p>
+          <h3 class="card-title">Fridge Rescue</h3>
+          <p class="card-sum">A food-waste app where the food you save feeds a pixel pet. Food about to go off becomes tonight&rsquo;s recipe, and food you bought too much of goes to a food bank.</p>
+          <p class="card-decision"><b>Two problems, two answers.</b> A food bank can&rsquo;t take yoghurt that expires Thursday, so the app never suggests it. Only unopened, long-dated food goes in the donation box.</p>
+          <div class="card-links">
+            <a class="btn solid" href="projects.html#fridge-rescue">Read the story</a>
+            <a class="btn" href="https://drunkwiz.github.io/fridge-rescue/">Try it</a>
+          </div>
+        </div>
+        <div class="card-shot" aria-hidden="true">
+          <div class="phone">
+            <div class="screen fr">
+              <div class="notch"></div>
+              <div class="fr-pet"><div class="fr-sprite"><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="d"></i><i class="d"></i><i></i><i></i><i></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="d"></i><i class="b"></i><i class="b"></i><i class="d"></i><i class="b"></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="d"></i><i class="d"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i></i><i></i><i class="b"></i><i></i><i></i></div><div class="fr-status">sprout is hungry.</div><div class="fr-xp">[&#9632;&#9632;&#9632;&#9632;&#9632;&nbsp;&nbsp;&nbsp;] sapling &middot; &#128293; 6 days</div></div>
+              <div class="fr-box"><b>Rescue tonight</b><ul><li><span>spinach</span><span>1 day</span></li><li><span>chicken thighs</span><span>2 days</span></li><li><span>greek yoghurt</span><span>3 days</span></li></ul><span class="fr-act">make one recipe &rarr;</span></div>
+              <div class="fr-box donate"><b>Donate</b><p>7 items you&rsquo;ll probably never eat. That&rsquo;s about 5 meals for someone.</p><span class="fr-act">find a food bank &rarr;</span></div>
             </div>
           </div>
         </div>
