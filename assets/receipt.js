@@ -32,6 +32,8 @@
   var FIT = { normal: 8.5, hard: 6.5 }; // how far off (px, on average) a tear can be and still fit
   var LIP = 30;             // y of the slot's lip inside the slot drawing
   var NS = 'http://www.w3.org/2000/svg';
+  // Other scripts (sound, the pinboard) listen for these instead of reaching in here.
+  function emit(name, detail) { document.dispatchEvent(new CustomEvent('receipt:' + name, { detail: detail || {} })); }
 
   // Slot shapes: heights (px, + is lower) at evenly spaced points across the receipt.
   // Smooth shapes are curved between points; sharp ones (lin) use straight segments.
@@ -152,6 +154,7 @@
     y = clamp(y, 16, H - 36);
     tear = { dir: dir, W: w, H: H, tipX: x0, tipY: y, wob: 0, pts: [[x0, y]], stub: stub, sf: sf, pf: pf };
     draw();
+    emit('tearstart');
   }
 
   // Move the tip of the tear toward (tx, ty). With follow, the printer tears neatly
@@ -236,6 +239,7 @@
     tear = null; drag = null; auto = null; state = 'gone';
     sheet.classList.remove('grabbing');
     var s = score(t);
+    emit('torn', { fits: s.fits, pct: s.pct });
 
     var r = receipt.getBoundingClientRect();
     var wrap = document.createElement('div');
@@ -324,6 +328,9 @@
     function done() {
       wrap.remove();
       postCount.textContent = String(posted).padStart(3, '0');
+      var sorted = t.pts.slice().sort(function (a, b) { return a[0] - b[0]; });
+      emit('posted', { no: receipt.querySelector('.r-no').textContent, shape: shape.name, pct: score(t).pct,
+        edge: sorted.filter(function (p, i) { return i % 4 === 0; }).map(function (p) { return [+(p[0] / t.W).toFixed(3), Math.round(p[1])]; }) });
       post.classList.remove('gulp');
       void post.offsetWidth;
       post.classList.add('gulp');
@@ -353,6 +360,13 @@
     loop();
   }
 
+  // Receipt lines with data-goto are shortcuts to their project.
+  function jump(el) {
+    if (!el || state === 'gone') return false;
+    emit('goto', { id: el.getAttribute('data-goto') });
+    return true;
+  }
+
   function local(e) {
     var r = receipt.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
@@ -370,7 +384,7 @@
       e.preventDefault();
     }
     var p = local(e);
-    drag = { id: e.pointerId, type: e.pointerType, sx: e.clientX, sy: e.clientY, x: p.x, y: p.y, downY: p.y, moved: false };
+    drag = { id: e.pointerId, type: e.pointerType, sx: e.clientX, sy: e.clientY, x: p.x, y: p.y, downY: p.y, moved: false, line: e.target.closest('[data-goto]') };
     try { sheet.setPointerCapture(e.pointerId); } catch (err) {}
     if (e.pointerType === 'mouse') sheet.classList.add('grabbing');
   });
@@ -395,12 +409,13 @@
     drag = null;
     sheet.classList.remove('grabbing');
     if (d.moved) { suppressClick = true; setTimeout(function () { suppressClick = false; }, 400); return; }
-    if (d.type === 'mouse' && !tear) rip(d.downY);   // a plain click: see rip(). Taps arrive as click events.
+    if (d.type === 'mouse' && !tear && !jump(d.line)) rip(d.downY);   // a plain click: see rip(). Taps arrive as click events.
   }
   sheet.addEventListener('pointerup', release);
   sheet.addEventListener('pointercancel', release);   // the browser took over to scroll; keep any partial tear
   sheet.addEventListener('click', function (e) {
     if (lastType === 'mouse' || suppressClick) return;
+    if (!tear && jump(e.target.closest('[data-goto]'))) return;
     rip(local(e).y);
   });
   receipt.addEventListener('keydown', function (e) {

@@ -28,6 +28,8 @@
 <script>document.documentElement.classList.add('js')</script>
 <script src="/assets/site.js" defer></script>
 <script src="/assets/receipt.js" defer></script>
+<script src="/assets/demos.js" defer></script>
+<script src="/assets/extras.js" defer></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -80,10 +82,10 @@
                data-count: how many projects a line stands for. Placed or finalist projects get their own line;
                everything else is in "+N more". -->
           <ul class="r-list">
-            <li data-result="win"><span class="r-item">Lead Time<small>ForgeHacks &middot; Business+AI</small></span><span>Track win</span></li>
-            <li data-result="second"><span class="r-item">Recall<small>Amex AI Hackathon 2026</small></span><span>2nd</span></li>
-            <li data-result="finalist"><span class="r-item">Voucher Kaki<small>SimplifyNext IGNITE 2026</small></span><span>Finalist</span></li>
-            <li data-result="shipped" data-count="5"><span class="r-item">+5 more<small>Pinch, AgentShopper, &hellip;</small></span><span>Shipped</span></li>
+            <li data-result="win" data-goto="lead-time" data-date="2026-10-10"><span class="r-item">Lead Time<small>ForgeHacks &middot; Oct 2026</small></span><span>Track win</span></li>
+            <li data-result="second" data-goto="recall" data-date="2026-09-16"><span class="r-item">Recall<small>Amex AI Hackathon &middot; Sep 2026</small></span><span>2nd</span></li>
+            <li data-result="finalist" data-goto="voucher-kaki" data-date="2026-09-19"><span class="r-item">Voucher Kaki<small>SimplifyNext IGNITE &middot; Sep 2026</small></span><span>Finalist</span></li>
+            <li data-result="shipped" data-count="5" data-goto="also" data-date="2026-09-27"><span class="r-item">+5 more<small>Aug&ndash;Oct 2026</small></span><span>Shipped</span></li>
           </ul>
           <hr class="r-rule">
           <ul class="r-list">
@@ -104,7 +106,8 @@
         </svg>
         <p class="post-label" aria-live="polite">Slot: <span class="post-name">wave</span> &middot; posted <span class="post-count">000</span></p>
       </div>
-      <div class="mode"><button type="button" class="mode-btn" aria-pressed="false">Hard mode <span class="mode-state">off</span></button></div>
+      <div class="mode"><button type="button" class="mode-btn" aria-pressed="false">Hard mode <span class="mode-state">off</span></button><button type="button" class="mode-btn sound-btn" aria-pressed="true" hidden>Sound <span class="mode-state">on</span></button></div>
+      <p class="line-hint">Click a line to jump to it. Older lines fade, like real thermal paper.</p>
       <p class="sr-only" role="status" aria-live="polite"></p>
     </div>
   </header>
@@ -129,7 +132,7 @@
           <li>A rewindable back-test that publishes its own misses: 1 of 4 forecasts landed</li>
           <li>Launch plans with price, stock and posting dates; every model answer schema-checked</li>
         </ul>
-        <ul class="tags" aria-label="Stack"><li>Python stdlib</li><li>React</li><li>Vite</li><li>Qwen</li><li>Gemini</li><li>pytrends</li><li>Docker</li></ul>
+        <div class="slip" aria-label="Project receipt"><div class="slip-paper"><ul class="r-list"><li><span>Event</span><span>ForgeHacks 2026</span></li><li><span>Track</span><span>Business + AI</span></li><li><span>Team</span><span>Solo</span></li><li><span>Stack</span><span>Python, React, Vite</span></li><li><span></span><span>Qwen, Gemini, pytrends</span></li></ul><hr class="r-rule"><ul class="r-list"><li class="r-total"><span>Result</span><span>Track win</span></li></ul></div></div>
         <div class="links">
           <a class="btn solid sm" href="https://lead-time-cjnn.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
           <a class="btn sm" href="projects.html#lead-time">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
@@ -140,8 +143,9 @@
           <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>lead-time-cjnn.onrender.com</span></div>
           <div class="screen"><img src="assets/shots/lead-time.webp" width="1280" height="1850" loading="lazy" decoding="async" alt="Lead Time overview for an example dessert café: 22 foods on the radar, and sea salt coffee flagged as coming soon with a US-versus-Singapore trend chart."></div>
         </div>
-        <figcaption>Live screen &middot; hover to scroll</figcaption>
+        <figcaption>Live screen &middot; scrolls as you do</figcaption>
       </figure>
+      <div class="demo" data-demo="lead-time"></div>
     </article>
 
     <article class="feat flip" id="recall" aria-labelledby="rc-h">
@@ -156,7 +160,7 @@
           <li>Every claim cites a real transaction and is checked by a second model family</li>
           <li>Rules code makes every decision that touches money; silence is a valid answer</li>
         </ul>
-        <ul class="tags" aria-label="Stack"><li>LLM proposer</li><li>Cross-family verifier</li><li>Rules engine</li></ul>
+        <div class="slip" aria-label="Project receipt"><div class="slip-paper"><ul class="r-list"><li><span>Event</span><span>Amex AI Hackathon</span></li><li><span>Built</span><span>Proposer + verifier</span></li><li><span>Money</span><span>Rules code only</span></li></ul><hr class="r-rule"><ul class="r-list"><li class="r-total"><span>Result</span><span>2nd place</span></li></ul></div></div>
         <div class="links">
           <a class="btn sm" href="projects.html#recall">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
         </div>
@@ -175,6 +179,7 @@
         </div>
         <figcaption class="ill">&#9998; Illustration &middot; no public demo</figcaption>
       </figure>
+      <div class="demo" data-demo="recall"></div>
     </article>
 
     <article class="feat" id="voucher-kaki" aria-labelledby="vk-h">
@@ -189,7 +194,7 @@
           <li>Ranking by relevance and walking distance, with a lift for local-owned shops</li>
           <li>Says what it gave up whenever it has to widen a search</li>
         </ul>
-        <ul class="tags" aria-label="Stack"><li>React</li><li>Vite</li><li>Leaflet</li><li>OneMap</li><li>Web Speech</li><li>Vercel</li></ul>
+        <div class="slip" aria-label="Project receipt"><div class="slip-paper"><ul class="r-list"><li><span>Event</span><span>SimplifyNext IGNITE</span></li><li><span>Team</span><span>Four</span></li><li><span>Langs</span><span>EN, 中文, BM, தமிழ்</span></li><li><span>Stack</span><span>React, Leaflet</span></li><li><span></span><span>OneMap, Web Speech</span></li></ul><hr class="r-rule"><ul class="r-list"><li class="r-total"><span>Result</span><span>Finalist</span></li></ul></div></div>
         <div class="links">
           <a class="btn solid sm" href="https://simplify-ai-hackathon.vercel.app">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
           <a class="btn sm" href="projects.html#voucher-kaki">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
@@ -199,11 +204,12 @@
         <div class="phone">
           <div class="screen"><img src="assets/shots/voucher-kaki.webp" width="560" height="2513" loading="lazy" decoding="async" alt="Voucher Kaki on a phone: a chicken rice search near Yishun, with filters and the nearest local-owned hawker stalls that take Heartland vouchers."></div>
         </div>
-        <figcaption>Live screen &middot; hover to scroll</figcaption>
+        <figcaption>Live screen &middot; scrolls as you do</figcaption>
       </figure>
+      <div class="demo" data-demo="voucher-kaki"></div>
     </article>
 
-    <div class="sec-head" style="margin-top:4rem">
+    <div class="sec-head" id="also" style="margin-top:4rem">
       <h2>Also shipped</h2>
       <a href="projects.html">Full write-ups<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
     </div>
@@ -227,6 +233,7 @@
           <li>Every generated claim cites a fact; budgets are enforced in code</li>
         </ul>
         <ul class="tags" aria-label="Stack"><li>Python</li><li>Streamlit</li><li>GPT-4o mini</li><li>OpenAI embeddings</li><li>NumPy</li></ul>
+        <div class="demo" data-demo="agentshopper"></div>
         <div class="links">
           <a class="btn solid sm" href="https://agentshopper.streamlit.app/">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
           <a class="btn sm" href="projects.html#agentshopper">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
@@ -250,6 +257,7 @@
           <li>A printable recipe card with an honest &ldquo;Still unknown&rdquo; list</li>
         </ul>
         <ul class="tags" aria-label="Stack"><li>React</li><li>Vite</li><li>Express</li><li>Gemini</li><li>Web Audio</li></ul>
+        <div class="demo" data-demo="pinch"></div>
         <div class="links">
           <a class="btn solid sm" href="https://pinch-htpl.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
           <a class="btn sm" href="projects.html#pinch">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
@@ -274,6 +282,7 @@
           <li>Prompt-injection tests against a hijacked fake model</li>
         </ul>
         <ul class="tags" aria-label="Stack"><li>Python</li><li>React</li><li>Vite</li><li>Gemini</li><li>OCR</li><li>pytest</li></ul>
+        <div class="demo" data-demo="chaincheck"></div>
         <div class="links">
           <a class="btn solid sm" href="https://chaincheck-dxj5.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
           <a class="btn sm" href="projects.html#chaincheck">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
@@ -298,6 +307,7 @@
           <li>Deadline and notice checks written as code from the regulations</li>
         </ul>
         <ul class="tags" aria-label="Stack"><li>Python</li><li>React</li><li>Vite</li><li>pdf.js</li><li>pdfplumber</li><li>Gemini Flash</li></ul>
+        <div class="demo" data-demo="clause"></div>
         <div class="links">
           <a class="btn solid sm" href="https://clause-p7uk.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
           <a class="btn sm" href="projects.html#clause">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
@@ -321,6 +331,7 @@
           <li>Receipt scanning with Claude, cleaned up by tested pure functions</li>
         </ul>
         <ul class="tags" aria-label="Stack"><li>Expo</li><li>React Native</li><li>TypeScript</li><li>Claude</li><li>RevenueCat</li></ul>
+        <div class="demo" data-demo="fridge-rescue"></div>
         <div class="links">
           <a class="btn solid sm" href="https://drunkwiz.github.io/fridge-rescue/">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
           <a class="btn sm" href="projects.html#fridge-rescue">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
@@ -334,6 +345,12 @@
       </div>
     </div>
   </main>
+
+  <section class="board" id="board" aria-labelledby="board-h">
+    <div class="sec-head"><h2 id="board-h">Posted receipts</h2><button type="button" class="board-clear" hidden>Unpin all</button></div>
+    <p class="board-empty">Nothing pinned yet. Tear the receipt at the top in the slot&rsquo;s shape, and the piece you post ends up here.</p>
+    <ol class="pins"></ol>
+  </section>
 
   <footer class="end">
     <div class="receipt">

@@ -101,6 +101,17 @@ Motion respects `prefers-reduced-motion`: the receipt appears without printing, 
 
 ---
 
+## 🎛️ The extras
+
+- **Receipt lines are shortcuts.** Click one to jump to that project. Lines fade with age (`data-date`), like real thermal paper.
+- **Sound.** Tearing makes a paper-rip sound, generated in the browser. The Sound button mutes it, and the choice is remembered.
+- **Posted receipts.** Every piece that fits the slot is pinned to a corkboard near the bottom of the page, kept in your browser only.
+- **Printed slips.** The top three projects print a small receipt of their event, team, stack and result when they scroll into view.
+- **Try the idea.** Each project has a small demo that runs its core rule in the browser, with no AI and no network (`assets/demos.js`).
+- **Screens scroll with the page** like a screen recording, and **Read the story** grows the card into its write-up where the browser supports view transitions.
+
+All of it switches off or goes still under `prefers-reduced-motion`.
+
 ## ➕ Adding a project
 
 1. **Screen:** save a WebP in `assets/shots/` (about 1100px wide for desktop screens, 560px for phones).

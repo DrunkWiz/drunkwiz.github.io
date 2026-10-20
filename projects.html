@@ -26,6 +26,16 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;700;800;900&display=swap"></noscript>
 <link rel="stylesheet" href="/assets/site.css">
 <script>document.documentElement.classList.add('js')</script>
+<script>
+/* Card-to-write-up transition: the opened project grows out of the card that was clicked. */
+window.addEventListener('pagereveal', function (e) {
+  if (!e.viewTransition || !location.hash) return;
+  var el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (!el) return;
+  el.style.viewTransitionName = 'project';
+  e.viewTransition.finished.finally(function () { el.style.viewTransitionName = ''; });
+});
+</script>
 <script src="/assets/site.js" defer></script>
 </head>
 <body>
