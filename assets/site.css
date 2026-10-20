@@ -51,6 +51,7 @@ a:hover{text-decoration-thickness:2px}
 /* ---------- hero ---------- */
 .hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,360px);gap:clamp(2rem,6vw,6rem);align-items:center;padding:clamp(1.5rem,5vh,4rem) 0 clamp(2.5rem,6vh,4rem)}
 .eyebrow{font:500 .78rem/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 1.3rem}
+.hello{font-size:1.25rem;color:var(--muted);margin:0 0 1rem}
 h1{font-weight:900;font-size:clamp(2.6rem,6.4vw,5.6rem);line-height:.93;letter-spacing:-.035em;margin:0 0 1.4rem;max-width:12ch}
 h1 em{font-style:normal;color:var(--paper);background:linear-gradient(transparent 62%,rgba(201,55,47,.6) 62% 90%,transparent 90%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .sub{color:var(--muted);max-width:44ch;margin:0 0 1.8rem;font-size:1.1rem}

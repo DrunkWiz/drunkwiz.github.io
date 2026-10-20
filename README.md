@@ -1,6 +1,6 @@
 # 🧾 drunkwiz.github.io
 
-> **I ship AI tools that show their working. The site prints you a receipt to prove it.**
+> **A personal corner of the web that prints you a receipt.**
 > 🔗 Live site: [drunkwiz.github.io](https://drunkwiz.github.io/)
 
 ---
@@ -127,7 +127,7 @@ Then visit **[http://localhost:8000](http://localhost:8000)**.
 
 <div align="center">
 
-Printed in Singapore 🧾 · Questions? [github.com/DrunkWiz](https://github.com/DrunkWiz)
+Printed in Singapore by Nathan 🧾 · Questions? [github.com/DrunkWiz](https://github.com/DrunkWiz)
 
 *Thank you. Come again.*
 
