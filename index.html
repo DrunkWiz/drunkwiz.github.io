@@ -3,1240 +3,354 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nathan · drunkwiz</title>
-<meta name="description" content="Nathan builds useful things for people software tends to forget. Voucher Kaki and Recall.">
-<meta property="og:title" content="Nathan builds for the people software tends to forget">
-<meta property="og:description" content="Voucher Kaki, a finalist at SimplifyNext IGNITE 2026. Recall, 2nd place at the American Express AI Hackathon 2026.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧾</text></svg>">
+<title>drunkwiz · AI tools that show their working</title>
+<meta name="description" content="Eight shipped AI products from hackathons in Singapore: a track win, a runner-up and a finalist. Live demos, real screens, and tools that cite their evidence.">
+<link rel="canonical" href="https://drunkwiz.github.io/">
+<meta name="theme-color" content="#183F38">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://drunkwiz.github.io/">
+<meta property="og:site_name" content="drunkwiz">
+<meta property="og:title" content="I ship AI tools that show their working.">
+<meta property="og:description" content="8 projects shipped · 1 track win · 1 runner-up · 1 finalist. Live demos and real screens.">
+<meta property="og:image" content="https://drunkwiz.github.io/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A printed receipt listing Lead Time, track win; Recall, 2nd; Voucher Kaki, finalist; total 8 projects.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;600&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
-<style>
-:root{
-  --table:#183F38;      /* hawker-table green */
-  --table-deep:#123029;
-  --chalk:#EEF0E8;
-  --muted:#A9BDB5;
-  --rule:#2F5A51;
-  --paper:#FBFAF5;
-  --ink:#34333A;        /* thermal print */
-  --ink-soft:#6E6C75;
-  --stamp:#C9372F;
-  --sans:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
-  --mono:"Azeret Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;background:var(--table);color:var(--chalk);
-  font:400 1.125rem/1.6 var(--sans);
-  -webkit-font-smoothing:antialiased;
-}
-a{color:inherit;text-decoration-thickness:1px;text-underline-offset:.2em}
-a:hover{text-decoration-thickness:2px}
-:focus-visible{outline:3px solid var(--chalk);outline-offset:3px;border-radius:4px}
-.wrap{max-width:1160px;margin:0 auto;padding:0 clamp(1.25rem,4vw,3rem)}
-
-/* ---------- hero ---------- */
-.hero{
-  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
-  gap:clamp(2rem,6vw,5rem);align-items:start;
-  padding-top:clamp(3rem,9vh,6.5rem);padding-bottom:clamp(3rem,8vh,6rem);
-}
-.hello{font-size:1.25rem;color:var(--muted);margin:0 0 1rem}
-h1{
-  font-weight:800;font-size:clamp(2.6rem,6.2vw,5.1rem);
-  line-height:.98;letter-spacing:-.025em;margin:0 0 1.75rem;max-width:14ch;
-}
-.lede{max-width:46ch;margin:0 0 2.25rem;color:var(--chalk)}
-.lede span{color:var(--muted)}
-.actions{display:flex;flex-wrap:wrap;gap:.75rem}
-.btn{
-  display:inline-block;padding:.8rem 1.3rem;border-radius:999px;
-  font-weight:700;font-size:1rem;text-decoration:none;
-  border:2px solid var(--chalk);
-}
-.btn.solid{background:var(--chalk);color:var(--table)}
-.btn:hover{background:var(--paper);color:var(--table);border-color:var(--paper)}
-
-/* receipt + printer */
-.printer{position:relative;max-width:360px;justify-self:center;width:100%}
-.slot{
-  height:22px;border-radius:12px;background:var(--table-deep);
-  box-shadow:inset 0 4px 6px rgba(0,0,0,.45);position:relative;z-index:2;
-}
-.feed{margin:-11px 14px 0;padding-bottom:30px;clip-path:inset(0 -80px -100vh -80px)}
-.receipt{
-  background:var(--paper);color:var(--ink);
-  font:400 .8rem/1.55 var(--mono);
-  padding:2.2rem 1.4rem 2.6rem;position:relative;
-  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%;
-          mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%;
-  user-select:none;-webkit-user-select:none;
-}
-.receipt.printing{animation:print 2.2s steps(22,end) .35s both}
-.receipt:focus-visible{outline:3px solid var(--chalk);outline-offset:4px}
-/* tearing */
-.sheet{position:relative;cursor:grab;touch-action:pan-y;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
-.sheet.grabbing{cursor:grabbing}
-.sheet.tearing{filter:drop-shadow(0 1px 1.2px rgba(0,0,0,.35))}
-.stub{position:absolute;left:0;top:0;width:100%;pointer-events:none}
-.fringe{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3}
-.f-hi{fill:none;stroke:#FFFFFF;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
-.f-shade{fill:none;stroke:rgba(70,60,50,.18);stroke-width:1;stroke-linejoin:round}
-.fall{position:fixed;z-index:50;pointer-events:none;filter:drop-shadow(0 14px 18px rgba(0,0,0,.35))}
-/* the shaped post slot */
-.post{position:relative;margin:-14px 14px 0;color:var(--muted)}
-.post svg{display:block;width:100%;height:auto;overflow:visible}
-.p-hole{fill:url(#holeGrad)}
-.p-top{fill:none;stroke:rgba(0,0,0,.35);stroke-width:1.5;stroke-linejoin:round}
-.p-rim{fill:none;stroke:#7FA49A;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;transition:stroke .3s}
-.post-label{margin:.1rem 0 0;text-align:center;font:400 .72rem/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase}
-.post.gulp .p-rim{animation:gulp .6s ease-out}
-.mode{display:flex;justify-content:center;margin:.7rem 0 0}
-.mode-btn{font:600 .85rem/1 var(--sans);color:var(--chalk);background:transparent;border:2px solid var(--rule);border-radius:999px;padding:.5rem .95rem;cursor:pointer}
-.mode-btn:hover{border-color:var(--chalk)}
-.mode-state{display:inline-block;margin-left:.35rem;padding:.15rem .45rem;border-radius:999px;background:var(--rule);font-size:.75rem;text-transform:uppercase;letter-spacing:.05em}
-.mode-btn[aria-pressed="true"]{border-color:var(--stamp)}
-.mode-btn[aria-pressed="true"] .mode-state{background:var(--stamp);color:#fff}
-@keyframes gulp{0%{stroke:#F3E7B0;stroke-width:4}100%{stroke:#7FA49A;stroke-width:2.5}}
-@media (prefers-reduced-motion:reduce){.post.gulp .p-rim{animation:none}}
-.tear-hint{white-space:nowrap;margin:0 14px .6rem;color:var(--muted);font-size:.9rem;text-align:center;min-height:1.4em}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@keyframes print{from{transform:translateY(-102%)}to{transform:translateY(0)}}
-.r-head{text-align:center;margin-bottom:1.1rem}
-.r-head strong{display:block;font-size:1.35rem;font-weight:600;letter-spacing:.04em}
-.r-head > span{display:block;color:var(--ink-soft)}
-.r-no{font-weight:400}
-.r-rule{border:0;border-top:1.5px dashed #B9B7BE;margin:.9rem 0}
-.r-list{list-style:none;margin:0;padding:0}
-.r-list li{display:flex;justify-content:space-between;gap:1rem}
-.r-list li small{display:block;color:var(--ink-soft);font-size:.72rem;margin:-.15rem 0 .45rem}
-.r-item{display:block}
-.r-total{font-weight:600;font-size:.95rem}
-.stamp{
-  position:absolute;right:.8rem;bottom:6.4rem;transform:rotate(-11deg);
-  border:2.5px solid var(--stamp);color:var(--stamp);border-radius:6px;
-  padding:.2rem .55rem;font:600 .95rem/1 var(--mono);letter-spacing:.12em;
-  opacity:.82;mix-blend-mode:multiply;
-}
-.r-foot{text-align:center;margin-top:1.2rem;color:var(--ink-soft)}
-.barcode{
-  height:44px;margin:1rem auto .4rem;max-width:220px;
-  background:repeating-linear-gradient(90deg,
-    var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 8px,
-    var(--ink) 8px 11px,transparent 11px 12px,var(--ink) 12px 13px,transparent 13px 16px,
-    var(--ink) 16px 17px,transparent 17px 19px,var(--ink) 19px 22px,transparent 22px 24px);
-}
-
-/* ---------- projects ---------- */
-.project{border-top:1px solid var(--rule);padding:clamp(3.5rem,9vw,6.5rem) 0}
-.project .wrap{
-  display:grid;grid-template-columns:minmax(0,1fr) 320px;
-  gap:clamp(2rem,6vw,5.5rem);align-items:center;
-}
-h2{font-weight:800;font-size:clamp(2.2rem,4.6vw,3.6rem);line-height:1;letter-spacing:-.02em;margin:0 0 .6rem}
-.meta{color:var(--muted);margin:0 0 1.75rem;font-size:1rem}
-.project p{max-width:58ch}
-h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005em}
-.project .btn{margin-top:1.25rem}
-.caption{color:var(--muted);font-size:.85rem;text-align:center;margin:.9rem auto 0;max-width:30ch}
-
-/* phones */
-.phone{
-  width:300px;margin:0 auto;border-radius:44px;padding:11px;
-  background:#22252B;box-shadow:0 30px 60px -20px rgba(0,0,0,.55),inset 0 0 0 2px #3A3E46;
-}
-.screen{border-radius:34px;overflow:hidden;min-height:520px;position:relative;font-family:var(--sans)}
-.notch{width:96px;height:26px;border-radius:14px;background:#22252B;margin:9px auto 0}
-
-/* Voucher Kaki screen */
-.vk{background:#F7F7F4;color:#24292B;font-size:.78rem;line-height:1.4}
-.vk-bar{padding:.9rem .9rem .7rem;display:grid;gap:.45rem}
-.vk-search{background:#fff;border:1.5px solid #D9DCD6;border-radius:12px;padding:.6rem .75rem;font-size:.85rem}
-.vk-loc{justify-self:start;background:#E3EFE9;color:#1E5A4C;border-radius:999px;padding:.2rem .65rem;font-weight:600}
-.vk-answer{padding:0 .9rem;margin:.2rem 0 .6rem}
-.vk-fill{margin:0 .9rem .7rem;background:#FFF6DC;border-radius:10px;padding:.55rem .7rem;color:#5B4A18}
-.vk-fill ul{margin:.25rem 0 0;padding-left:1rem}
-.vk-card{display:grid;grid-template-columns:26px 1fr;gap:.6rem;margin:0 .9rem .5rem;background:#fff;border-radius:12px;padding:.65rem;border:1px solid #E4E6E1}
-.vk-num{width:24px;height:24px;border-radius:50%;background:#1E5A4C;color:#fff;display:grid;place-items:center;font-weight:700;font-size:.72rem}
-.vk-card b{display:block;font-size:.84rem}
-.vk-card span{color:#646B6E}
-.vk-card .vk-num{color:#fff}
-.vk-tag{display:inline-block;margin-top:.25rem;background:#EEF0EC;border-radius:6px;padding:.05rem .4rem;font-size:.68rem;color:#3E4446}
-
-/* Lead Time screen */
-.lt{background:#FFFBF4;color:#2B2622;font-size:.78rem;line-height:1.4}
-.lt-top{padding:.85rem .95rem .5rem;display:flex;justify-content:space-between;align-items:baseline}
-.lt-top b{font-size:.95rem}
-.lt-top span{color:#857A70;font-size:.7rem}
-.lt-shop{margin:0 .95rem .6rem;color:#857A70;font-size:.72rem}
-.lt-card{margin:0 .8rem .55rem;background:#fff;border:1px solid #EFE6DA;border-radius:14px;padding:.7rem .75rem}
-.lt-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
-.lt-row b{font-size:.86rem}
-.lt-v{border-radius:999px;padding:.12rem .5rem;font-size:.68rem;font-weight:700;white-space:nowrap}
-.lt-go{background:#DCEFE2;color:#1F6B3B}
-.lt-late{background:#FCEBD0;color:#8A5410}
-.lt-wait{background:#ECE8F4;color:#54477A}
-.lt-why{color:#6E655D;font-size:.7rem;margin-top:.3rem}
-.lt-spark{display:block;width:100%;height:34px;margin-top:.45rem}
-.lt-spark .abroad{fill:none;stroke:#C9A27A;stroke-width:1.6}
-.lt-spark .sg{fill:none;stroke:#2B2622;stroke-width:1.8}
-.lt-key{display:flex;gap:.7rem;color:#857A70;font-size:.64rem;margin-top:.2rem}
-.lt-fit{margin:.55rem 0 0;font-size:.68rem;color:#6E655D}
-.lt-fit .lt-v{margin-right:.3rem}
-.lt-sub{margin:.4rem .95rem .35rem;color:#857A70;font-size:.68rem}
-.lt-chips{display:flex;flex-wrap:wrap;gap:.3rem;margin:0 .8rem}
-.lt-chips span{background:#F3ECE2;border-radius:6px;padding:.1rem .45rem;font-size:.66rem;color:#6E655D}
-.lt-key i{display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:.25rem}
-
-/* Pinch screen */
-.pn{background:#FAF6EE;color:#3A2E25;font-size:.78rem;line-height:1.42}
-.pn-card{margin:.6rem .7rem;background:#FFFDF8;border:1px solid #EADFCC;border-radius:6px;padding:.8rem .85rem;
-  background-image:repeating-linear-gradient(#FFFDF8 0 21px,#EFE6D6 21px 22px);background-position:0 46px}
-.pn-title{font-family:Georgia,serif;font-size:1.05rem;font-weight:700;margin:0 0 .55rem;line-height:1.2}
-.pn-h{font-size:.64rem;color:#8C7A66;text-transform:uppercase;letter-spacing:.06em;margin:.5rem 0 .2rem}
-.pn-ing{list-style:none;margin:0;padding:0}
-.pn-ing li{display:flex;justify-content:space-between;gap:.5rem;padding:.08rem 0}
-.pn-ing .ok{color:#3C6B45;font-weight:700}
-.pn-ing .unk{color:#A0522D;font-style:italic}
-.pn-quote{margin:.35rem 0 0;padding:.35rem .5rem;border-left:3px solid #D9B77E;background:#FBF3E3;font-family:Georgia,serif;font-style:italic;font-size:.74rem}
-.pn-quote small{display:block;font-style:normal;font-family:inherit;color:#8C7A66;font-size:.62rem;margin-top:.1rem}
-.pn-unknown{margin:.5rem 0 0;padding:.45rem .5rem;border:1.5px dashed #C9A07A;border-radius:6px;font-size:.72rem}
-.pn-unknown b{display:block;color:#A0522D;font-size:.68rem;margin-bottom:.1rem}
-
-/* AgentShopper screen */
-.as{background:#F5F6FA;color:#1E2233;font-size:.74rem;line-height:1.4}
-.as-q{margin:.6rem .7rem .5rem;background:#fff;border:1px solid #DDE1EC;border-radius:12px;padding:.55rem .65rem;font-size:.72rem}
-.as-q small{display:block;color:#6B7189;font-size:.62rem;margin-bottom:.15rem}
-.as-cols{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:0 .7rem}
-.as-col{background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.45rem .45rem .35rem}
-.as-col.after{border-color:#5B6CF0;box-shadow:0 0 0 1px #5B6CF0 inset}
-.as-h{font-size:.6rem;font-weight:700;color:#6B7189;margin:0 0 .3rem;text-transform:uppercase;letter-spacing:.04em}
-.as-col.after .as-h{color:#3D4BD1}
-.as-col ol{margin:0;padding-left:1rem}
-.as-col li{margin-bottom:.3rem;font-size:.66rem}
-.as-col li span{display:block;color:#6B7189;font-size:.58rem}
-.as-new{color:#3D4BD1;font-weight:700}
-.as-moved{margin:.5rem .7rem 0;background:#E7EAFE;color:#2C3699;border-radius:8px;padding:.4rem .55rem;font-size:.68rem;font-weight:600}
-.as-score{display:flex;justify-content:space-between;align-items:center;margin:.45rem .7rem 0;background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.4rem .55rem;font-size:.66rem}
-.as-score b{font-size:.9rem}
-
-/* ChainCheck screen */
-.cc{background:#F6F5F2;color:#22252A;font-size:.76rem;line-height:1.4}
-.cc-verdict{margin:.7rem .75rem .5rem;background:#B3261E;color:#fff;border-radius:12px;padding:.7rem .8rem}
-.cc-verdict b{display:block;font-size:1.25rem;letter-spacing:.08em}
-.cc-verdict span{font-size:.7rem;opacity:.92}
-.cc-stage{margin:0 .75rem .5rem;background:#fff;border:1px solid #E2E0DA;border-radius:10px;padding:.5rem .6rem}
-.cc-stage small{display:block;color:#6C6A64;font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
-.cc-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
-.cc-steps i{height:6px;border-radius:3px;background:#E2E0DA}
-.cc-steps i.on{background:#B3261E}
-.cc-stage p{margin:.35rem 0 0;font-size:.7rem}
-.cc-flag{display:grid;grid-template-columns:auto 1fr;gap:.45rem;margin:0 .75rem .35rem;background:#fff;border:1px solid #E2E0DA;border-radius:10px;padding:.45rem .55rem;font-size:.68rem}
-.cc-dot{width:9px;height:9px;border-radius:50%;margin-top:.25rem;background:#B3261E}
-.cc-dot.amber{background:#D99A1E}
-.cc-flag b{display:block;font-size:.72rem}
-.cc-next{margin:.45rem .75rem 0;border:1.5px dashed #B3261E;border-radius:10px;padding:.45rem .55rem;font-size:.68rem;color:#7A1A14}
-.cc-next b{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.05em}
-
-/* Clause screen */
-.cl{background:#F4F6F8;color:#1D2733;font-size:.74rem;line-height:1.42}
-.cl-top{display:flex;justify-content:space-between;align-items:baseline;padding:.75rem .85rem .45rem}
-.cl-top b{font-size:.88rem}
-.cl-due{background:#FDECC8;color:#7A4B00;border-radius:999px;padding:.12rem .5rem;font-size:.64rem;font-weight:700}
-.cl-sent{margin:0 .7rem .4rem;background:#fff;border:1px solid #DCE2E8;border-radius:10px;padding:.5rem .6rem}
-.cl-sent mark{background:#DDEBFF;color:inherit;border-radius:3px;padding:0 .1rem}
-.cl-cite{display:block;margin-top:.3rem;color:#2D5FA8;font-size:.62rem;font-weight:600}
-.cl-src{margin:0 .7rem .4rem;background:#FCFCF9;border:1px solid #DCE2E8;border-radius:6px;padding:.5rem .6rem;font-family:Georgia,serif;font-size:.68rem;color:#444C55}
-.cl-src small{display:block;font-family:var(--sans);color:#6A7480;font-size:.58rem;margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.04em}
-.cl-src mark{background:#FFE7A3;color:inherit}
-.cl-fail{margin:0 .7rem;border:1.5px dashed #AEB7C2;border-radius:10px;padding:.45rem .55rem;color:#8A939E;font-size:.68rem}
-.cl-fail s{color:#8A939E}
-.cl-fail b{display:block;color:#A3352B;font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.1rem}
-
-/* Fridge Rescue screen */
-.fr{background:#fff;color:#141414;font:400 .72rem/1.4 var(--mono)}
-.fr-pet{margin:.6rem .7rem .45rem;border:2px solid #141414;padding:.55rem;text-align:center}
-.fr-sprite{display:grid;grid-template-columns:repeat(8,7px);gap:0;justify-content:center;margin:.1rem auto .35rem}
-.fr-sprite i{width:7px;height:7px}
-.fr-sprite i.g{background:#3E8E41}
-.fr-sprite i.d{background:#141414}
-.fr-sprite i.b{background:#8B5A2B}
-.fr-status{font-size:.7rem}
-.fr-xp{font-size:.62rem;color:#555;margin-top:.15rem}
-.fr-box{margin:0 .7rem .4rem;border:2px solid #141414;padding:.45rem .55rem}
-.fr-box b{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem}
-.fr-box ul{list-style:none;margin:0;padding:0}
-.fr-box li{display:flex;justify-content:space-between;font-size:.66rem}
-.fr-box li span:last-child{color:#B3261E}
-.fr-box.donate{background:#F1F7EE}
-.fr-box p{margin:0;font-size:.66rem}
-.fr-act{display:inline-block;margin-top:.35rem;background:#141414;color:#fff;padding:.12rem .45rem;font-size:.62rem}
-
-/* Recall screen */
-.rc{background:#1B2230;color:#E8ECF3;font-size:.8rem;line-height:1.45;padding-bottom:1rem}
-.rc-top{padding:.9rem 1rem .4rem;color:#AEB7C7;font-size:.78rem;text-align:center}
-.rc-charge{margin:.4rem .8rem;background:#273043;border-radius:14px;padding:.85rem}
-.rc-charge b{display:block;font-size:.95rem;letter-spacing:.02em}
-.rc-amt{font-size:1.35rem;font-weight:700;margin:.15rem 0 .35rem}
-.rc-amt small{font-size:.72rem;color:#AEB7C7;font-weight:400}
-.rc-flag{display:inline-block;background:#3A4560;color:#C8D1E2;border-radius:6px;padding:.1rem .45rem;font-size:.68rem}
-.rc-ai{margin:.7rem .8rem;background:#DCE6F7;color:#1B2230;border-radius:14px;padding:.85rem}
-.rc-ai-h{display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:#47536B;margin-bottom:.35rem}
-.rc-conf{background:#C3D2EC;border-radius:6px;padding:.05rem .4rem}
-.rc-chips{display:flex;gap:.35rem;margin-top:.55rem;flex-wrap:wrap}
-.rc-chips span{background:#C3D2EC;border-radius:6px;padding:.08rem .45rem;font-size:.68rem}
-.rc-btns{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.8rem}
-.rc-btns button{
-  font:600 .78rem/1.2 var(--sans);border-radius:12px;padding:.7rem .4rem;cursor:pointer;
-  background:transparent;color:#E8ECF3;border:1.5px solid #E8ECF3;
-}
-.rc-btns button:hover{background:#E8ECF3;color:#1B2230}
-.rc-btns button:focus-visible{outline:2px solid #fff;outline-offset:2px}
-.rc-result{margin:0 .9rem;min-height:3.2em;color:#C8D1E2;font-size:.76rem}
-
-/* ---------- work carousel ---------- */
-.work{border-top:1px solid var(--rule);padding:clamp(3.5rem,8vw,5.5rem) 0 clamp(3rem,7vw,5rem)}
-.work-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.25rem;flex-wrap:wrap;margin-bottom:2rem}
-.work-head h2{margin:0}
-.work-sub{color:var(--muted);margin:.5rem 0 0;font-size:1.05rem}
-.work-controls{display:flex;align-items:center;gap:.6rem}
-.nav-btn{
-  width:48px;height:48px;border-radius:50%;border:2px solid var(--rule);background:transparent;color:var(--chalk);
-  display:grid;place-items:center;cursor:pointer;padding:0;
-}
-.nav-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.nav-btn:hover:not(:disabled){border-color:var(--chalk)}
-.nav-btn:disabled{opacity:.35;cursor:default}
-.all-btn{
-  display:inline-flex;align-items:center;gap:.6rem;margin-left:.4rem;
-  background:var(--chalk);color:var(--table);text-decoration:none;font-weight:800;font-size:1rem;
-  padding:.8rem .8rem .8rem 1.3rem;border-radius:999px;border:2px solid var(--chalk);
-}
-.all-btn .count{
-  background:var(--table);color:var(--chalk);border-radius:999px;min-width:1.8rem;height:1.8rem;
-  display:inline-grid;place-items:center;font-size:.85rem;padding:0 .45rem;
-}
-.all-btn:hover{background:var(--paper);border-color:var(--paper)}
-
-.track{
-  --edge:max(clamp(1.25rem,4vw,3rem), calc((100% - 1160px) / 2 + clamp(1.25rem,4vw,3rem)));
-  list-style:none;margin:0;display:flex;gap:1.25rem;overflow-x:auto;
-  padding:.25rem var(--edge) 1.25rem;scroll-padding-inline:var(--edge);
-  scroll-snap-type:x mandatory;scroll-behavior:smooth;overscroll-behavior-x:contain;
-  scrollbar-width:none;cursor:grab;
-}
-.track::-webkit-scrollbar{display:none}
-.track.dragging{scroll-snap-type:none;scroll-behavior:auto;cursor:grabbing;user-select:none}
-.track:focus-visible{outline-offset:-3px}
-.card{
-  flex:0 0 auto;width:min(860px,82vw);scroll-snap-align:start;
-  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(1.5rem,4vw,3rem);align-items:center;
-  background:#1D4840;border:1px solid var(--rule);border-radius:24px;
-  padding:clamp(1.5rem,3.5vw,2.75rem);
-}
-.card-meta{color:var(--muted);font-size:.95rem;margin:0 0 .5rem}
-.card-title{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1;letter-spacing:-.02em;margin:0 0 1rem}
-.card-sum{margin:0 0 1rem;max-width:46ch}
-.card-decision{margin:0 0 1.5rem;max-width:46ch;color:var(--muted)}
-.card-decision b{color:var(--chalk)}
-.card-links{display:flex;flex-wrap:wrap;gap:.6rem}
-.card-shot .phone{zoom:.72;margin:0;box-shadow:0 24px 40px -18px rgba(0,0,0,.6),inset 0 0 0 2px #3A3E46}
-.rc-btns span{font:600 .78rem/1.2 var(--sans);border-radius:12px;padding:.7rem .4rem;border:1.5px solid #E8ECF3;text-align:center}
-.card.more{
-  width:min(320px,72vw);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
-  background:transparent;border:2px dashed var(--rule);
-}
-.more-title{font-size:1.6rem;font-weight:800;margin:0 0 .5rem;letter-spacing:-.01em}
-.more-sub{color:var(--muted);margin:0 0 1.5rem}
-
-.work-foot{display:flex;align-items:center;gap:1rem;margin-top:.5rem}
-.counter{margin:0;color:var(--muted);font-size:.95rem;white-space:nowrap}
-.progress{flex:1;max-width:240px;height:3px;background:var(--rule);border-radius:3px;overflow:hidden}
-.progress span{display:block;height:100%;width:50%;background:var(--chalk);border-radius:3px;transition:width .3s}
-
-@media (max-width:720px){
-  .work-head{align-items:center}
-  .work-head > div:first-child{flex:1}
-  .work-sub{display:none}
-  .nav-btn{display:none}
-  .all-btn{margin-left:0;font-size:.95rem}
-  .card{width:86vw;grid-template-columns:1fr;align-items:start}
-  .card-shot{order:-1;height:210px;overflow:hidden;border-radius:16px;margin:-.25rem -.25rem 0;background:#163B34;display:flex;justify-content:center;padding-top:16px}
-  .card-shot .phone{zoom:.62}
-  .card.more{width:70vw}
-}
-
-/* ---------- principles + about ---------- */
-.band{border-top:1px solid var(--rule);padding:clamp(3.5rem,9vw,6rem) 0}
-.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2rem,6vw,5rem)}
-.band h2{font-size:clamp(1.9rem,3.6vw,2.7rem);margin-bottom:1.5rem}
-.rules{list-style:none;margin:0;padding:0}
-.rules li{padding:.95rem 0;border-bottom:1px solid var(--rule);max-width:44ch}
-.rules li:first-child{border-top:1px solid var(--rule)}
-.about p{max-width:46ch;margin:0 0 1.1rem}
-.about p.soft{color:var(--muted)}
-
-footer{border-top:1px solid var(--rule);padding:2.5rem 0 3rem;color:var(--muted);font-size:.95rem}
-footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-footer .bye{font-family:var(--mono);color:var(--chalk)}
-
-/* ---------- responsive ---------- */
-@media (max-width:880px){
-  .hero,.project .wrap,.two{grid-template-columns:1fr}
-  .printer{justify-self:start}
-  .phone{margin:0}
-  .caption{text-align:left;margin-left:0}
-}
-@media (max-width:360px){
-  .phone{width:100%}
-}
-@media (prefers-reduced-motion:reduce){
-  .receipt.printing{animation:none}
-  html{scroll-behavior:auto}
-}
-</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;700;800;900&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;700;800;900&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add('js')</script>
+<script src="/assets/site.js" defer></script>
+<script src="/assets/receipt.js" defer></script>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+<a class="skip" href="#work">Skip to the work</a>
 
-<header class="wrap hero">
-  <div>
-    <p class="hello">Hi, I'm Nathan.</p>
-    <h1>I build for the people software tends to forget.</h1>
-    <p class="lede">An older person on a small phone looking for one dish near home. A card member staring at a charge they can't place. <span>I build mostly at hackathons, in Python and React, and I like things that keep working when something breaks and say plainly what they can't do.</span></p>
-    <div class="actions">
-      <a class="btn solid" href="#work">See the work</a>
-      <a class="btn" href="https://github.com/drunkwiz">GitHub</a>
-    </div>
+<div class="wrap">
+  <div class="bar">
+    <a class="home" href="/">drunkwiz</a>
+    <nav aria-label="Site">
+      <a class="opt" href="#work">Work</a>
+      <a href="projects.html">All projects</a>
+      <a href="https://github.com/DrunkWiz">GitHub<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+    </nav>
   </div>
 
-  <div class="printer" aria-label="A receipt summarising Nathan's projects">
-    <p class="tear-hint" aria-hidden="true"></p>
-    <div class="slot" aria-hidden="true"></div>
-    <div class="feed">
-      <div class="sheet">
-      <div class="receipt printing" tabindex="0" role="button" aria-label="Tear off the receipt">
-        <div class="r-head">
-          <strong>drunkwiz</strong>
-          <span>Singapore</span>
-          <span>Receipt no. <b class="r-no">0001</b></span>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Hackathon builds · Singapore · 2026</p>
+      <h1>I ship AI tools that <em>show their working.</em></h1>
+      <p class="sub">Eight live products. Every number traced to data, every claim cited, and a plain &ldquo;I don&rsquo;t know&rdquo; when it doesn&rsquo;t.</p>
+      <!-- Counted from the receipt below by assets/site.js; the numbers here are the no-JS fallback. -->
+      <ul class="proof" aria-label="Results">
+        <li><b data-tally="total">8</b><span>Projects shipped</span></li>
+        <li class="placed"><b data-tally="win">1</b><span>Track win</span></li>
+        <li class="placed"><b data-tally="second">1</b><span>Runner-up</span></li>
+        <li class="placed"><b data-tally="finalist">1</b><span>Finalist</span></li>
+      </ul>
+      <div class="actions">
+        <a class="btn solid" href="#work">See the work<svg class="ico" aria-hidden="true"><use href="#i-down"/></svg></a>
+        <a class="btn" href="https://github.com/DrunkWiz">GitHub<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+      </div>
+    </div>
+
+    <div class="printer" role="group" aria-label="A receipt of the projects. You can tear it off.">
+      <p class="tear-hint" aria-hidden="true"></p>
+      <div class="slot" aria-hidden="true"></div>
+      <div class="feed">
+        <div class="sheet">
+        <div class="receipt printing" tabindex="0" role="button" aria-label="Tear off the receipt">
+          <div class="r-head">
+            <strong>drunkwiz</strong>
+            <span>Singapore</span>
+            <span>Receipt no. <b class="r-no">0001</b></span>
+          </div>
+          <!-- The receipt drives the results strip. data-result: win | second | finalist | shipped.
+               data-count: how many projects a line stands for. Placed or finalist projects get their own line;
+               everything else is in "+N more". -->
+          <ul class="r-list">
+            <li data-result="win"><span class="r-item">Lead Time<small>ForgeHacks &middot; Business+AI</small></span><span>Track win</span></li>
+            <li data-result="second"><span class="r-item">Recall<small>Amex AI Hackathon 2026</small></span><span>2nd</span></li>
+            <li data-result="finalist"><span class="r-item">Voucher Kaki<small>SimplifyNext IGNITE 2026</small></span><span>Finalist</span></li>
+            <li data-result="shipped" data-count="5"><span class="r-item">+5 more<small>Pinch, AgentShopper, &hellip;</small></span><span>Shipped</span></li>
+          </ul>
+          <hr class="r-rule">
+          <ul class="r-list">
+            <li class="r-total"><span>Total</span><span data-tally="total">8 projects</span></li>
+          </ul>
+          <div class="r-stamp" aria-hidden="true">SHIPPED</div>
+          <div class="barcode" aria-hidden="true"></div>
+          <p class="r-foot">Thank you. Come again.</p>
         </div>
-        <div class="stamp" aria-hidden="true">SHIPPED</div>
-        <!-- The receipt is the highlight reel. From now on, only add projects that placed or reached finals. Every project still goes in the carousel and on projects.html. -->
-        <ul class="r-list">
-          <li><span class="r-item">Lead Time<small>ForgeHacks &middot; Business+AI</small></span><span>Track win</span></li>
-          <li><span class="r-item">Recall<small>Amex AI Hackathon 2026</small></span><span>2nd</span></li>
-          <li><span class="r-item">Voucher Kaki<small>SimplifyNext IGNITE 2026</small></span><span>Finalist</span></li>
-          <li><span class="r-item">Pinch<small>Build With AI: Basics 2026</small></span><span>Submitted</span></li>
-          <li><span class="r-item">AgentShopper<small>NUS LifeHack 2026</small></span><span>Submitted</span></li>
-        </ul>
-        <hr class="r-rule">
-        <ul class="r-list">
-          <li class="r-total"><span>Total</span><span>5 projects</span></li>
-        </ul>
-        <div class="barcode" aria-hidden="true"></div>
-        <p class="r-foot">Thank you. Come again.</p>
+        </div>
       </div>
+      <div class="post">
+        <svg aria-hidden="true">
+          <defs><linearGradient id="holeGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050D0B"/><stop offset="1" stop-color="#0F2722"/></linearGradient></defs>
+          <polygon class="p-hole" points=""/>
+          <polyline class="p-top" points=""/>
+          <polyline class="p-rim" points=""/>
+        </svg>
+        <p class="post-label" aria-live="polite">Slot: <span class="post-name">wave</span> &middot; posted <span class="post-count">000</span></p>
       </div>
+      <div class="mode"><button type="button" class="mode-btn" aria-pressed="false">Hard mode <span class="mode-state">off</span></button></div>
+      <p class="sr-only" role="status" aria-live="polite"></p>
     </div>
-    <div class="post">
-      <svg aria-hidden="true">
-        <defs><linearGradient id="holeGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050D0B"/><stop offset="1" stop-color="#0F2722"/></linearGradient></defs>
-        <polygon class="p-hole" points=""/>
-        <polyline class="p-top" points=""/>
-        <polyline class="p-rim" points=""/>
-      </svg>
-      <p class="post-label" aria-live="polite">Slot: <span class="post-name">wave</span> &middot; posted <span class="post-count">000</span></p>
-    </div>
-    <div class="mode"><button type="button" class="mode-btn" aria-pressed="false">Hard mode <span class="mode-state">off</span></button></div>
-    <p class="sr-only" role="status" aria-live="polite"></p>
-  </div>
-</header>
+  </header>
 
-<main>
-  <section class="work" id="work" aria-labelledby="work-title">
-    <div class="wrap work-head">
+  <main id="work">
+    <div class="sec-head">
+      <h2>Best work, by result</h2>
+      <a href="projects.html">All 8 projects<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+    </div>
+
+    <!-- Each project: pitch, a real screen, 3 things built, stack tags, a result stamp.
+         The long write-up lives on projects.html under the same id. -->
+    <article class="feat" id="lead-time" aria-labelledby="lt-h">
+      <span class="stamp" data-thunk>Track winner<small>ForgeHacks 2026</small></span>
       <div>
-        <h2 id="work-title">Work</h2>
-        <p class="work-sub">Hackathon builds, and the decision that shaped each one.</p>
+        <p class="meta">01 &middot; Business + AI track &middot; Solo build</p>
+        <h3 id="lt-h">Lead Time</h3>
+        <p class="pitch">Tells small food businesses which overseas food trends are heading to Singapore, and whether their kitchen can make them.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>Arrival forecasts for 22 foods across 7 markets, from Google Trends</li>
+          <li>A rewindable back-test that publishes its own misses: 1 of 4 forecasts landed</li>
+          <li>Launch plans with price, stock and posting dates; every model answer schema-checked</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Python stdlib</li><li>React</li><li>Vite</li><li>Qwen</li><li>Gemini</li><li>pytrends</li><li>Docker</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://lead-time-cjnn.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="projects.html#lead-time">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+        </div>
       </div>
-      <div class="work-controls">
-        <button class="nav-btn" type="button" data-dir="-1" aria-label="Previous project" disabled>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
-        </button>
-        <button class="nav-btn" type="button" data-dir="1" aria-label="Next project">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
-        </button>
-        <a class="all-btn" href="projects.html">View all projects <span class="count">2</span></a>
+      <figure class="shot">
+        <div class="browser">
+          <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>lead-time-cjnn.onrender.com</span></div>
+          <div class="screen"><img src="assets/shots/lead-time.webp" width="1280" height="1850" loading="lazy" decoding="async" alt="Lead Time overview for an example dessert café: 22 foods on the radar, and sea salt coffee flagged as coming soon with a US-versus-Singapore trend chart."></div>
+        </div>
+        <figcaption>Live screen &middot; hover to scroll</figcaption>
+      </figure>
+    </article>
+
+    <article class="feat flip" id="recall" aria-labelledby="rc-h">
+      <span class="stamp" data-thunk>2nd place<small>Amex AI Hackathon</small></span>
+      <div>
+        <p class="meta">02 &middot; American Express AI Hackathon 2026</p>
+        <h3 id="rc-h">Recall</h3>
+        <p class="pitch">Helps card members recognise charges they&rsquo;ve forgotten, without ever being sure on their behalf.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>Rebuilds the trip behind an unfamiliar charge from the member&rsquo;s own history</li>
+          <li>Every claim cites a real transaction and is checked by a second model family</li>
+          <li>Rules code makes every decision that touches money; silence is a valid answer</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>LLM proposer</li><li>Cross-family verifier</li><li>Rules engine</li></ul>
+        <div class="links">
+          <a class="btn sm" href="projects.html#recall">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+        </div>
       </div>
-    </div>
-
-    <!-- To add a project: copy one <li class="card"> below, edit it, and add a full write-up to projects.html. -->
-    <ul class="track" tabindex="0" aria-label="Projects, scroll sideways">
-      <li class="card">
-        <div class="card-text">
-          <p class="card-meta">Winner, Business + AI track, ForgeHacks Online 2026. Solo build.</p>
-          <h3 class="card-title">Lead Time</h3>
-          <p class="card-sum">Shows small Singapore food businesses which overseas food trends are heading their way, whether their kitchen can make them, and how to price, stock and launch them first.</p>
-          <p class="card-decision"><b>It grades its own forecasts.</b> Of 4 arrival dates it could strictly check, 1 landed in its window, and the app says so instead of hiding it.</p>
-          <div class="card-links">
-            <a class="btn solid" href="projects.html#lead-time">Read the story</a>
-            <a class="btn" href="https://lead-time-cjnn.onrender.com">Try it</a>
-          </div>
-        </div>
-        <div class="card-shot" aria-hidden="true">
-          <div class="phone">
-            <div class="screen lt">
-              <div class="notch"></div>
-              <div class="lt-top"><b>Heading your way</b><span>as of 3 Oct</span></div>
-              <p class="lt-shop">Example: Block 216 Dessert Café</p>
-              <div class="lt-card">
-                <div class="lt-row"><b>Sea salt coffee</b><span class="lt-v lt-late">Coming soon</span></div>
-                <p class="lt-why">Taking off in the US since March. Past foods reached Singapore 3 weeks to 14 months later, so watch it rather than bet on a date.</p>
-                <svg class="lt-spark" viewBox="0 0 200 34" preserveAspectRatio="none"><polyline class="abroad" points="0,31 40,30 70,29 90,22 110,14 135,9 160,7 200,6"/><polyline class="sg" points="0,32 50,32 100,31 150,31 200,30"/></svg>
-                <div class="lt-key"><span><i style="background:#C9A27A"></i>US</span><span><i style="background:#2B2622"></i>Singapore</span></div>
-                <p class="lt-fit"><span class="lt-v lt-go">You can make it</span> Espresso machine, fridge, blender.</p>
-              </div>
-              <p class="lt-sub">Already peaked here</p>
-              <div class="lt-chips"><span>Dubai chocolate</span><span>Dubai chewy cookie</span><span>Tanghulu</span><span>Korean salt bread</span></div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="card">
-        <div class="card-text">
-          <p class="card-meta">2nd place, American Express AI Hackathon 2026</p>
-          <h3 class="card-title">Recall</h3>
-          <p class="card-sum">When a card member doesn't recognise a charge, Recall rebuilds the memory from their own card history: the flight, the hotel, the trip that charge belongs to.</p>
-          <p class="card-decision"><b>The model is never allowed to be sure.</b> Every claim cites a real transaction, a second model checks it, and when in doubt it says nothing.</p>
-          <div class="card-links">
-            <a class="btn solid" href="projects.html#recall">Read the story</a>
-          </div>
-        </div>
-        <div class="card-shot" aria-hidden="true">
-          <div class="phone">
-            <div class="screen rc">
-              <div class="notch"></div>
+      <figure class="shot">
+        <div class="phone">
+          <div class="screen" role="img" aria-label="Illustration of Recall: an unfamiliar SATS PARK charge of 14.50 dollars, matched with moderate confidence to an airport-parking trip.">
+            <div class="rc" aria-hidden="true">
               <div class="rc-top">Transaction details</div>
-              <div class="rc-charge">
-                <b>SATS PARK PTE</b>
-                <div class="rc-amt">$14.50 <small>SGD, 14 Jun</small></div>
-                <span class="rc-flag">Unfamiliar merchant</span>
-              </div>
-              <div class="rc-ai">
-                <div class="rc-ai-h"><span>Possible match</span><span class="rc-conf">Moderate confidence</span></div>
-                This looks like airport parking at Changi T3, the same trip as your flight booking on 12 Jun and your hotel charge in Bangkok.
-                <div class="rc-chips"><span>Flight, 12 Jun</span><span>Hotel, Bangkok</span></div>
-              </div>
-              <div class="rc-btns"><span>Yes, this was me</span><span>This isn't mine</span></div>
+              <div class="rc-charge"><b>SATS PARK PTE</b><div class="rc-amt">$14.50 <small>SGD, 14 Jun</small></div><span class="rc-flag">Unfamiliar merchant</span></div>
+              <div class="rc-ai"><div class="rc-ai-h"><span>Possible match</span><span class="rc-conf">Moderate confidence</span></div>This looks like airport parking at Changi T3, the same trip as your flight booking on 12 Jun and your hotel charge in Bangkok.<div class="rc-chips"><span>Flight, 12 Jun</span><span>Hotel, Bangkok</span></div></div>
+              <div class="rc-btns"><span>Yes, this was me</span><span>This isn&rsquo;t mine</span></div>
+              <p class="rc-note">Both buttons carry equal weight on purpose.</p>
             </div>
           </div>
         </div>
-      </li>
+        <figcaption class="ill">&#9998; Illustration &middot; no public demo</figcaption>
+      </figure>
+    </article>
 
-      <li class="card">
-        <div class="card-text">
-          <p class="card-meta">Finalist, SimplifyNext IGNITE Agentic AI Hackathon 2026</p>
-          <h3 class="card-title">Voucher Kaki</h3>
-          <p class="card-sum">Say or type what you feel like eating, in four languages, and it finds CDC-voucher eateries near you, with a nudge toward independent shops over chains.</p>
-          <p class="card-decision"><b>The best decision was a deletion.</b> Google ratings were built in, then taken out, so small shops with no listing don't lose to famous ones.</p>
-          <div class="card-links">
-            <a class="btn solid" href="projects.html#voucher-kaki">Read the story</a>
-            <a class="btn" href="https://simplify-ai-hackathon.vercel.app">Try it</a>
-          </div>
-        </div>
-        <div class="card-shot" aria-hidden="true">
-          <div class="phone">
-            <div class="screen vk">
-              <div class="notch"></div>
-              <div class="vk-bar">
-                <div class="vk-search">dim sum supper</div>
-                <span class="vk-loc">Yishun</span>
-              </div>
-              <p class="vk-answer">Here are dim sum places near Yishun that take CDC vouchers.</p>
-              <div class="vk-fill">To fill this list I:
-                <ul><li>widened to 1.5 km</li><li>widened to 3 km</li><li>included places not tagged for supper</li></ul>
-              </div>
-              <div class="vk-card"><span class="vk-num">1</span><div><b>Dim Sum Corner</b><span>6 min walk, 420 m</span><br><span class="vk-tag">Independent</span></div></div>
-              <div class="vk-card"><span class="vk-num">2</span><div><b>Supper House Kopitiam</b><span>14 min walk, 1.1 km</span><br><span class="vk-tag">Independent</span></div></div>
-              <div class="vk-card"><span class="vk-num">3</span><div><b>Golden Bamboo Eating House</b><span>Bus or 28 min walk, 2.2 km</span></div></div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="card">
-        <div class="card-text">
-          <p class="card-meta">Submitted, Build With AI: Basics 2026 on Devpost. Solo build.</p>
-          <h3 class="card-title">Pinch</h3>
-          <p class="card-sum">Interviews your grandparent while they cook, so &ldquo;a pinch&rdquo;, &ldquo;a splash&rdquo; and &ldquo;until it smells right&rdquo; get pinned down while their hands are still in the pot.</p>
-          <p class="card-decision"><b>It never guesses an amount.</b> The AI decides what to ask. Plain code checks every amount on the card against what the cook actually said, and anything it can't trace becomes &ldquo;amount unknown&rdquo;.</p>
-          <div class="card-links">
-            <a class="btn solid" href="projects.html#pinch">Read the story</a>
-            <a class="btn" href="https://pinch-htpl.onrender.com">Try it</a>
-          </div>
-        </div>
-        <div class="card-shot" aria-hidden="true">
-          <div class="phone">
-            <div class="screen pn">
-              <div class="notch"></div>
-              <div class="pn-card">
-                <p class="pn-title">Betty&rsquo;s Sunday pancakes</p>
-                <p class="pn-h">Ingredients</p>
-                <ul class="pn-ing">
-                  <li><span>Flour</span><span>1 cup</span></li>
-                  <li><span>Egg</span><span>1</span></li>
-                  <li><span>Milk</span><span class="ok">about &frac34; cup &#10003;</span></li>
-                  <li><span>Butter, for the pan</span><span class="unk">amount unknown</span></li>
-                </ul>
-                <p class="pn-quote">&ldquo;About &frac34; cup. Just enough so it runs off the spoon.&rdquo;<small>She clarified, when asked how much a splash is</small></p>
-                <p class="pn-quote">&ldquo;The first one is always for the cook.&rdquo;<small>Her words</small></p>
-                <div class="pn-unknown"><b>Still unknown</b>Butter amount. She said &ldquo;a little butter in the pan&rdquo;. Ask Betty next time.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="card">
-        <div class="card-text">
-          <p class="card-meta">NUS LifeHack 2026, Rezolve AI challenge. Team of three.</p>
-          <h3 class="card-title">AgentShopper</h3>
-          <p class="card-sum">Turns an ordinary product catalogue into content AI shopping assistants can understand, trust and recommend, then shows a product moving from &ldquo;never showed up&rdquo; to the top of the list.</p>
-          <p class="card-decision"><b>It has to prove it worked.</b> It searches your catalogue twice, once with the original content and once with the new, and shows both result lists side by side.</p>
-          <div class="card-links">
-            <a class="btn solid" href="projects.html#agentshopper">Read the story</a>
-            <a class="btn" href="https://agentshopper.streamlit.app/">Try it</a>
-          </div>
-        </div>
-        <div class="card-shot" aria-hidden="true">
-          <div class="phone">
-            <div class="screen as">
-              <div class="notch"></div>
-              <div class="as-q"><small>Ask like a shopper</small>&ldquo;Training for a half marathon in Singapore&rsquo;s humid weather. Lightweight shoes under S$200.&rdquo;</div>
-              <div class="as-cols">
-                <div class="as-col"><p class="as-h">Original content</p>
-                  <ol><li>Terrafirma Anchor Daily<span>S$149</span></li><li>Halcyon Crossover Gym<span>S$159</span></li><li>Terrafirma Loop Indoor<span>S$139</span></li></ol></div>
-                <div class="as-col after"><p class="as-h">AgentShopper</p>
-                  <ol><li>Kestrel Drift 3<span>S$179</span></li><li><b class="as-new">Vela Aero 9</b><span>S$199</span></li><li>Vela Halo Breeze<span>S$189</span></li></ol></div>
-              </div>
-              <div class="as-moved">Vela Aero 9: not surfaced at all &rarr; #2</div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="card">
-        <div class="card-text">
-          <p class="card-meta">Submitted, WarriorHacks 2.0, 2026. Solo build.</p>
-          <h3 class="card-title">ChainCheck</h3>
-          <p class="card-sum">Paste what an investment offer showed you and it tells you which claims can&rsquo;t be checked, where you are in the scam playbook, and what the scammer will ask for next.</p>
-          <p class="card-decision"><b>It never says &ldquo;safe&rdquo;.</b> Any flag means stop. The best you can get is &ldquo;no red flags found, check these yourself&rdquo;.</p>
-          <div class="card-links">
-            <a class="btn solid" href="projects.html#chaincheck">Read the story</a>
-            <a class="btn" href="https://chaincheck-dxj5.onrender.com">Try it</a>
-          </div>
-        </div>
-        <div class="card-shot" aria-hidden="true">
-          <div class="phone">
-            <div class="screen cc">
-              <div class="notch"></div>
-              <div class="cc-verdict"><b>STOP</b><span>3 red flags. Don&rsquo;t send money yet.</span></div>
-              <div class="cc-stage"><small>Where you are in the playbook</small>
-                <div class="cc-steps"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
-                <p>Stage 3 of 5: trust building</p></div>
-              <div class="cc-flag"><span class="cc-dot"></span><div><b>Returns of 8% a week</b>That&rsquo;s over 5,000% a year. Real funds don&rsquo;t promise this.</div></div>
-              <div class="cc-flag"><span class="cc-dot"></span><div><b>App from a link</b>Not from an app store.</div></div>
-              <div class="cc-flag"><span class="cc-dot amber"></span><div><b>&ldquo;Senior analyst&rdquo;</b>A title you can&rsquo;t check.</div></div>
-              <div class="cc-next"><b>What they&rsquo;ll ask next</b>A small &ldquo;test deposit&rdquo;, then a fee to withdraw it.</div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="card">
-        <div class="card-text">
-          <p class="card-meta">Submitted, ML Build Challenge 3, 2026. Solo build.</p>
-          <h3 class="card-title">Clause</h3>
-          <p class="card-sum">Reads your own health insurance plan and drafts an appeal for a denied claim, with your deadline, what the denial letter left out, and whether your bill adds up.</p>
-          <p class="card-decision"><b>Every sentence has to point.</b> Each one quotes the plan text it rests on. Code checks the quote is really there, and a sentence that fails is greyed out.</p>
-          <div class="card-links">
-            <a class="btn solid" href="projects.html#clause">Read the story</a>
-            <a class="btn" href="https://clause-p7uk.onrender.com">Try it</a>
-          </div>
-        </div>
-        <div class="card-shot" aria-hidden="true">
-          <div class="phone">
-            <div class="screen cl">
-              <div class="notch"></div>
-              <div class="cl-top"><b>Your appeal</b><span class="cl-due">164 days left</span></div>
-              <div class="cl-sent">The plan covers medically necessary <mark>outpatient physical therapy, up to 20 visits</mark> a year, and I had used 6.<span class="cl-cite">&#10003; Plan, p. 41, &sect;3.2</span></div>
-              <div class="cl-src"><small>Plan, page 41</small>&hellip;covered services include <mark>outpatient physical therapy, up to 20 visits</mark> per calendar year when medically necessary&hellip;</div>
-              <div class="cl-fail"><b>Not shown as fact</b><s>The denial was sent after the 30-day limit.</s> The quote doesn&rsquo;t contain &ldquo;30&rdquo;.</div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="card">
-        <div class="card-text">
-          <p class="card-meta">Submitted, RevenueCat Shipaton 2026. Solo build.</p>
-          <h3 class="card-title">Fridge Rescue</h3>
-          <p class="card-sum">A food-waste app where the food you save feeds a pixel pet. Food about to go off becomes tonight&rsquo;s recipe, and food you bought too much of goes to a food bank.</p>
-          <p class="card-decision"><b>Two problems, two answers.</b> A food bank can&rsquo;t take yoghurt that expires Thursday, so the app never suggests it. Only unopened, long-dated food goes in the donation box.</p>
-          <div class="card-links">
-            <a class="btn solid" href="projects.html#fridge-rescue">Read the story</a>
-            <a class="btn" href="https://drunkwiz.github.io/fridge-rescue/">Try it</a>
-          </div>
-        </div>
-        <div class="card-shot" aria-hidden="true">
-          <div class="phone">
-            <div class="screen fr">
-              <div class="notch"></div>
-              <div class="fr-pet"><div class="fr-sprite"><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="d"></i><i class="d"></i><i></i><i></i><i></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="d"></i><i class="b"></i><i class="b"></i><i class="d"></i><i class="b"></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="d"></i><i class="d"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i></i><i></i><i class="b"></i><i></i><i></i></div><div class="fr-status">sprout is hungry.</div><div class="fr-xp">[&#9632;&#9632;&#9632;&#9632;&#9632;&nbsp;&nbsp;&nbsp;] sapling &middot; &#128293; 6 days</div></div>
-              <div class="fr-box"><b>Rescue tonight</b><ul><li><span>spinach</span><span>1 day</span></li><li><span>chicken thighs</span><span>2 days</span></li><li><span>greek yoghurt</span><span>3 days</span></li></ul><span class="fr-act">make one recipe &rarr;</span></div>
-              <div class="fr-box donate"><b>Donate</b><p>7 items you&rsquo;ll probably never eat. That&rsquo;s about 5 meals for someone.</p><span class="fr-act">find a food bank &rarr;</span></div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="card more">
-        <p class="more-title">That's the latest.</p>
-        <p class="more-sub">Every project, with the full write-up, is on one page.</p>
-        <a class="btn solid" href="projects.html">View all projects</a>
-      </li>
-    </ul>
-
-    <div class="wrap work-foot">
-      <p class="counter" aria-live="polite"><span class="c-now">1</span> of <span class="c-total">2</span></p>
-      <div class="progress" aria-hidden="true"><span></span></div>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="wrap two">
+    <article class="feat" id="voucher-kaki" aria-labelledby="vk-h">
+      <span class="stamp" data-thunk>Finalist<small>SimplifyNext IGNITE</small></span>
       <div>
-        <h2>How I like to build</h2>
-        <ul class="rules">
-          <li>Put the model where judgement is needed, and keep it out where correctness is needed.</li>
-          <li>Degrade instead of breaking. A second model provider, a second map, offline data underneath.</li>
-          <li>Tests run with no network and no API key.</li>
-          <li>Say plainly what's real and what's simulated.</li>
+        <p class="meta">03 &middot; Agentic AI Hackathon &middot; Team of four</p>
+        <h3 id="vk-h">Voucher Kaki</h3>
+        <p class="pitch">Finds CDC-voucher eateries near you, typed or spoken, in four languages.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>Search in English, <span lang="zh">中文</span>, Bahasa Melayu and <span lang="ta">தமிழ்</span>, by text or voice</li>
+          <li>Ranking by relevance and walking distance, with a lift for local-owned shops</li>
+          <li>Says what it gave up whenever it has to widen a search</li>
         </ul>
+        <ul class="tags" aria-label="Stack"><li>React</li><li>Vite</li><li>Leaflet</li><li>OneMap</li><li>Web Speech</li><li>Vercel</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://simplify-ai-hackathon.vercel.app">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="projects.html#voucher-kaki">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+        </div>
       </div>
-      <div class="about">
-        <h2>Who I picture</h2>
-        <p>For three years in school, I went out every quarter with a volunteer group to visit elderly residents, in their own neighbourhoods and at homes for the aged, bringing games and food to them.</p>
-        <p>When I decide what goes on a small screen, they're who I picture. If it works for them, it usually works for everyone else too.</p>
-        <p class="soft">Currently studying in Singapore and doing as many hackathons as I can fit in.</p>
+      <figure class="shot">
+        <div class="phone">
+          <div class="screen"><img src="assets/shots/voucher-kaki.webp" width="560" height="2513" loading="lazy" decoding="async" alt="Voucher Kaki on a phone: a chicken rice search near Yishun, with filters and the nearest local-owned hawker stalls that take Heartland vouchers."></div>
+        </div>
+        <figcaption>Live screen &middot; hover to scroll</figcaption>
+      </figure>
+    </article>
+
+    <div class="sec-head" style="margin-top:4rem">
+      <h2>Also shipped</h2>
+      <a href="projects.html">Full write-ups<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+    </div>
+
+    <div class="grid">
+      <article class="mini" id="agentshopper" aria-labelledby="as-h">
+        <span class="stamp sm" data-thunk>Shipped<small>NUS LifeHack 2026</small></span>
+        <figure class="shot">
+          <div class="browser">
+            <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>agentshopper.streamlit.app</span></div>
+            <div class="screen fit"><img src="assets/shots/agentshopper.webp" width="1100" height="778" loading="lazy" decoding="async" alt="AgentShopper before-and-after search: three products go from not surfaced at all to ranks 1, 2 and 3, each answer citing product facts."></div>
+          </div>
+          <figcaption>Screen from the repo</figcaption>
+        </figure>
+        <p class="meta">Team of three &middot; Led engineering</p>
+        <h3 id="as-h">AgentShopper</h3>
+        <p class="pitch">Makes a product catalogue readable to AI shopping assistants, then proves it worked.</p>
+        <ul class="built" aria-label="What I built">
+          <li>Reads CSV, Excel, Shopify JSON and scanned PDFs into verified facts</li>
+          <li>Searches the same catalogue before and after, side by side</li>
+          <li>Every generated claim cites a fact; budgets are enforced in code</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Python</li><li>Streamlit</li><li>GPT-4o mini</li><li>OpenAI embeddings</li><li>NumPy</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://agentshopper.streamlit.app/">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="projects.html#agentshopper">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+        </div>
+      </article>
+
+      <article class="mini" id="pinch" aria-labelledby="pn-h">
+        <span class="stamp sm" data-thunk>Shipped<small>Build With AI 2026</small></span>
+        <figure class="shot">
+          <div class="phone">
+            <div class="screen"><img src="assets/shots/pinch.webp" width="375" height="1154" loading="lazy" decoding="async" alt="A Pinch recipe card for Sunday pancakes: amounts marked as clarified by the cook, her exact words quoted, and butter listed under Still unknown."></div>
+          </div>
+          <figcaption>Screen from the repo</figcaption>
+        </figure>
+        <p class="meta">Solo build</p>
+        <h3 id="pn-h">Pinch</h3>
+        <p class="pitch">Interviews your grandparent while they cook and never guesses an amount.</p>
+        <ul class="built" aria-label="What I built">
+          <li>Records each step and asks at most one follow-up, out loud</li>
+          <li>Server code traces every amount on the card to the cook&rsquo;s own words</li>
+          <li>A printable recipe card with an honest &ldquo;Still unknown&rdquo; list</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>React</li><li>Vite</li><li>Express</li><li>Gemini</li><li>Web Audio</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://pinch-htpl.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="projects.html#pinch">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+        </div>
+      </article>
+
+      <article class="mini" id="chaincheck" aria-labelledby="cc-h">
+        <span class="stamp sm" data-thunk>Shipped<small>WarriorHacks 2.0</small></span>
+        <figure class="shot">
+          <div class="browser">
+            <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>chaincheck-dxj5.onrender.com</span></div>
+            <div class="screen"><img src="assets/shots/chaincheck.webp" width="1100" height="1547" loading="lazy" decoding="async" alt="ChainCheck home: paste an investment offer or add screenshots, read on the device, to check it against the scam playbook."></div>
+          </div>
+          <figcaption>Live screen</figcaption>
+        </figure>
+        <p class="meta">Solo build</p>
+        <h3 id="cc-h">ChainCheck</h3>
+        <p class="pitch">Checks an investment offer against the scam playbook and never calls anything safe.</p>
+        <ul class="built" aria-label="What I built">
+          <li>In-browser OCR, so screenshots never leave the phone</li>
+          <li>Rule-based verdict and playbook stage; the model can only add flags</li>
+          <li>Prompt-injection tests against a hijacked fake model</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Python</li><li>React</li><li>Vite</li><li>Gemini</li><li>OCR</li><li>pytest</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://chaincheck-dxj5.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="projects.html#chaincheck">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+        </div>
+      </article>
+
+      <article class="mini" id="clause" aria-labelledby="cl-h">
+        <span class="stamp sm" data-thunk>Shipped<small>ML Build Challenge 3</small></span>
+        <figure class="shot">
+          <div class="browser">
+            <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>clause-p7uk.onrender.com</span></div>
+            <div class="screen fit"><img src="assets/shots/clause.webp" width="1100" height="733" loading="lazy" decoding="async" alt="Clause appeal draft beside the plan document, with the quoted clause highlighted on its source page."></div>
+          </div>
+          <figcaption>Screen from the repo</figcaption>
+        </figure>
+        <p class="meta">Solo build</p>
+        <h3 id="cl-h">Clause</h3>
+        <p class="pitch">Drafts a health insurance appeal where every sentence quotes the plan it rests on.</p>
+        <ul class="built" aria-label="What I built">
+          <li>Plans and regulations split into numbered, page-located clauses</li>
+          <li>A verifier that greys out any sentence whose quote doesn&rsquo;t hold</li>
+          <li>Deadline and notice checks written as code from the regulations</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Python</li><li>React</li><li>Vite</li><li>pdf.js</li><li>pdfplumber</li><li>Gemini Flash</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://clause-p7uk.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="projects.html#clause">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+        </div>
+      </article>
+
+      <article class="mini" id="fridge-rescue" aria-labelledby="fr-h">
+        <span class="stamp sm" data-thunk>Shipped<small>RevenueCat Shipaton</small></span>
+        <figure class="shot">
+          <div class="phone">
+            <div class="screen"><img src="assets/shots/fridge-rescue.webp" width="560" height="1214" loading="lazy" decoding="async" alt="Fridge Rescue home screen: Sprout the pixel pet, a rescue card for food about to expire, and a donate card."></div>
+          </div>
+          <figcaption>Screen from the repo</figcaption>
+        </figure>
+        <p class="meta">Solo build</p>
+        <h3 id="fr-h">Fridge Rescue</h3>
+        <p class="pitch">A food-waste app where the food you save feeds a pixel pet, and surplus goes to a food bank.</p>
+        <ul class="built" aria-label="What I built">
+          <li>One recipe from everything that&rsquo;s about to expire</li>
+          <li>Donation rules: unopened, shelf-stable, more than 60 days left</li>
+          <li>Receipt scanning with Claude, cleaned up by tested pure functions</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Expo</li><li>React Native</li><li>TypeScript</li><li>Claude</li><li>RevenueCat</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://drunkwiz.github.io/fridge-rescue/">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="projects.html#fridge-rescue">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
+        </div>
+      </article>
+
+      <div class="more">
+        <p class="t">That&rsquo;s the lot.</p>
+        <p class="s">Every project&rsquo;s full write-up, the code, and how I like to build.</p>
+        <a class="btn solid" href="projects.html">All projects<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
       </div>
     </div>
-  </section>
-</main>
+  </main>
 
-<footer>
-  <div class="wrap">
-    <span class="bye">Thank you. Come again.</span>
-    <span><a href="https://github.com/drunkwiz">github.com/drunkwiz</a></span>
-  </div>
-</footer>
-
-<script>
-
-/* Tear-off receipt with a shaped post slot.
-   Mouse: grab the receipt anywhere and drag sideways; the tear follows the cursor.
-   If the torn edge has the same shape as the slot's lip (at any height on the
-   receipt), the piece slides into the slot; otherwise it falls away.
-   Touch, pen and keyboard: a tap (or Enter) lets the printer tear the slot's shape
-   for you at that height. Hard mode turns that help off, tightens the fit and
-   uses trickier shapes. A new receipt, with a new slot shape, prints after each tear. */
-(function () {
-  var sheet = document.querySelector('.sheet');
-  var receipt = sheet.querySelector('.receipt');
-  var hint = document.querySelector('.tear-hint');
-  var status = document.querySelector('.printer [role="status"]');
-  var post = document.querySelector('.post');
-  var postSvg = post.querySelector('svg');
-  var postCount = post.querySelector('.post-count');
-  var postName = post.querySelector('.post-name');
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  var modeBtn = document.querySelector('.mode-btn');
-  var hard = false;
-  try { hard = localStorage.getItem('vk-hard') === '1'; } catch (e) {}
-  function hintText() {
-    if (hard) return fine ? 'Hard mode: tear the slot shape freehand.' : 'Hard mode: swipe the slot shape freehand.';
-    return fine ? "Tear it in the slot's shape, any height." : "Swipe sideways in the slot's shape, or tap.";
-  }
-
-  var REPRINT_AFTER = 3500; // ms after a tear before a new receipt prints
-  var STEP = 3;             // px between points on the torn edge
-  var SPEED = 18;           // max px the tear advances per frame
-  var FOLLOW = 0.5;         // how tightly the tear follows the cursor up and down (0 to 1)
-  var FIT = { normal: 8.5, hard: 6.5 }; // how far off (px, on average) a tear can be and still fit
-  var LIP = 30;             // y of the slot's lip inside the slot drawing
-  var NS = 'http://www.w3.org/2000/svg';
-
-  // Slot shapes: heights (px, + is lower) at evenly spaced points across the receipt.
-  // Smooth shapes are curved between points; sharp ones (lin) use straight segments.
-  var SHAPES = {
-    normal: [
-      { name: 'wave',        v: [20, -20, 20, -20, 20] },
-      { name: 'hill',        v: [18, 14, -22, 14, 18] },
-      { name: 'valley',      v: [-20, 2, 22, 2, -20] },
-      { name: 'step',        v: [-18, -18, -18, 18, 18, 18] },
-      { name: 'ramp',        v: [-20, -20, 20, 20] },
-      { name: 'plateau',     v: [16, 16, -20, -20, 16, 16] },
-      { name: 'notch',       v: [-16, -16, 20, 20, -16, -16] },
-      { name: 'twin peaks',  v: [18, -20, 12, -20, 18] },
-      { name: 'swoop',       v: [-24, 18, 22, 16, -6] },
-      { name: 'ledge',       v: [20, 20, 20, -20, -20, 20] },
-    ],
-    hard: [
-      { name: 'zigzag',      v: [-18, 18, -18, 18, -18, 18, -18], lin: true },
-      { name: 'stairs',      v: [-21, -21, -7, -7, 7, 7, 21, 21], lin: true },
-      { name: 'crown',       v: [-20, 18, -4, 18, -4, 18, -20], lin: true },
-      { name: 'lightning',   v: [-22, 8, -6, 22], lin: true },
-      { name: 'ripple',      v: [16, -16, 16, -16, 16, -16, 16, -16, 16] },
-      { name: 'tooth',       v: [-16, -16, 20, -16, -16], lin: true },
-      { name: 'castle',      v: [16, 16, -18, -18, 16, 16, -18, -18, 16, 16], lin: true },
-      { name: 'spike',       v: [14, 14, 14, -22, 14, 14, 14], lin: true },
-    ],
-  };
-  function pool() { return SHAPES[hard ? 'hard' : 'normal']; }
-  function pick() {
-    var list = pool(), next;
-    do { next = list[Math.floor(Math.random() * list.length)]; } while (list.length > 1 && next === shape);
-    return next;
-  }
-  var shape = null;
-  shape = pick();
-
-  var state = reduce ? 'idle' : 'printing'; // printing | idle | gone
-  var count = 1, posted = 0, tear = null, drag = null, auto = null, raf = 0, lastType = 'mouse';
-
-  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-  function poly(pts) {
-    return 'polygon(' + pts.map(function (p) { return p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px'; }).join(',') + ')';
-  }
-  function strip(el) {
-    ['tabindex', 'role', 'aria-label'].forEach(function (a) { el.removeAttribute(a); });
-    el.setAttribute('aria-hidden', 'true');
-    el.classList.remove('printing');
-  }
-  // Shape height at u (0 = left edge, 1 = right edge), smoothly interpolated.
-  function prof(u) {
-    var v = shape.v, n = v.length - 1, pos = clamp(u, 0, 1) * n, i = Math.min(n - 1, Math.floor(pos)), f = pos - i;
-    var s = shape.lin ? f : (1 - Math.cos(f * Math.PI)) / 2;
-    return v[i] + (v[i + 1] - v[i]) * s;
-  }
-  function W() { return receipt.offsetWidth; }
-  // Where the printer's own tear goes: the slot shape, anchored at height y0 at x0,
-  // and kept on the paper.
-  function anchorFor(x0, y0) {
-    var w = W(), H = receipt.offsetHeight, lo = Infinity, hi = -Infinity;
-    for (var x = 0; x <= w; x += 4) { var v = prof(x / w); lo = Math.min(lo, v); hi = Math.max(hi, v); }
-    return clamp(y0 - prof(x0 / w), 16 - lo, H - 36 - hi);
-  }
-
-  function drawShape() {
-    var w = W(), lip = [], top = [];
-
-    // The slot: a dark opening whose bottom edge (the lip) has the same shape.
-    var pad = 10;
-    postSvg.setAttribute('viewBox', (-pad) + ' 0 ' + (w + pad * 2) + ' 64');
-    for (var px = -pad; px <= w + pad; px += 4) {
-      var y = LIP + prof(px / w);
-      lip.push([px, y]);
-      top.push([px, y - 16]);
-    }
-    var hole = top.concat(lip.slice().reverse()).map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
-    var rim = lip.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
-    var lipTop = top.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
-    postSvg.querySelector('.p-hole').setAttribute('points', hole);
-    postSvg.querySelector('.p-rim').setAttribute('points', rim);
-    postSvg.querySelector('.p-top').setAttribute('points', lipTop);
-    postName.textContent = shape.name;
-  }
-
-  function fringe() {
-    var svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('class', 'fringe');
-    svg.setAttribute('aria-hidden', 'true');
-    ['f-shade', 'f-hi'].forEach(function (c) {
-      var line = document.createElementNS(NS, 'polyline');
-      line.setAttribute('class', c);
-      svg.appendChild(line);
-    });
-    return svg;
-  }
-  function setFringe(svg, pts, off) {
-    var lines = svg.querySelectorAll('polyline');
-    lines[0].setAttribute('points', pts.map(function (p) { return p[0] + ',' + (p[1] + off * 2.4); }).join(' '));
-    lines[1].setAttribute('points', pts.map(function (p) { return p[0] + ',' + (p[1] + off); }).join(' '));
-  }
-
-  receipt.addEventListener('animationend', function (e) {
-    if (e.animationName !== 'print') return;
-    receipt.classList.remove('printing');
-    state = 'idle';
-    hint.textContent = hintText();
-  });
-
-  function begin(dir, y) {
-    var w = W(), H = receipt.offsetHeight;
-    var stub = receipt.cloneNode(true);       // the part that stays in the printer
-    strip(stub);
-    stub.classList.add('stub');
-    var sf = fringe(); stub.appendChild(sf);
-    var pf = fringe(); receipt.appendChild(pf);
-    sheet.appendChild(stub);
-    sheet.classList.add('tearing');
-    var x0 = dir > 0 ? 0 : w;
-    y = clamp(y, 16, H - 36);
-    tear = { dir: dir, W: w, H: H, tipX: x0, tipY: y, wob: 0, pts: [[x0, y]], stub: stub, sf: sf, pf: pf };
-    draw();
-  }
-
-  // Move the tip of the tear toward (tx, ty). With follow, the printer tears neatly
-  // in the slot's shape instead. Returns true once the tear reaches the far edge.
-  function extend(tx, ty, follow) {
-    var t = tear, moved = 0;
-    while (moved < SPEED) {
-      var left = t.dir > 0 ? tx - t.tipX : t.tipX - tx;
-      if (left < STEP) break;
-      t.tipX = clamp(t.tipX + t.dir * STEP, 0, t.W);
-      moved += STEP;
-      if (follow) t.tipY = t.anchor + prof(t.tipX / t.W);
-      else t.tipY += (clamp(ty, 16, t.H - 36) - t.tipY) * FOLLOW;   // the tear lags the hand a little
-      t.wob = clamp(t.wob + (Math.random() - 0.5) * 1.7, -2.8, 2.8); // slow wander of the fibres
-      t.pts.push([t.tipX, t.tipY + t.wob + (Math.random() - 0.5) * 1.5]);
-      if (t.tipX === 0 || t.tipX === t.W) break;
-    }
-    draw();
-    return t.tipX === (t.dir > 0 ? t.W : 0);
-  }
-
-  function draw() {
-    var t = tear, start = t.dir > 0 ? 0 : t.W, far = t.dir > 0 ? t.W : 0;
-    var done = t.tipX === far;
-    var lower = [], upper = [];
-    t.pts.forEach(function (p) {
-      var gap = Math.min(5, Math.abs(t.tipX - p[0]) * 0.03); // the tear opens wider behind the tip
-      lower.push([p[0], p[1] + gap * 0.75]);
-      upper.push([p[0], p[1] - gap * 0.25]);
-    });
-    var bottom = lower.concat(done ? [] : [[far, t.tipY]]).concat([[far, t.H + 30], [start, t.H + 30]]);
-    var top = [[start, -30], [far, -30]].concat(done ? [] : [[far, t.tipY]]).concat(upper.slice().reverse());
-    receipt.style.clipPath = poly(bottom);
-    t.stub.style.clipPath = poly(top);
-    setFringe(t.pf, lower, 1.1);
-    setFringe(t.sf, upper, -1.1);
-  }
-
-  function loop() {
-    if (raf) return;
-    raf = requestAnimationFrame(function step() {
-      raf = 0;
-      if (!tear) return;
-      var target = drag ? drag : auto;
-      if (!target) return;
-      var edge = tear.dir > 0 ? tear.W + 10 : -10;
-      if (auto && !auto.follow) auto.y += (Math.random() - 0.5) * 6;
-      var doneNow = auto
-        ? extend(edge, auto.y, auto.follow)
-        : extend(target.x, target.y, false);
-      if (doneNow) { finish(); return; }
-      raf = requestAnimationFrame(step);
-    });
-  }
-
-  // Torn edge y at x, read off the tear's points.
-  function edgeAt(pts, x) {
-    for (var i = 1; i < pts.length; i++) {
-      var a = pts[i - 1], b = pts[i];
-      if ((x - a[0]) * (x - b[0]) <= 0) {
-        var f = b[0] === a[0] ? 0 : (x - a[0]) / (b[0] - a[0]);
-        return a[1] + (b[1] - a[1]) * f;
-      }
-    }
-    return pts[pts.length - 1][1];
-  }
-  // How closely the torn edge matches the slot's shape. Height doesn't matter, only shape.
-  function score(t) {
-    var pts = t.pts.slice().sort(function (a, b) { return a[0] - b[0]; });
-    var diffs = [], n = 24;
-    for (var k = 0; k < n; k++) {
-      var x = t.W * (0.04 + 0.92 * k / (n - 1));
-      diffs.push(edgeAt(pts, x) - prof(x / t.W));
-    }
-    var mean = diffs.reduce(function (s, d) { return s + d; }, 0) / n;
-    var rms = Math.sqrt(diffs.reduce(function (s, d) { return s + (d - mean) * (d - mean); }, 0) / n);
-    return { rms: rms, fits: rms <= FIT[hard ? 'hard' : 'normal'], pct: Math.round(clamp(1 - rms / 24, 0, 1) * 100) };
-  }
-
-  function finish() {
-    var t = tear;
-    tear = null; drag = null; auto = null; state = 'gone';
-    sheet.classList.remove('grabbing');
-    var s = score(t);
-
-    var r = receipt.getBoundingClientRect();
-    var wrap = document.createElement('div');
-    wrap.className = 'fall';
-    wrap.setAttribute('aria-hidden', 'true');
-    wrap.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px';
-    var piece = receipt.cloneNode(true);
-    strip(piece);
-    wrap.appendChild(piece);
-    document.body.appendChild(wrap);
-
-    receipt.style.visibility = 'hidden';
-    receipt.style.clipPath = '';
-    t.pf.remove();
-
-    if (s.fits) {
-      posted += 1;
-      hint.textContent = s.pct >= 92 ? 'Perfect fit. Posted.' : 'Posted, ' + s.pct + '% match.';
-      status.textContent = 'The torn piece fit the slot and was posted. A new receipt prints in a few seconds.';
-      slideIn(wrap, t, r);
-    } else {
-      hint.textContent = 'No fit, ' + s.pct + '% match. Try again.';
-      status.textContent = 'The torn piece did not fit the slot and fell away. A new receipt prints in a few seconds.';
-      fallAway(wrap, t, r);
-    }
-
-    setTimeout(function () {
-      t.stub.style.transition = 'opacity .35s';
-      t.stub.style.opacity = '0';
-      setTimeout(function () { t.stub.remove(); sheet.classList.remove('tearing'); }, 400);
-      count += 1;
-      receipt.querySelector('.r-no').textContent = String(count).padStart(4, '0');
-      shape = pick();
-      drawShape();
-      receipt.style.visibility = '';
-      status.textContent = 'New receipt printed. The slot is now a ' + shape.name + '.';
-      if (reduce) {
-        state = 'idle';
-        hint.textContent = hintText();
-      } else {
-        state = 'printing';
-        hint.textContent = 'Printing a new one…';
-        receipt.classList.remove('printing');
-        void receipt.offsetWidth; // restart the print animation
-        receipt.classList.add('printing');
-      }
-    }, REPRINT_AFTER);
-  }
-
-  function fallAway(wrap, t, r) {
-    var last = t.pts[t.pts.length - 1];
-    wrap.style.transformOrigin = last[0] + 'px ' + last[1] + 'px';
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        if (reduce) {
-          wrap.style.transition = 'opacity .4s';
-          wrap.style.opacity = '0';
-        } else {
-          var dx = t.dir * (30 + Math.random() * 70);
-          var rot = -t.dir * (12 + Math.random() * 22);
-          wrap.style.transition = 'transform 1.3s cubic-bezier(.45,0,.9,.55)';
-          wrap.style.transform = 'translate(' + dx.toFixed(0) + 'px,' + (window.innerHeight + r.height).toFixed(0) + 'px) rotate(' + rot.toFixed(0) + 'deg)';
-        }
-      });
-    });
-    setTimeout(function () { wrap.remove(); }, 1500);
-  }
-
-  // Slide the piece straight down behind the slot's lip, so it disappears into the slot.
-  function slideIn(wrap, t, r) {
-    var pr = postSvg.getBoundingClientRect();
-    var vb = postSvg.viewBox.baseVal, k = pr.width / vb.width;
-    var w = t.W;
-    // Page y of the lip at receipt x.
-    function lipPage(x) { return pr.top + (LIP + prof(x / w)) * k; }
-    var pts = t.pts.slice().sort(function (a, b) { return a[0] - b[0]; });
-    var dist = 0;
-    for (var x = 0; x <= w; x += 6) dist = Math.max(dist, lipPage(x) - (r.top + edgeAt(pts, x)));
-    dist += 10;
-    function clipAt(dy) {
-      var c = [[-40, -2000], [w + 40, -2000]];
-      for (var x = w + 40; x >= -40; x -= 6) c.push([x, lipPage(x) - r.top - dy]);
-      wrap.style.clipPath = poly(c);
-      wrap.style.transform = 'translateY(' + dy.toFixed(1) + 'px)';
-    }
-    function done() {
-      wrap.remove();
-      postCount.textContent = String(posted).padStart(3, '0');
-      post.classList.remove('gulp');
-      void post.offsetWidth;
-      post.classList.add('gulp');
-    }
-    if (reduce) { clipAt(dist); done(); return; }
-    var t0 = performance.now(), D = 950;
-    requestAnimationFrame(function frame(now) {
-      var p = clamp((now - t0) / D, 0, 1);
-      clipAt(dist * p * p);                  // speeds up as it drops, like it's being pulled in
-      if (p < 1) requestAnimationFrame(frame); else done();
-    });
-  }
-
-  // A click, tap or Enter. Normal mode: the printer tears the slot's shape at that
-  // height, so it posts. Hard mode: you get a plain rough tear, no help.
-  function rip(localY) {
-    if (state !== 'idle') return;
-    var dir = Math.random() < 0.5 ? 1 : -1, x0 = dir > 0 ? 0 : W();
-    var y0 = localY == null ? receipt.offsetHeight * 0.55 : localY;
-    if (!tear) {
-      if (hard) begin(dir, y0);
-      else { var a = anchorFor(x0, y0); begin(dir, a + prof(x0 / W())); tear.anchor = a; }
-    }
-    var follow = !hard;
-    if (reduce) { while (!extend(tear.dir > 0 ? tear.W + 10 : -10, tear.tipY, follow)) {} finish(); return; }
-    auto = { follow: follow, y: tear.tipY };
-    loop();
-  }
-
-  function local(e) {
-    var r = receipt.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
-  }
-
-  // Mouse, finger or pen: drag sideways across the receipt to tear it. The receipt
-  // only claims sideways swipes (touch-action: pan-y), so swiping up and down still
-  // scrolls the page. A tap or click without dragging lets rip() tear it.
-  var suppressClick = false;
-  sheet.addEventListener('pointerdown', function (e) {
-    lastType = e.pointerType;
-    if (state !== 'idle' || auto || drag) return;
-    if (e.pointerType === 'mouse') {
-      if (e.button !== 0) return;
-      e.preventDefault();
-    }
-    var p = local(e);
-    drag = { id: e.pointerId, type: e.pointerType, sx: e.clientX, sy: e.clientY, x: p.x, y: p.y, downY: p.y, moved: false };
-    try { sheet.setPointerCapture(e.pointerId); } catch (err) {}
-    if (e.pointerType === 'mouse') sheet.classList.add('grabbing');
-  });
-  sheet.addEventListener('pointermove', function (e) {
-    if (!drag || e.pointerId !== drag.id) return;
-    var p = local(e);
-    var dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
-    if (!drag.moved) {
-      var need = drag.type === 'mouse' ? 5 : 8;
-      if (Math.abs(dx) < need) return;
-      if (drag.type !== 'mouse' && Math.abs(dy) > Math.abs(dx)) return; // vertical: let the page scroll
-      drag.moved = true;
-      if (!tear) begin(dx >= 0 ? 1 : -1, drag.downY);
-    }
-    if (e.cancelable && drag.type !== 'mouse') e.preventDefault();
-    drag.x = p.x; drag.y = p.y;
-    loop();
-  });
-  function release(e) {
-    if (!drag || (e && e.pointerId !== drag.id)) return;
-    var d = drag;
-    drag = null;
-    sheet.classList.remove('grabbing');
-    if (d.moved) { suppressClick = true; setTimeout(function () { suppressClick = false; }, 400); return; }
-    if (d.type === 'mouse' && !tear) rip(d.downY);   // a plain click: see rip(). Taps arrive as click events.
-  }
-  sheet.addEventListener('pointerup', release);
-  sheet.addEventListener('pointercancel', release);   // the browser took over to scroll; keep any partial tear
-  sheet.addEventListener('click', function (e) {
-    if (lastType === 'mouse' || suppressClick) return;
-    rip(local(e).y);
-  });
-  receipt.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rip(); }
-  });
-  window.addEventListener('resize', function () { if (!tear && state !== 'gone') drawShape(); });
-
-  function setHard(on) {
-    hard = on;
-    try { localStorage.setItem('vk-hard', on ? '1' : '0'); } catch (e) {}
-    modeBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    modeBtn.querySelector('.mode-state').textContent = on ? 'on' : 'off';
-    if (!tear && state === 'idle') { shape = pick(); drawShape(); }
-    if (state !== 'gone') hint.textContent = hintText();
-  }
-  modeBtn.addEventListener('click', function () { setHard(!hard); });
-
-  setHard(hard);
-  drawShape();
-  hint.textContent = hintText();
-})();
-
-/* Work carousel: arrows, counter, progress, and drag-to-scroll with a mouse. */
-(function () {
-  var track = document.querySelector('.track');
-  if (!track) return;
-  var cards = Array.prototype.slice.call(track.querySelectorAll('.card:not(.more)'));
-  var all = track.querySelectorAll('.card');
-  var prev = document.querySelector('.nav-btn[data-dir="-1"]');
-  var next = document.querySelector('.nav-btn[data-dir="1"]');
-  var now = document.querySelector('.c-now');
-  var bar = document.querySelector('.progress span');
-  document.querySelectorAll('.all-btn .count, .c-total').forEach(function (el) { el.textContent = cards.length; });
-
-  function step() {
-    var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-    return all[0].getBoundingClientRect().width + gap;
-  }
-  function update() {
-    var max = track.scrollWidth - track.clientWidth;
-    var i = Math.round(track.scrollLeft / step());
-    now.textContent = Math.min(i + 1, cards.length);
-    bar.style.width = (max > 0 ? Math.max(track.clientWidth / track.scrollWidth, track.scrollLeft / max) * 100 : 100) + '%';
-    prev.disabled = track.scrollLeft <= 2;
-    next.disabled = track.scrollLeft >= max - 2;
-  }
-  [prev, next].forEach(function (b) {
-    b.addEventListener('click', function () { track.scrollBy({ left: Number(b.dataset.dir) * step() }); });
-  });
-  var ticking = false;
-  track.addEventListener('scroll', function () {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function () { ticking = false; update(); });
-  });
-  window.addEventListener('resize', update);
-
-  // Mouse drag. Touch already swipes natively.
-  var drag = null, suppress = false;
-  track.addEventListener('pointerdown', function (e) {
-    if (e.pointerType !== 'mouse' || e.button !== 0) return;
-    drag = { x: e.clientX, left: track.scrollLeft, moved: false, id: e.pointerId };
-  });
-  track.addEventListener('pointermove', function (e) {
-    if (!drag) return;
-    var dx = e.clientX - drag.x;
-    if (!drag.moved && Math.abs(dx) < 6) return;
-    if (!drag.moved) { drag.moved = true; track.classList.add('dragging'); track.setPointerCapture(drag.id); }
-    track.scrollLeft = drag.left - dx;
-  });
-  function end() {
-    if (!drag) return;
-    suppress = drag.moved;
-    drag = null;
-    if (track.classList.contains('dragging')) {
-      track.classList.remove('dragging');
-      var i = Math.round(track.scrollLeft / step());
-      track.scrollTo({ left: i * step() });
-    }
-  }
-  track.addEventListener('pointerup', end);
-  track.addEventListener('pointercancel', end);
-  track.addEventListener('click', function (e) {
-    if (suppress) { e.preventDefault(); e.stopPropagation(); suppress = false; }
-  }, true);
-  track.addEventListener('dragstart', function (e) { e.preventDefault(); });
-
-  update();
-})();
-</script>
+  <footer class="end">
+    <div class="receipt">
+      <div class="r-head"><strong>drunkwiz</strong><span>End of receipt</span></div>
+      <div class="r-stamp" aria-hidden="true">PAID</div>
+      <hr class="r-rule">
+      <ul class="r-list">
+        <li class="r-total"><span>Subtotal</span><span>8 projects</span></li>
+        <li><span>Placed</span><span>3</span></li>
+        <li><span>Live demos</span><span>7</span></li>
+      </ul>
+      <hr class="r-rule">
+      <p class="ask">Questions?<br><a href="https://github.com/DrunkWiz">github.com/DrunkWiz</a></p>
+      <div class="barcode" aria-hidden="true"></div>
+      <p class="r-foot">Thank you. Come again.</p>
+    </div>
+  </footer>
+</div>
 </body>
 </html>

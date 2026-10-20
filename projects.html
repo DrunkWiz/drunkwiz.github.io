@@ -4,710 +4,395 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>All projects · drunkwiz</title>
-<meta name="description" content="Every project Nathan has built, with the decision behind each one.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧾</text></svg>">
+<meta name="description" content="Every project, results first: Lead Time, Recall, Voucher Kaki, AgentShopper, Pinch, ChainCheck, Clause and Fridge Rescue, each with real screens, stack and the decision that shaped it.">
+<link rel="canonical" href="https://drunkwiz.github.io/projects.html">
+<meta name="theme-color" content="#183F38">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://drunkwiz.github.io/projects.html">
+<meta property="og:site_name" content="drunkwiz">
+<meta property="og:title" content="All projects · drunkwiz">
+<meta property="og:description" content="8 projects shipped · 1 track win · 1 runner-up · 1 finalist. The full write-ups.">
+<meta property="og:image" content="https://drunkwiz.github.io/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A printed receipt listing Lead Time, track win; Recall, 2nd; Voucher Kaki, finalist; total 8 projects.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;600&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
-<style>
-:root{
-  --table:#183F38;      /* hawker-table green */
-  --table-deep:#123029;
-  --chalk:#EEF0E8;
-  --muted:#A9BDB5;
-  --rule:#2F5A51;
-  --paper:#FBFAF5;
-  --ink:#34333A;        /* thermal print */
-  --ink-soft:#6E6C75;
-  --stamp:#C9372F;
-  --sans:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
-  --mono:"Azeret Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;background:var(--table);color:var(--chalk);
-  font:400 1.125rem/1.6 var(--sans);
-  -webkit-font-smoothing:antialiased;
-}
-a{color:inherit;text-decoration-thickness:1px;text-underline-offset:.2em}
-a:hover{text-decoration-thickness:2px}
-:focus-visible{outline:3px solid var(--chalk);outline-offset:3px;border-radius:4px}
-.wrap{max-width:1160px;margin:0 auto;padding:0 clamp(1.25rem,4vw,3rem)}
-
-/* ---------- hero ---------- */
-.hero{
-  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
-  gap:clamp(2rem,6vw,5rem);align-items:start;
-  padding-top:clamp(3rem,9vh,6.5rem);padding-bottom:clamp(3rem,8vh,6rem);
-}
-.hello{font-size:1.25rem;color:var(--muted);margin:0 0 1rem}
-h1{
-  font-weight:800;font-size:clamp(2.6rem,6.2vw,5.1rem);
-  line-height:.98;letter-spacing:-.025em;margin:0 0 1.75rem;max-width:14ch;
-}
-.lede{max-width:46ch;margin:0 0 2.25rem;color:var(--chalk)}
-.lede span{color:var(--muted)}
-.actions{display:flex;flex-wrap:wrap;gap:.75rem}
-.btn{
-  display:inline-block;padding:.8rem 1.3rem;border-radius:999px;
-  font-weight:700;font-size:1rem;text-decoration:none;
-  border:2px solid var(--chalk);
-}
-.btn.solid{background:var(--chalk);color:var(--table)}
-.btn:hover{background:var(--paper);color:var(--table);border-color:var(--paper)}
-
-/* receipt + printer */
-.printer{position:relative;max-width:360px;justify-self:center;width:100%}
-.slot{
-  height:22px;border-radius:12px;background:var(--table-deep);
-  box-shadow:inset 0 4px 6px rgba(0,0,0,.45);position:relative;z-index:2;
-}
-.feed{margin:-11px 14px 0;padding-bottom:30px;clip-path:inset(0 -80px -100vh -80px)}
-.receipt{
-  background:var(--paper);color:var(--ink);
-  font:400 .8rem/1.55 var(--mono);
-  padding:2.2rem 1.4rem 2.6rem;position:relative;
-  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%;
-          mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%;
-  user-select:none;-webkit-user-select:none;
-}
-.receipt.printing{animation:print 2.2s steps(22,end) .35s both}
-.receipt:focus-visible{outline:3px solid var(--chalk);outline-offset:4px}
-/* tearing */
-.sheet{position:relative;cursor:grab;touch-action:pan-y}
-.sheet.grabbing{cursor:grabbing}
-.sheet.tearing{filter:drop-shadow(0 1px 1.2px rgba(0,0,0,.35))}
-.stub{position:absolute;left:0;top:0;width:100%;pointer-events:none}
-.fringe{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3}
-.f-hi{fill:none;stroke:#FFFFFF;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
-.f-shade{fill:none;stroke:rgba(70,60,50,.18);stroke-width:1;stroke-linejoin:round}
-.fall{position:fixed;z-index:50;pointer-events:none;filter:drop-shadow(0 14px 18px rgba(0,0,0,.35))}
-.tear-hint{margin:0 14px .6rem;color:var(--muted);font-size:.9rem;text-align:center;min-height:1.4em}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@keyframes print{from{transform:translateY(-102%)}to{transform:translateY(0)}}
-.r-head{text-align:center;margin-bottom:1.1rem}
-.r-head strong{display:block;font-size:1.35rem;font-weight:600;letter-spacing:.04em}
-.r-head > span{display:block;color:var(--ink-soft)}
-.r-no{font-weight:400}
-.r-rule{border:0;border-top:1.5px dashed #B9B7BE;margin:.9rem 0}
-.r-list{list-style:none;margin:0;padding:0}
-.r-list li{display:flex;justify-content:space-between;gap:1rem}
-.r-list li small{display:block;color:var(--ink-soft);font-size:.72rem;margin:-.15rem 0 .45rem}
-.r-item{display:block}
-.r-total{font-weight:600;font-size:.95rem}
-.stamp{
-  position:absolute;right:.8rem;bottom:6.4rem;transform:rotate(-11deg);
-  border:2.5px solid var(--stamp);color:var(--stamp);border-radius:6px;
-  padding:.2rem .55rem;font:600 .95rem/1 var(--mono);letter-spacing:.12em;
-  opacity:.82;mix-blend-mode:multiply;
-}
-.r-foot{text-align:center;margin-top:1.2rem;color:var(--ink-soft)}
-.barcode{
-  height:44px;margin:1rem auto .4rem;max-width:220px;
-  background:repeating-linear-gradient(90deg,
-    var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 8px,
-    var(--ink) 8px 11px,transparent 11px 12px,var(--ink) 12px 13px,transparent 13px 16px,
-    var(--ink) 16px 17px,transparent 17px 19px,var(--ink) 19px 22px,transparent 22px 24px);
-}
-
-/* ---------- projects ---------- */
-.project{border-top:1px solid var(--rule);padding:clamp(3.5rem,9vw,6.5rem) 0}
-.project .wrap{
-  display:grid;grid-template-columns:minmax(0,1fr) 320px;
-  gap:clamp(2rem,6vw,5.5rem);align-items:center;
-}
-h2{font-weight:800;font-size:clamp(2.2rem,4.6vw,3.6rem);line-height:1;letter-spacing:-.02em;margin:0 0 .6rem}
-.meta{color:var(--muted);margin:0 0 1.75rem;font-size:1rem}
-.project p{max-width:58ch}
-h3{font-size:1.3rem;font-weight:700;margin:2.25rem 0 .5rem;letter-spacing:-.005em}
-.project .btn{margin-top:1.25rem}
-.caption{color:var(--muted);font-size:.85rem;text-align:center;margin:.9rem auto 0;max-width:30ch}
-
-/* phones */
-.phone{
-  width:300px;margin:0 auto;border-radius:44px;padding:11px;
-  background:#22252B;box-shadow:0 30px 60px -20px rgba(0,0,0,.55),inset 0 0 0 2px #3A3E46;
-}
-.screen{border-radius:34px;overflow:hidden;min-height:520px;position:relative;font-family:var(--sans)}
-.notch{width:96px;height:26px;border-radius:14px;background:#22252B;margin:9px auto 0}
-
-/* Voucher Kaki screen */
-.vk{background:#F7F7F4;color:#24292B;font-size:.78rem;line-height:1.4}
-.vk-bar{padding:.9rem .9rem .7rem;display:grid;gap:.45rem}
-.vk-search{background:#fff;border:1.5px solid #D9DCD6;border-radius:12px;padding:.6rem .75rem;font-size:.85rem}
-.vk-loc{justify-self:start;background:#E3EFE9;color:#1E5A4C;border-radius:999px;padding:.2rem .65rem;font-weight:600}
-.vk-answer{padding:0 .9rem;margin:.2rem 0 .6rem}
-.vk-fill{margin:0 .9rem .7rem;background:#FFF6DC;border-radius:10px;padding:.55rem .7rem;color:#5B4A18}
-.vk-fill ul{margin:.25rem 0 0;padding-left:1rem}
-.vk-card{display:grid;grid-template-columns:26px 1fr;gap:.6rem;margin:0 .9rem .5rem;background:#fff;border-radius:12px;padding:.65rem;border:1px solid #E4E6E1}
-.vk-num{width:24px;height:24px;border-radius:50%;background:#1E5A4C;color:#fff;display:grid;place-items:center;font-weight:700;font-size:.72rem}
-.vk-card b{display:block;font-size:.84rem}
-.vk-card span{color:#646B6E}
-.vk-card .vk-num{color:#fff}
-.vk-tag{display:inline-block;margin-top:.25rem;background:#EEF0EC;border-radius:6px;padding:.05rem .4rem;font-size:.68rem;color:#3E4446}
-
-/* Lead Time screen */
-.lt{background:#FFFBF4;color:#2B2622;font-size:.78rem;line-height:1.4}
-.lt-top{padding:.85rem .95rem .5rem;display:flex;justify-content:space-between;align-items:baseline}
-.lt-top b{font-size:.95rem}
-.lt-top span{color:#857A70;font-size:.7rem}
-.lt-shop{margin:0 .95rem .6rem;color:#857A70;font-size:.72rem}
-.lt-card{margin:0 .8rem .55rem;background:#fff;border:1px solid #EFE6DA;border-radius:14px;padding:.7rem .75rem}
-.lt-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
-.lt-row b{font-size:.86rem}
-.lt-v{border-radius:999px;padding:.12rem .5rem;font-size:.68rem;font-weight:700;white-space:nowrap}
-.lt-go{background:#DCEFE2;color:#1F6B3B}
-.lt-late{background:#FCEBD0;color:#8A5410}
-.lt-wait{background:#ECE8F4;color:#54477A}
-.lt-why{color:#6E655D;font-size:.7rem;margin-top:.3rem}
-.lt-spark{display:block;width:100%;height:34px;margin-top:.45rem}
-.lt-spark .abroad{fill:none;stroke:#C9A27A;stroke-width:1.6}
-.lt-spark .sg{fill:none;stroke:#2B2622;stroke-width:1.8}
-.lt-key{display:flex;gap:.7rem;color:#857A70;font-size:.64rem;margin-top:.2rem}
-.lt-fit{margin:.55rem 0 0;font-size:.68rem;color:#6E655D}
-.lt-fit .lt-v{margin-right:.3rem}
-.lt-sub{margin:.4rem .95rem .35rem;color:#857A70;font-size:.68rem}
-.lt-chips{display:flex;flex-wrap:wrap;gap:.3rem;margin:0 .8rem}
-.lt-chips span{background:#F3ECE2;border-radius:6px;padding:.1rem .45rem;font-size:.66rem;color:#6E655D}
-.lt-key i{display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:.25rem}
-
-/* Pinch screen */
-.pn{background:#FAF6EE;color:#3A2E25;font-size:.78rem;line-height:1.42}
-.pn-card{margin:.6rem .7rem;background:#FFFDF8;border:1px solid #EADFCC;border-radius:6px;padding:.8rem .85rem;
-  background-image:repeating-linear-gradient(#FFFDF8 0 21px,#EFE6D6 21px 22px);background-position:0 46px}
-.pn-title{font-family:Georgia,serif;font-size:1.05rem;font-weight:700;margin:0 0 .55rem;line-height:1.2}
-.pn-h{font-size:.64rem;color:#8C7A66;text-transform:uppercase;letter-spacing:.06em;margin:.5rem 0 .2rem}
-.pn-ing{list-style:none;margin:0;padding:0}
-.pn-ing li{display:flex;justify-content:space-between;gap:.5rem;padding:.08rem 0}
-.pn-ing .ok{color:#3C6B45;font-weight:700}
-.pn-ing .unk{color:#A0522D;font-style:italic}
-.pn-quote{margin:.35rem 0 0;padding:.35rem .5rem;border-left:3px solid #D9B77E;background:#FBF3E3;font-family:Georgia,serif;font-style:italic;font-size:.74rem}
-.pn-quote small{display:block;font-style:normal;font-family:inherit;color:#8C7A66;font-size:.62rem;margin-top:.1rem}
-.pn-unknown{margin:.5rem 0 0;padding:.45rem .5rem;border:1.5px dashed #C9A07A;border-radius:6px;font-size:.72rem}
-.pn-unknown b{display:block;color:#A0522D;font-size:.68rem;margin-bottom:.1rem}
-
-/* AgentShopper screen */
-.as{background:#F5F6FA;color:#1E2233;font-size:.74rem;line-height:1.4}
-.as-q{margin:.6rem .7rem .5rem;background:#fff;border:1px solid #DDE1EC;border-radius:12px;padding:.55rem .65rem;font-size:.72rem}
-.as-q small{display:block;color:#6B7189;font-size:.62rem;margin-bottom:.15rem}
-.as-cols{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:0 .7rem}
-.as-col{background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.45rem .45rem .35rem}
-.as-col.after{border-color:#5B6CF0;box-shadow:0 0 0 1px #5B6CF0 inset}
-.as-h{font-size:.6rem;font-weight:700;color:#6B7189;margin:0 0 .3rem;text-transform:uppercase;letter-spacing:.04em}
-.as-col.after .as-h{color:#3D4BD1}
-.as-col ol{margin:0;padding-left:1rem}
-.as-col li{margin-bottom:.3rem;font-size:.66rem}
-.as-col li span{display:block;color:#6B7189;font-size:.58rem}
-.as-new{color:#3D4BD1;font-weight:700}
-.as-moved{margin:.5rem .7rem 0;background:#E7EAFE;color:#2C3699;border-radius:8px;padding:.4rem .55rem;font-size:.68rem;font-weight:600}
-.as-score{display:flex;justify-content:space-between;align-items:center;margin:.45rem .7rem 0;background:#fff;border:1px solid #DDE1EC;border-radius:10px;padding:.4rem .55rem;font-size:.66rem}
-.as-score b{font-size:.9rem}
-
-/* ChainCheck screen */
-.cc{background:#F6F5F2;color:#22252A;font-size:.76rem;line-height:1.4}
-.cc-verdict{margin:.7rem .75rem .5rem;background:#B3261E;color:#fff;border-radius:12px;padding:.7rem .8rem}
-.cc-verdict b{display:block;font-size:1.25rem;letter-spacing:.08em}
-.cc-verdict span{font-size:.7rem;opacity:.92}
-.cc-stage{margin:0 .75rem .5rem;background:#fff;border:1px solid #E2E0DA;border-radius:10px;padding:.5rem .6rem}
-.cc-stage small{display:block;color:#6C6A64;font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
-.cc-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
-.cc-steps i{height:6px;border-radius:3px;background:#E2E0DA}
-.cc-steps i.on{background:#B3261E}
-.cc-stage p{margin:.35rem 0 0;font-size:.7rem}
-.cc-flag{display:grid;grid-template-columns:auto 1fr;gap:.45rem;margin:0 .75rem .35rem;background:#fff;border:1px solid #E2E0DA;border-radius:10px;padding:.45rem .55rem;font-size:.68rem}
-.cc-dot{width:9px;height:9px;border-radius:50%;margin-top:.25rem;background:#B3261E}
-.cc-dot.amber{background:#D99A1E}
-.cc-flag b{display:block;font-size:.72rem}
-.cc-next{margin:.45rem .75rem 0;border:1.5px dashed #B3261E;border-radius:10px;padding:.45rem .55rem;font-size:.68rem;color:#7A1A14}
-.cc-next b{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.05em}
-
-/* Clause screen */
-.cl{background:#F4F6F8;color:#1D2733;font-size:.74rem;line-height:1.42}
-.cl-top{display:flex;justify-content:space-between;align-items:baseline;padding:.75rem .85rem .45rem}
-.cl-top b{font-size:.88rem}
-.cl-due{background:#FDECC8;color:#7A4B00;border-radius:999px;padding:.12rem .5rem;font-size:.64rem;font-weight:700}
-.cl-sent{margin:0 .7rem .4rem;background:#fff;border:1px solid #DCE2E8;border-radius:10px;padding:.5rem .6rem}
-.cl-sent mark{background:#DDEBFF;color:inherit;border-radius:3px;padding:0 .1rem}
-.cl-cite{display:block;margin-top:.3rem;color:#2D5FA8;font-size:.62rem;font-weight:600}
-.cl-src{margin:0 .7rem .4rem;background:#FCFCF9;border:1px solid #DCE2E8;border-radius:6px;padding:.5rem .6rem;font-family:Georgia,serif;font-size:.68rem;color:#444C55}
-.cl-src small{display:block;font-family:var(--sans);color:#6A7480;font-size:.58rem;margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.04em}
-.cl-src mark{background:#FFE7A3;color:inherit}
-.cl-fail{margin:0 .7rem;border:1.5px dashed #AEB7C2;border-radius:10px;padding:.45rem .55rem;color:#8A939E;font-size:.68rem}
-.cl-fail s{color:#8A939E}
-.cl-fail b{display:block;color:#A3352B;font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.1rem}
-
-/* Fridge Rescue screen */
-.fr{background:#fff;color:#141414;font:400 .72rem/1.4 var(--mono)}
-.fr-pet{margin:.6rem .7rem .45rem;border:2px solid #141414;padding:.55rem;text-align:center}
-.fr-sprite{display:grid;grid-template-columns:repeat(8,7px);gap:0;justify-content:center;margin:.1rem auto .35rem}
-.fr-sprite i{width:7px;height:7px}
-.fr-sprite i.g{background:#3E8E41}
-.fr-sprite i.d{background:#141414}
-.fr-sprite i.b{background:#8B5A2B}
-.fr-status{font-size:.7rem}
-.fr-xp{font-size:.62rem;color:#555;margin-top:.15rem}
-.fr-box{margin:0 .7rem .4rem;border:2px solid #141414;padding:.45rem .55rem}
-.fr-box b{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem}
-.fr-box ul{list-style:none;margin:0;padding:0}
-.fr-box li{display:flex;justify-content:space-between;font-size:.66rem}
-.fr-box li span:last-child{color:#B3261E}
-.fr-box.donate{background:#F1F7EE}
-.fr-box p{margin:0;font-size:.66rem}
-.fr-act{display:inline-block;margin-top:.35rem;background:#141414;color:#fff;padding:.12rem .45rem;font-size:.62rem}
-
-/* Recall screen */
-.rc{background:#1B2230;color:#E8ECF3;font-size:.8rem;line-height:1.45;padding-bottom:1rem}
-.rc-top{padding:.9rem 1rem .4rem;color:#AEB7C7;font-size:.78rem;text-align:center}
-.rc-charge{margin:.4rem .8rem;background:#273043;border-radius:14px;padding:.85rem}
-.rc-charge b{display:block;font-size:.95rem;letter-spacing:.02em}
-.rc-amt{font-size:1.35rem;font-weight:700;margin:.15rem 0 .35rem}
-.rc-amt small{font-size:.72rem;color:#AEB7C7;font-weight:400}
-.rc-flag{display:inline-block;background:#3A4560;color:#C8D1E2;border-radius:6px;padding:.1rem .45rem;font-size:.68rem}
-.rc-ai{margin:.7rem .8rem;background:#DCE6F7;color:#1B2230;border-radius:14px;padding:.85rem}
-.rc-ai-h{display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:#47536B;margin-bottom:.35rem}
-.rc-conf{background:#C3D2EC;border-radius:6px;padding:.05rem .4rem}
-.rc-chips{display:flex;gap:.35rem;margin-top:.55rem;flex-wrap:wrap}
-.rc-chips span{background:#C3D2EC;border-radius:6px;padding:.08rem .45rem;font-size:.68rem}
-.rc-btns{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.8rem}
-.rc-btns button{
-  font:600 .78rem/1.2 var(--sans);border-radius:12px;padding:.7rem .4rem;cursor:pointer;
-  background:transparent;color:#E8ECF3;border:1.5px solid #E8ECF3;
-}
-.rc-btns button:hover{background:#E8ECF3;color:#1B2230}
-.rc-btns button:focus-visible{outline:2px solid #fff;outline-offset:2px}
-.rc-result{margin:0 .9rem;min-height:3.2em;color:#C8D1E2;font-size:.76rem}
-
-/* ---------- work carousel ---------- */
-.work{border-top:1px solid var(--rule);padding:clamp(3.5rem,8vw,5.5rem) 0 clamp(3rem,7vw,5rem)}
-.work-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.25rem;flex-wrap:wrap;margin-bottom:2rem}
-.work-head h2{margin:0}
-.work-sub{color:var(--muted);margin:.5rem 0 0;font-size:1.05rem}
-.work-controls{display:flex;align-items:center;gap:.6rem}
-.nav-btn{
-  width:48px;height:48px;border-radius:50%;border:2px solid var(--rule);background:transparent;color:var(--chalk);
-  display:grid;place-items:center;cursor:pointer;padding:0;
-}
-.nav-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.nav-btn:hover:not(:disabled){border-color:var(--chalk)}
-.nav-btn:disabled{opacity:.35;cursor:default}
-.all-btn{
-  display:inline-flex;align-items:center;gap:.6rem;margin-left:.4rem;
-  background:var(--chalk);color:var(--table);text-decoration:none;font-weight:800;font-size:1rem;
-  padding:.8rem .8rem .8rem 1.3rem;border-radius:999px;border:2px solid var(--chalk);
-}
-.all-btn .count{
-  background:var(--table);color:var(--chalk);border-radius:999px;min-width:1.8rem;height:1.8rem;
-  display:inline-grid;place-items:center;font-size:.85rem;padding:0 .45rem;
-}
-.all-btn:hover{background:var(--paper);border-color:var(--paper)}
-
-.track{
-  --edge:max(clamp(1.25rem,4vw,3rem), calc((100% - 1160px) / 2 + clamp(1.25rem,4vw,3rem)));
-  list-style:none;margin:0;display:flex;gap:1.25rem;overflow-x:auto;
-  padding:.25rem var(--edge) 1.25rem;scroll-padding-inline:var(--edge);
-  scroll-snap-type:x mandatory;scroll-behavior:smooth;overscroll-behavior-x:contain;
-  scrollbar-width:none;cursor:grab;
-}
-.track::-webkit-scrollbar{display:none}
-.track.dragging{scroll-snap-type:none;scroll-behavior:auto;cursor:grabbing;user-select:none}
-.track:focus-visible{outline-offset:-3px}
-.card{
-  flex:0 0 auto;width:min(860px,82vw);scroll-snap-align:start;
-  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(1.5rem,4vw,3rem);align-items:center;
-  background:#1D4840;border:1px solid var(--rule);border-radius:24px;
-  padding:clamp(1.5rem,3.5vw,2.75rem);
-}
-.card-meta{color:var(--muted);font-size:.95rem;margin:0 0 .5rem}
-.card-title{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1;letter-spacing:-.02em;margin:0 0 1rem}
-.card-sum{margin:0 0 1rem;max-width:46ch}
-.card-decision{margin:0 0 1.5rem;max-width:46ch;color:var(--muted)}
-.card-decision b{color:var(--chalk)}
-.card-links{display:flex;flex-wrap:wrap;gap:.6rem}
-.card-shot .phone{zoom:.72;margin:0;box-shadow:0 24px 40px -18px rgba(0,0,0,.6),inset 0 0 0 2px #3A3E46}
-.rc-btns span{font:600 .78rem/1.2 var(--sans);border-radius:12px;padding:.7rem .4rem;border:1.5px solid #E8ECF3;text-align:center}
-.card.more{
-  width:min(320px,72vw);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
-  background:transparent;border:2px dashed var(--rule);
-}
-.more-title{font-size:1.6rem;font-weight:800;margin:0 0 .5rem;letter-spacing:-.01em}
-.more-sub{color:var(--muted);margin:0 0 1.5rem}
-
-.work-foot{display:flex;align-items:center;gap:1rem;margin-top:.5rem}
-.counter{margin:0;color:var(--muted);font-size:.95rem;white-space:nowrap}
-.progress{flex:1;max-width:240px;height:3px;background:var(--rule);border-radius:3px;overflow:hidden}
-.progress span{display:block;height:100%;width:50%;background:var(--chalk);border-radius:3px;transition:width .3s}
-
-@media (max-width:720px){
-  .work-head{align-items:center}
-  .work-head > div:first-child{flex:1}
-  .work-sub{display:none}
-  .nav-btn{display:none}
-  .all-btn{margin-left:0;font-size:.95rem}
-  .card{width:86vw;grid-template-columns:1fr;align-items:start}
-  .card-shot{order:-1;height:210px;overflow:hidden;border-radius:16px;margin:-.25rem -.25rem 0;background:#163B34;display:flex;justify-content:center;padding-top:16px}
-  .card-shot .phone{zoom:.62}
-  .card.more{width:70vw}
-}
-
-/* ---------- principles + about ---------- */
-.band{border-top:1px solid var(--rule);padding:clamp(3.5rem,9vw,6rem) 0}
-.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2rem,6vw,5rem)}
-.band h2{font-size:clamp(1.9rem,3.6vw,2.7rem);margin-bottom:1.5rem}
-.rules{list-style:none;margin:0;padding:0}
-.rules li{padding:.95rem 0;border-bottom:1px solid var(--rule);max-width:44ch}
-.rules li:first-child{border-top:1px solid var(--rule)}
-.about p{max-width:46ch;margin:0 0 1.1rem}
-.about p.soft{color:var(--muted)}
-
-footer{border-top:1px solid var(--rule);padding:2.5rem 0 3rem;color:var(--muted);font-size:.95rem}
-footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-footer .bye{font-family:var(--mono);color:var(--chalk)}
-
-/* ---------- responsive ---------- */
-@media (max-width:880px){
-  .hero,.project .wrap,.two{grid-template-columns:1fr}
-  .printer{justify-self:start}
-  .phone{margin:0}
-  .caption{text-align:left;margin-left:0}
-}
-@media (max-width:360px){
-  .phone{width:100%}
-}
-@media (prefers-reduced-motion:reduce){
-  .receipt.printing{animation:none}
-  html{scroll-behavior:auto}
-}
-
-/* ---------- all projects page ---------- */
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-top:1.5rem;padding-bottom:1.5rem}
-.home-link{font-family:var(--mono);font-weight:600;font-size:1.1rem;text-decoration:none}
-.back-btn{display:inline-flex;align-items:center;gap:.45rem;text-decoration:none;font-weight:700;font-size:.95rem;border:2px solid var(--rule);border-radius:999px;padding:.55rem 1.1rem .55rem .85rem}
-.back-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.back-btn:hover{border-color:var(--chalk)}
-.intro{padding:clamp(2.5rem,7vw,5rem) 0 clamp(2.5rem,6vw,4rem)}
-.intro h1{max-width:none;margin-bottom:1rem}
-.intro .lede{margin:0 0 2.5rem}
-.ledger{width:100%;border-collapse:collapse;font-size:1rem}
-.ledger th{text-align:left;font-weight:500;color:var(--muted);padding:0 1rem .7rem 0;border-bottom:1px solid var(--chalk)}
-.ledger td{padding:1rem 1rem 1rem 0;border-bottom:1px solid var(--rule);vertical-align:baseline}
-.ledger td a{font-weight:800;font-size:1.25rem;text-decoration:none}
-.ledger td a:hover{text-decoration:underline}
-.note{color:var(--muted);font-size:.85rem;margin:.6rem 0 0}
-.ledger .num{font-family:var(--mono);color:var(--muted);font-size:.9rem}
-@media (max-width:640px){
-  .ledger thead{position:absolute;left:-999px}
-  .ledger tr{display:grid;grid-template-columns:auto 1fr;column-gap:.8rem;padding:.9rem 0;border-bottom:1px solid var(--rule)}
-  .ledger td{border:0;padding:.1rem 0}
-  .ledger td:nth-child(3),.ledger td:nth-child(4){grid-column:2;color:var(--muted);font-size:.95rem}
-}
-</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;700;800;900&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;700;800;900&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/site.css">
+<script>document.documentElement.classList.add('js')</script>
+<script src="/assets/site.js" defer></script>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+</svg>
+<a class="skip" href="#ledger">Skip to the projects</a>
 
-<div class="wrap topbar">
-  <a class="home-link" href="index.html">drunkwiz</a>
-  <a class="back-btn" href="index.html#work"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Back to home</a>
-</div>
+<div class="wrap">
+  <div class="bar">
+    <a class="home" href="/">drunkwiz</a>
+    <nav aria-label="Site">
+      <a href="/"><svg class="ico" aria-hidden="true"><use href="#i-left"/></svg>Home</a>
+      <a href="https://github.com/DrunkWiz">GitHub<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+    </nav>
+  </div>
 
-<header class="wrap intro">
-  <h1>All projects</h1>
-  <p class="lede">Everything I've built so far, results first, each with the decision that shaped it.</p>
-  <!-- To add a project: add a row here, and a <section class="project"> below. -->
-  <table class="ledger">
-    <thead><tr><th scope="col">Year</th><th scope="col">Project</th><th scope="col">Event</th><th scope="col">Result</th></tr></thead>
+  <header class="intro">
+    <p class="eyebrow">Receipt, itemised</p>
+    <h1>All projects</h1>
+    <p class="sub">Results first. Each one with a real screen, what I built, and the decision that shaped it.</p>
+  </header>
+
+  <!-- To add a project: add a row here and an <article class="feat"> below. If it placed, add it to the receipt on index.html too; otherwise bump "+N more" there. -->
+  <table class="ledger" id="ledger">
+    <caption>The ledger</caption>
+    <thead><tr><th scope="col">Result</th><th scope="col">Project</th><th scope="col" class="ev">Event</th><th scope="col" class="stk">Stack</th></tr></thead>
     <tbody>
-      <tr><td class="num">2026</td><td><a href="#lead-time">Lead Time</a></td><td>ForgeHacks Online, Business + AI track</td><td>Track winner</td></tr>
-      <tr><td class="num">2026</td><td><a href="#recall">Recall</a></td><td>American Express AI Hackathon</td><td>2nd place</td></tr>
-      <tr><td class="num">2026</td><td><a href="#voucher-kaki">Voucher Kaki</a></td><td>SimplifyNext IGNITE Agentic AI Hackathon</td><td>Finalist</td></tr>
-      <tr><td class="num">2026</td><td><a href="#pinch">Pinch</a></td><td>Build With AI: Basics (Devpost)</td><td>Submitted</td></tr>
-      <tr><td class="num">2026</td><td><a href="#agentshopper">AgentShopper</a></td><td>NUS LifeHack (Rezolve AI challenge)</td><td>Submitted</td></tr>
-      <tr><td class="num">2026</td><td><a href="#chaincheck">ChainCheck</a></td><td>WarriorHacks 2.0</td><td>Submitted</td></tr>
-      <tr><td class="num">2026</td><td><a href="#clause">Clause</a></td><td>ML Build Challenge 3 (Devpost)</td><td>Submitted</td></tr>
-      <tr><td class="num">2026</td><td><a href="#fridge-rescue">Fridge Rescue</a></td><td>RevenueCat Shipaton</td><td>Submitted</td></tr>
+      <tr><td class="res placed">Track winner</td><td><a href="#lead-time">Lead Time</a></td><td class="ev">ForgeHacks Online 2026, Business + AI track</td><td class="stk">Python · React · Qwen · Gemini</td></tr>
+      <tr><td class="res placed">2nd place</td><td><a href="#recall">Recall</a></td><td class="ev">American Express AI Hackathon 2026</td><td class="stk">LLM + verifier · rules engine</td></tr>
+      <tr><td class="res placed">Finalist</td><td><a href="#voucher-kaki">Voucher Kaki</a></td><td class="ev">SimplifyNext IGNITE Agentic AI Hackathon 2026</td><td class="stk">React · Leaflet · OneMap</td></tr>
+      <tr><td class="res">Submitted</td><td><a href="#agentshopper">AgentShopper</a></td><td class="ev">NUS LifeHack 2026, Rezolve AI challenge</td><td class="stk">Python · Streamlit · OpenAI</td></tr>
+      <tr><td class="res">Submitted</td><td><a href="#pinch">Pinch</a></td><td class="ev">Build With AI: Basics 2026 (Devpost)</td><td class="stk">React · Express · Gemini</td></tr>
+      <tr><td class="res">Submitted</td><td><a href="#chaincheck">ChainCheck</a></td><td class="ev">WarriorHacks 2.0, 2026</td><td class="stk">Python · React · Gemini</td></tr>
+      <tr><td class="res">Submitted</td><td><a href="#clause">Clause</a></td><td class="ev">ML Build Challenge 3, 2026 (Devpost)</td><td class="stk">Python · React · pdf.js · Gemini</td></tr>
+      <tr><td class="res">Submitted</td><td><a href="#fridge-rescue">Fridge Rescue</a></td><td class="ev">RevenueCat Shipaton 2026</td><td class="stk">Expo · React Native · Claude</td></tr>
     </tbody>
   </table>
-</header>
 
-<main>
-  <section class="project" id="lead-time" aria-labelledby="lt-title">
-    <div class="wrap">
+  <main>
+    <article class="feat" id="lead-time" aria-labelledby="lt-h">
+      <span class="stamp" data-thunk>Track winner<small>ForgeHacks 2026</small></span>
       <div>
-        <h2 id="lt-title">Lead Time</h2>
-        <p class="meta">Winner of the Business + AI track at ForgeHacks Online 2026. Solo build.</p>
-        <p>Food trends usually blow up overseas first. Lead Time watches weekly search interest for 22 foods across seven markets, works out how long each one has historically taken to reach Singapore, and tells a small food business which trends are heading its way. For each food it gives a verdict (Go, Go but late, Wait and watch, or Skip), checks whether the kitchen can actually make it, and then helps with the launch: a suggested price and margin, when to bulk order, a launch offer with its break-even, and a dated posting plan.</p>
-        <h3>It grades its own forecasts</h3>
-        <p>Every calculation takes an "as of" date, and a test makes sure no future data leaks in, so the app can be rewound to any past week and checked against what really happened. The results aren't flattering, and the app shows them anyway. Of 4 arrival forecasts that could be strictly checked, 1 fell inside its window. For Korean yogurt ice cream, the window was 19 weeks too early. When past arrivals are too uneven, it says "Wait and watch" instead of inventing a date.</p>
-        <h3>The model doesn't get the last word</h3>
-        <p>An open model judges what the kitchen can make and drafts the launch copy, but every answer is schema-checked. Anything with dates, links, quantities or popularity claims the data doesn't support is rejected and rewritten. All the numbers come from plain Python, and if every model is down, labelled offline rules take over.</p>
-        <a class="btn" href="https://lead-time-cjnn.onrender.com">Try Lead Time</a>
+        <p class="meta">ForgeHacks Online 2026 &middot; Business + AI track &middot; Solo build</p>
+        <h2 class="ttl" id="lt-h">Lead Time</h2>
+        <p class="pitch">Tells small food businesses which overseas food trends are heading to Singapore, and whether their kitchen can make them.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>Arrival forecasts for 22 foods across 7 markets, from Google Trends</li>
+          <li>A rewindable back-test that publishes its own misses: 1 of 4 forecasts landed</li>
+          <li>Launch plans with price, stock and posting dates; every model answer schema-checked</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Python stdlib</li><li>React</li><li>Vite</li><li>Qwen</li><li>Gemini</li><li>pytrends</li><li>Docker</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://lead-time-cjnn.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="https://github.com/DrunkWiz/lead-time">Code<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+        </div>
+      </div>
+      <figure class="shot">
+        <div class="browser">
+          <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>lead-time-cjnn.onrender.com</span></div>
+          <div class="screen"><img src="assets/shots/lead-time.webp" width="1280" height="1850" loading="lazy" decoding="async" alt="Lead Time overview for an example dessert café: 22 foods on the radar, and sea salt coffee flagged as coming soon with a US-versus-Singapore trend chart."></div>
+        </div>
+        <figcaption>Live screen &middot; hover to scroll</figcaption>
+      </figure>
+      <div class="story">
+        <p class="lead">Food trends usually blow up overseas first. Lead Time watches weekly search interest for 22 foods across seven markets, works out how long each one has historically taken to reach Singapore, and tells a small food business which trends are heading its way. For each food it gives a verdict (Go, Go but late, Wait and watch, or Skip), checks whether the kitchen can actually make it, and then helps with the launch: a suggested price and margin, when to bulk order, a launch offer with its break-even, and a dated posting plan.</p>
+        <div>
+          <h3 class="story-h">It grades its own forecasts</h3>
+          <p>Every calculation takes an "as of" date, and a test makes sure no future data leaks in, so the app can be rewound to any past week and checked against what really happened. The results aren't flattering, and the app shows them anyway. Of 4 arrival forecasts that could be strictly checked, 1 fell inside its window. For Korean yogurt ice cream, the window was 19 weeks too early. When past arrivals are too uneven, it says "Wait and watch" instead of inventing a date.</p>
+        </div>
+        <div>
+          <h3 class="story-h">The model doesn't get the last word</h3>
+          <p>An open model judges what the kitchen can make and drafts the launch copy, but every answer is schema-checked. Anything with dates, links, quantities or popularity claims the data doesn't support is rejected and rewritten. All the numbers come from plain Python, and if every model is down, labelled offline rules take over.</p>
+        </div>
         <p class="note">Runs on a free server, so the first load can take up to a minute.</p>
       </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen lt">
-              <div class="notch"></div>
-              <div class="lt-top"><b>Heading your way</b><span>as of 3 Oct</span></div>
-              <p class="lt-shop">Example: Block 216 Dessert Café</p>
-              <div class="lt-card">
-                <div class="lt-row"><b>Sea salt coffee</b><span class="lt-v lt-late">Coming soon</span></div>
-                <p class="lt-why">Taking off in the US since March. Past foods reached Singapore 3 weeks to 14 months later, so watch it rather than bet on a date.</p>
-                <svg class="lt-spark" viewBox="0 0 200 34" preserveAspectRatio="none"><polyline class="abroad" points="0,31 40,30 70,29 90,22 110,14 135,9 160,7 200,6"/><polyline class="sg" points="0,32 50,32 100,31 150,31 200,30"/></svg>
-                <div class="lt-key"><span><i style="background:#C9A27A"></i>US</span><span><i style="background:#2B2622"></i>Singapore</span></div>
-                <p class="lt-fit"><span class="lt-v lt-go">You can make it</span> Espresso machine, fridge, blender.</p>
-              </div>
-              <p class="lt-sub">Already peaked here</p>
-              <div class="lt-chips"><span>Dubai chocolate</span><span>Dubai chewy cookie</span><span>Tanghulu</span><span>Korean salt bread</span></div>
-            </div>
-        </div>
-        <figcaption class="caption">The overview for the app's example dessert café, from the 3 Oct 2026 data snapshot.</figcaption>
-      </figure>
-    </div>
-  </section>
+    </article>
 
-  <section class="project" id="recall" aria-labelledby="rc-title">
-    <div class="wrap">
+    <article class="feat flip" id="recall" aria-labelledby="rc-h">
+      <span class="stamp" data-thunk>2nd place<small>Amex AI Hackathon</small></span>
       <div>
-        <h2 id="rc-title">Recall</h2>
-        <p class="meta">2nd place, American Express AI Hackathon 2026.</p>
-        <p>When a card member doesn't recognise a charge and the merchant shares nothing about it, Recall rebuilds the memory from their own card history: the flight, the hotel, the trip that charge belongs to. It picks up where merchant-supplied details run out, which is most of the long tail of small shops.</p>
-        <h3>The model is never allowed to be sure</h3>
-        <p>The worst thing Recall could do is talk someone out of reporting real fraud. So the model only proposes. Every claim has to cite a real transaction, a second model from a different family checks it, and plain rules code makes every decision that touches money. When the history is too thin, Recall shows the raw details and says nothing at all. Silence is always an acceptable answer.</p>
+        <p class="meta">American Express AI Hackathon 2026</p>
+        <h2 class="ttl" id="rc-h">Recall</h2>
+        <p class="pitch">Helps card members recognise charges they&rsquo;ve forgotten, without ever being sure on their behalf.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>Rebuilds the trip behind an unfamiliar charge from the member&rsquo;s own history</li>
+          <li>Every claim cites a real transaction and is checked by a second model family</li>
+          <li>Rules code makes every decision that touches money; silence is a valid answer</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>LLM proposer</li><li>Cross-family verifier</li><li>Rules engine</li></ul>
       </div>
-      <figure style="margin:0">
+      <figure class="shot">
         <div class="phone">
-          <div class="screen rc">
-            <div class="notch" aria-hidden="true"></div>
-            <div class="rc-top">Transaction details</div>
-            <div class="rc-charge">
-              <b>SATS PARK PTE</b>
-              <div class="rc-amt">$14.50 <small>SGD, 14 Jun</small></div>
-              <span class="rc-flag">Unfamiliar merchant</span>
+          <div class="screen" role="img" aria-label="Illustration of Recall: an unfamiliar SATS PARK charge of 14.50 dollars, matched with moderate confidence to an airport-parking trip.">
+            <div class="rc" aria-hidden="true">
+              <div class="rc-top">Transaction details</div>
+              <div class="rc-charge"><b>SATS PARK PTE</b><div class="rc-amt">$14.50 <small>SGD, 14 Jun</small></div><span class="rc-flag">Unfamiliar merchant</span></div>
+              <div class="rc-ai"><div class="rc-ai-h"><span>Possible match</span><span class="rc-conf">Moderate confidence</span></div>This looks like airport parking at Changi T3, the same trip as your flight booking on 12 Jun and your hotel charge in Bangkok.<div class="rc-chips"><span>Flight, 12 Jun</span><span>Hotel, Bangkok</span></div></div>
+              <div class="rc-btns"><span>Yes, this was me</span><span>This isn&rsquo;t mine</span></div>
+              <p class="rc-note">Both buttons carry equal weight on purpose.</p>
             </div>
-            <div class="rc-ai">
-              <div class="rc-ai-h"><span>Possible match</span><span class="rc-conf">Moderate confidence</span></div>
-              This looks like airport parking at Changi T3, the same trip as your flight booking on 12 Jun and your hotel charge in Bangkok.
-              <div class="rc-chips"><span>Flight, 12 Jun</span><span>Hotel, Bangkok</span></div>
-            </div>
-            <div class="rc-btns">
-              <button type="button" data-answer="yes">Yes, this was me</button>
-              <button type="button" data-answer="no">This isn't mine</button>
-            </div>
-            <p class="rc-result" role="status" aria-live="polite"></p>
           </div>
         </div>
-        <figcaption class="caption">The card member's view. Try both buttons: they carry equal weight on purpose.</figcaption>
+        <figcaption class="ill">&#9998; Illustration &middot; no public demo</figcaption>
       </figure>
-    </div>
-  </section>
-
-  <section class="project" id="voucher-kaki" aria-labelledby="vk-title">
-    <div class="wrap">
-      <div>
-        <h2 id="vk-title">Voucher Kaki</h2>
-        <p class="meta">Finalist, SimplifyNext IGNITE Agentic AI Hackathon 2026. Built with a team of four.</p>
-        <p>Say or type what you feel like eating, in English, 中文, Bahasa Melayu or தமிழ், and Voucher Kaki finds CDC-voucher eateries near you. Results are ranked by relevance and walking distance, with a deliberate nudge toward independent shops over chains. When it has to widen the search to fill the list, it tells you what it gave up instead of quietly showing worse matches.</p>
-        <h3>The best decision was a deletion</h3>
-        <p>We built Google ratings into every result, then took them out. Many of the small shops in our data have no Google listing at all, so a ratings line would put a 4.5 with 800 reviews next to a blank. Someone choosing lunch on a phone picks the number. The whole point of the app is to surface the places people overlook, and a half-empty ratings column would have pushed them straight back to the famous ones.</p>
-        <a class="btn" href="https://simplify-ai-hackathon.vercel.app">Try Voucher Kaki</a>
+      <div class="story">
+        <p class="lead">When a card member doesn't recognise a charge and the merchant shares nothing about it, Recall rebuilds the memory from their own card history: the flight, the hotel, the trip that charge belongs to. It picks up where merchant-supplied details run out, which is most of the long tail of small shops.</p>
+        <div>
+          <h3 class="story-h">The model is never allowed to be sure</h3>
+          <p>The worst thing Recall could do is talk someone out of reporting real fraud. So the model only proposes. Every claim has to cite a real transaction, a second model from a different family checks it, and plain rules code makes every decision that touches money. When the history is too thin, Recall shows the raw details and says nothing at all. Silence is always an acceptable answer.</p>
+        </div>
       </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen vk">
-            <div class="notch"></div>
-            <div class="vk-bar">
-              <div class="vk-search">dim sum supper</div>
-              <span class="vk-loc">Yishun</span>
-            </div>
-            <p class="vk-answer">Here are dim sum places near Yishun that take CDC vouchers.</p>
-            <div class="vk-fill">To fill this list I:
-              <ul><li>widened to 1.5 km</li><li>widened to 3 km</li><li>included places not tagged for supper</li></ul>
-            </div>
-            <div class="vk-card"><span class="vk-num">1</span><div><b>Dim Sum Corner</b><span>6 min walk, 420 m</span><br><span class="vk-tag">Independent</span></div></div>
-            <div class="vk-card"><span class="vk-num">2</span><div><b>Supper House Kopitiam</b><span>14 min walk, 1.1 km</span><br><span class="vk-tag">Independent</span></div></div>
-            <div class="vk-card"><span class="vk-num">3</span><div><b>Golden Bamboo Eating House</b><span>Bus or 28 min walk, 2.2 km</span></div></div>
-          </div>
-        </div>
-        <figcaption class="caption">Illustration of a late-night search in Yishun.</figcaption>
-      </figure>
-    </div>
-  </section>
+    </article>
 
-  <section class="project" id="pinch" aria-labelledby="pn-title">
-    <div class="wrap">
+    <article class="feat" id="voucher-kaki" aria-labelledby="vk-h">
+      <span class="stamp" data-thunk>Finalist<small>SimplifyNext IGNITE</small></span>
       <div>
-        <h2 id="pn-title">Pinch</h2>
-        <p class="meta">Submitted to Build With AI: Basics 2026 on Devpost. Solo build.</p>
-        <p>Family recipes often live only in someone&rsquo;s head, written down as &ldquo;a pinch&rdquo; or &ldquo;until it smells right&rdquo;. Most recipe apps record first and sort it out afterwards, and by the time they notice an amount is vague, the cook has left the kitchen. Pinch asks during the cooking. After each step, it either stays quiet because the step is clear, or asks one follow-up question, out loud and in big text. At the end you get a printable, notebook-style card with her words, her reasons, and an honest &ldquo;Still unknown&rdquo; list.</p>
-        <h3>It never guesses an amount</h3>
-        <p>Gemini decides what to ask. Plain server code checks every amount, number and quote on the card against what the cook actually said. Anything it can&rsquo;t trace back to her words becomes &ldquo;amount unknown&rdquo; and goes on the Still unknown list, so the card never invents a measurement she didn&rsquo;t give.</p>
-        <h3>Questions are rationed on purpose</h3>
-        <p>Nobody wants to be interrupted every ten seconds while cooking. Pinch allows at most one question per step and three per session, and that limit is enforced by the app, not left to the model. If the AI service is down, it falls back to notes mode, which still saves her exact words without filling anything in.</p>
-        <a class="btn" href="https://pinch-htpl.onrender.com">Try Pinch</a>
+        <p class="meta">SimplifyNext IGNITE Agentic AI Hackathon 2026 &middot; Team of four</p>
+        <h2 class="ttl" id="vk-h">Voucher Kaki</h2>
+        <p class="pitch">Finds CDC-voucher eateries near you, typed or spoken, in four languages.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>Search in English, <span lang="zh">中文</span>, Bahasa Melayu and <span lang="ta">தமிழ்</span>, by text or voice</li>
+          <li>Ranking by relevance and walking distance, with a lift for local-owned shops</li>
+          <li>Says what it gave up whenever it has to widen a search</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>React</li><li>Vite</li><li>Leaflet</li><li>OneMap</li><li>Web Speech</li><li>Vercel</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://simplify-ai-hackathon.vercel.app">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+        </div>
+      </div>
+      <figure class="shot">
+        <div class="phone">
+          <div class="screen"><img src="assets/shots/voucher-kaki.webp" width="560" height="2513" loading="lazy" decoding="async" alt="Voucher Kaki on a phone: a chicken rice search near Yishun, with filters and the nearest local-owned hawker stalls that take Heartland vouchers."></div>
+        </div>
+        <figcaption>Live screen &middot; hover to scroll</figcaption>
+      </figure>
+      <div class="story">
+        <p class="lead">Say or type what you feel like eating, in English, <span lang="zh">中文</span>, Bahasa Melayu or <span lang="ta">தமிழ்</span>, and Voucher Kaki finds CDC-voucher eateries near you. Results are ranked by relevance and walking distance, with a deliberate nudge toward independent shops over chains. When it has to widen the search to fill the list, it tells you what it gave up instead of quietly showing worse matches.</p>
+        <div>
+          <h3 class="story-h">The best decision was a deletion</h3>
+          <p>We built Google ratings into every result, then took them out. Many of the small shops in our data have no Google listing at all, so a ratings line would put a 4.5 with 800 reviews next to a blank. Someone choosing lunch on a phone picks the number. The whole point of the app is to surface the places people overlook, and a half-empty ratings column would have pushed them straight back to the famous ones.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="feat" id="agentshopper" aria-labelledby="as-h">
+      <span class="stamp sm" data-thunk>Shipped<small>NUS LifeHack 2026</small></span>
+      <div>
+        <p class="meta">NUS LifeHack 2026 &middot; Rezolve AI challenge &middot; Team of three, I led engineering and AI reasoning</p>
+        <h2 class="ttl" id="as-h">AgentShopper</h2>
+        <p class="pitch">Makes a product catalogue readable to AI shopping assistants, then proves it worked.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>Reads CSV, Excel, Shopify JSON and scanned PDFs into verified facts</li>
+          <li>Searches the same catalogue before and after, side by side</li>
+          <li>Every generated claim cites a fact; budgets are enforced in code</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Python</li><li>Streamlit</li><li>GPT-4o mini</li><li>OpenAI embeddings</li><li>NumPy</li><li>pdfplumber</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://agentshopper.streamlit.app/">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="https://github.com/DrunkWiz/lifehack-2026">Code<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+        </div>
+      </div>
+      <figure class="shot">
+        <div class="browser">
+          <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>agentshopper.streamlit.app</span></div>
+          <div class="screen fit"><img src="assets/shots/agentshopper.webp" width="1100" height="778" loading="lazy" decoding="async" alt="AgentShopper before-and-after search: three products go from not surfaced at all to ranks 1, 2 and 3, each answer citing product facts."></div>
+        </div>
+        <figcaption>Screen from the repo</figcaption>
+      </figure>
+      <div class="story">
+        <p class="lead">People are starting to shop by asking an AI assistant instead of typing into a search box. A question like &ldquo;lightweight shoes for a half marathon in humid weather, under S$200&rdquo; needs facts most product pages never state, so those products quietly never get recommended. AgentShopper takes a catalogue file (CSV, Excel, Shopify JSON or even a scanned PDF), scores how ready it is for AI shoppers, lists exactly which facts are missing, and writes content for each product: who it suits, who it doesn&rsquo;t, and how it compares with the real products beside it.</p>
+        <div>
+          <h3 class="story-h">It has to prove it worked</h3>
+          <p>Instead of claiming the new content is better, the app searches the catalogue twice, once with the original content and once with the new, over exactly the same products, and puts the two result lists side by side. Hard requirements like a S$200 budget are enforced in code, so the AI can&rsquo;t talk a S$219 shoe into the results.</p>
+        </div>
+        <div>
+          <h3 class="story-h">A made-up spec can&rsquo;t get in</h3>
+          <p>Every fact the AI extracts has to appear word for word in that product&rsquo;s own text, or it&rsquo;s thrown away. Every claim in the written content has to cite a real fact, a second, stricter pass checks the evidence actually supports it, and anything that fails is flagged for human review instead of published. If a product has no verified facts at all, the app writes nothing and says so.</p>
+        </div>
+        <p class="note">The two built-in demo catalogues, running shoes and facial skincare, work without uploading anything. The app sleeps when idle; press its wake-up button and give it a minute.</p>
+      </div>
+    </article>
+
+    <article class="feat flip" id="pinch" aria-labelledby="pn-h">
+      <span class="stamp sm" data-thunk>Shipped<small>Build With AI 2026</small></span>
+      <div>
+        <p class="meta">Build With AI: Basics 2026 on Devpost &middot; Solo build</p>
+        <h2 class="ttl" id="pn-h">Pinch</h2>
+        <p class="pitch">Interviews your grandparent while they cook and never guesses an amount.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>Records each step and asks at most one follow-up, out loud</li>
+          <li>Server code traces every amount on the card to the cook&rsquo;s own words</li>
+          <li>A printable recipe card with an honest &ldquo;Still unknown&rdquo; list</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>React</li><li>Vite</li><li>Node</li><li>Express</li><li>Gemini</li><li>Web Audio</li><li>Vitest</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://pinch-htpl.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="https://github.com/DrunkWiz/pinch">Code<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+        </div>
+      </div>
+      <figure class="shot">
+        <div class="phone">
+          <div class="screen"><img src="assets/shots/pinch.webp" width="375" height="1154" loading="lazy" decoding="async" alt="A Pinch recipe card for Sunday pancakes: amounts marked as clarified by the cook, her exact words quoted, and butter listed under Still unknown."></div>
+        </div>
+        <figcaption>Screen from the repo &middot; hover to scroll</figcaption>
+      </figure>
+      <div class="story">
+        <p class="lead">Family recipes often live only in someone&rsquo;s head, written down as &ldquo;a pinch&rdquo; or &ldquo;until it smells right&rdquo;. Most recipe apps record first and sort it out afterwards, and by the time they notice an amount is vague, the cook has left the kitchen. Pinch asks during the cooking. After each step, it either stays quiet because the step is clear, or asks one follow-up question, out loud and in big text. At the end you get a printable, notebook-style card with her words, her reasons, and an honest &ldquo;Still unknown&rdquo; list.</p>
+        <div>
+          <h3 class="story-h">It never guesses an amount</h3>
+          <p>Gemini decides what to ask. Plain server code checks every amount, number and quote on the card against what the cook actually said. Anything it can&rsquo;t trace back to her words becomes &ldquo;amount unknown&rdquo; and goes on the Still unknown list, so the card never invents a measurement she didn&rsquo;t give.</p>
+        </div>
+        <div>
+          <h3 class="story-h">Questions are rationed on purpose</h3>
+          <p>Nobody wants to be interrupted every ten seconds while cooking. Pinch allows at most one question per step and three per session, and that limit is enforced by the app, not left to the model. If the AI service is down, it falls back to notes mode, which still saves her exact words without filling anything in.</p>
+        </div>
         <p class="note">Runs on a free server, so the first load can take up to a minute. The built-in demo works without a microphone.</p>
       </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen pn">
-              <div class="notch"></div>
-              <div class="pn-card">
-                <p class="pn-title">Betty&rsquo;s Sunday pancakes</p>
-                <p class="pn-h">Ingredients</p>
-                <ul class="pn-ing">
-                  <li><span>Flour</span><span>1 cup</span></li>
-                  <li><span>Egg</span><span>1</span></li>
-                  <li><span>Milk</span><span class="ok">about &frac34; cup &#10003;</span></li>
-                  <li><span>Butter, for the pan</span><span class="unk">amount unknown</span></li>
-                </ul>
-                <p class="pn-quote">&ldquo;About &frac34; cup. Just enough so it runs off the spoon.&rdquo;<small>She clarified, when asked how much a splash is</small></p>
-                <p class="pn-quote">&ldquo;The first one is always for the cook.&rdquo;<small>Her words</small></p>
-                <div class="pn-unknown"><b>Still unknown</b>Butter amount. She said &ldquo;a little butter in the pan&rdquo;. Ask Betty next time.</div>
-              </div>
-            </div>
-        </div>
-        <figcaption class="caption">The app&rsquo;s example card. The butter amount was never said, so it stays unknown.</figcaption>
-      </figure>
-    </div>
-  </section>
+    </article>
 
-  <section class="project" id="agentshopper" aria-labelledby="as-title">
-    <div class="wrap">
+    <article class="feat" id="chaincheck" aria-labelledby="cc-h">
+      <span class="stamp sm" data-thunk>Shipped<small>WarriorHacks 2.0</small></span>
       <div>
-        <h2 id="as-title">AgentShopper</h2>
-        <p class="meta">NUS LifeHack 2026, Rezolve AI challenge. Built with a team of three; I led the engineering and AI reasoning.</p>
-        <p>People are starting to shop by asking an AI assistant instead of typing into a search box. A question like &ldquo;lightweight shoes for a half marathon in humid weather, under S$200&rdquo; needs facts most product pages never state, so those products quietly never get recommended. AgentShopper takes a catalogue file (CSV, Excel, Shopify JSON or even a scanned PDF), scores how ready it is for AI shoppers, lists exactly which facts are missing, and writes content for each product: who it suits, who it doesn&rsquo;t, and how it compares with the real products beside it.</p>
-        <h3>It has to prove it worked</h3>
-        <p>Instead of claiming the new content is better, the app searches the catalogue twice, once with the original content and once with the new, over exactly the same products, and puts the two result lists side by side. Hard requirements like a S$200 budget are enforced in code, so the AI can&rsquo;t talk a S$219 shoe into the results.</p>
-        <h3>A made-up spec can&rsquo;t get in</h3>
-        <p>Every fact the AI extracts has to appear word for word in that product&rsquo;s own text, or it&rsquo;s thrown away. Every claim in the written content has to cite a real fact, a second, stricter pass checks the evidence actually supports it, and anything that fails is flagged for human review instead of published. If a product has no verified facts at all, the app writes nothing and says so.</p>
-        <a class="btn" href="https://agentshopper.streamlit.app/">Try AgentShopper</a>
-        <p class="note">The two built-in demo catalogues, running shoes and facial skincare, work without uploading anything.</p>
+        <p class="meta">WarriorHacks 2.0, 2026 &middot; Solo build</p>
+        <h2 class="ttl" id="cc-h">ChainCheck</h2>
+        <p class="pitch">Checks an investment offer against the scam playbook and never calls anything safe.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>In-browser OCR, so screenshots never leave the phone</li>
+          <li>Rule-based verdict and playbook stage; the model can only add flags</li>
+          <li>Prompt-injection tests against a hijacked fake model</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Python</li><li>React</li><li>Vite</li><li>Gemini</li><li>OCR</li><li>pytest</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://chaincheck-dxj5.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="https://github.com/DrunkWiz/chaincheck">Code<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+        </div>
       </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen as">
-              <div class="notch"></div>
-              <div class="as-q"><small>Ask like a shopper</small>&ldquo;Training for a half marathon in Singapore&rsquo;s humid weather. Lightweight shoes under S$200.&rdquo;</div>
-              <div class="as-cols">
-                <div class="as-col"><p class="as-h">Original content</p>
-                  <ol><li>Terrafirma Anchor Daily<span>S$149</span></li><li>Halcyon Crossover Gym<span>S$159</span></li><li>Terrafirma Loop Indoor<span>S$139</span></li></ol></div>
-                <div class="as-col after"><p class="as-h">AgentShopper</p>
-                  <ol><li>Kestrel Drift 3<span>S$179</span></li><li><b class="as-new">Vela Aero 9</b><span>S$199</span></li><li>Vela Halo Breeze<span>S$189</span></li></ol></div>
-              </div>
-              <div class="as-moved">Vela Aero 9: not surfaced at all &rarr; #2</div>
-            </div>
+      <figure class="shot">
+        <div class="browser">
+          <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>chaincheck-dxj5.onrender.com</span></div>
+          <div class="screen"><img src="assets/shots/chaincheck.webp" width="1100" height="1547" loading="lazy" decoding="async" alt="ChainCheck home: paste an investment offer or add screenshots, read on the device, to check it against the scam playbook."></div>
         </div>
-        <figcaption class="caption">Illustration built from the app&rsquo;s demo shoe catalogue. A real run&rsquo;s ranking may differ.</figcaption>
+        <figcaption>Live screen &middot; hover to scroll</figcaption>
       </figure>
-    </div>
-  </section>
-
-  <section class="project" id="chaincheck" aria-labelledby="cc-title">
-    <div class="wrap">
-      <div>
-        <h2 id="cc-title">ChainCheck</h2>
-        <p class="meta">Submitted to WarriorHacks 2.0, 2026. Solo build. React and Vite on the front, a small Python API behind it, Gemini for reading.</p>
-        <p>Investment scams were the biggest single source of scam losses in Singapore in the first half of 2026. They rarely start with an obvious lie. They start with a friendly &ldquo;personal manager&rdquo;, a group chat full of people posting profits, and a small first deposit. ChainCheck takes what the offer showed you, as pasted text or screenshots, and checks it: is the firm on the MAS register, is the website a week old, do the promised returns make sense over a year, is there a fee to get your own money out. Then it shows which stage of the playbook you&rsquo;re in and what usually comes next.</p>
-        <h3>The model reads. Code decides.</h3>
-        <p>Gemini only pulls names, links and numbers out of the text into a fixed shape. Code pulls the hard facts out itself too and merges them in, so the model can add things but never remove them. Every check, the verdict and the stage are plain rules with their thresholds in one file. A pasted message that tries to talk to the AI (&ldquo;ignore your instructions&rdquo;) is itself a red flag, and the tests run it against a hijacked fake model to prove the verdict doesn&rsquo;t move.</p>
-        <h3>It never says safe</h3>
-        <p>There&rsquo;s no green tick. Any red or amber flag means stop, and the best possible result is &ldquo;no red flags found, verify these yourself before you pay&rdquo;. Screenshots are read in the browser, so they never leave your phone.</p>
-        <a class="btn" href="https://chaincheck-dxj5.onrender.com">Try ChainCheck</a>
+      <div class="story">
+        <p class="lead">Investment scams were the biggest single source of scam losses in Singapore in the first half of 2026. They rarely start with an obvious lie. They start with a friendly &ldquo;personal manager&rdquo;, a group chat full of people posting profits, and a small first deposit. ChainCheck takes what the offer showed you, as pasted text or screenshots, and checks it: is the firm on the MAS register, is the website a week old, do the promised returns make sense over a year, is there a fee to get your own money out. Then it shows which stage of the playbook you&rsquo;re in and what usually comes next.</p>
+        <div>
+          <h3 class="story-h">The model reads. Code decides.</h3>
+          <p>Gemini only pulls names, links and numbers out of the text into a fixed shape. Code pulls the hard facts out itself too and merges them in, so the model can add things but never remove them. Every check, the verdict and the stage are plain rules with their thresholds in one file. A pasted message that tries to talk to the AI (&ldquo;ignore your instructions&rdquo;) is itself a red flag, and the tests run it against a hijacked fake model to prove the verdict doesn&rsquo;t move.</p>
+        </div>
+        <div>
+          <h3 class="story-h">It never says safe</h3>
+          <p>There&rsquo;s no green tick. Any red or amber flag means stop, and the best possible result is &ldquo;no red flags found, verify these yourself before you pay&rdquo;. Screenshots are read in the browser, so they never leave your phone.</p>
+        </div>
         <p class="note">The MAS register on the demo uses invented firms and is labelled as demo data on screen, so a real firm is never called unlicensed. Free server, so the first load can take up to a minute.</p>
       </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen cc">
-              <div class="notch"></div>
-              <div class="cc-verdict"><b>STOP</b><span>3 red flags. Don&rsquo;t send money yet.</span></div>
-              <div class="cc-stage"><small>Where you are in the playbook</small>
-                <div class="cc-steps"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
-                <p>Stage 3 of 5: trust building</p></div>
-              <div class="cc-flag"><span class="cc-dot"></span><div><b>Returns of 8% a week</b>That&rsquo;s over 5,000% a year. Real funds don&rsquo;t promise this.</div></div>
-              <div class="cc-flag"><span class="cc-dot"></span><div><b>App from a link</b>Not from an app store.</div></div>
-              <div class="cc-flag"><span class="cc-dot amber"></span><div><b>&ldquo;Senior analyst&rdquo;</b>A title you can&rsquo;t check.</div></div>
-              <div class="cc-next"><b>What they&rsquo;ll ask next</b>A small &ldquo;test deposit&rdquo;, then a fee to withdraw it.</div>
-            </div>
-        </div>
-        <figcaption class="caption">Illustration of a result. The flags come from the app&rsquo;s real rules.</figcaption>
-      </figure>
-    </div>
-  </section>
+    </article>
 
-  <section class="project" id="clause" aria-labelledby="cl-title">
-    <div class="wrap">
+    <article class="feat flip" id="clause" aria-labelledby="cl-h">
+      <span class="stamp sm" data-thunk>Shipped<small>ML Build Challenge 3</small></span>
       <div>
-        <h2 id="cl-title">Clause</h2>
-        <p class="meta">Submitted to ML Build Challenge 3, 2026. Solo build. React, Vite and pdf.js, a Python back end, Gemini Flash.</p>
-        <p>When a US health insurer denies a claim, the answer is usually buried somewhere in a long plan document and a set of federal rules, and the appeal clock is already running. Clause reads your own plan and denial letter. It works out your appeal deadline, checks whether the denial notice included everything the law says it must, checks your bill against the plan, and drafts the appeal letter.</p>
-        <h3>Every sentence has to point</h3>
-        <p>Every plan, letter and regulation is split into numbered clauses with their page and position. The model may only make claims that quote one of them. Code then checks each quote: the clause exists, the words are really in it, the quote is long enough to mean something, and every number in the claim appears in the quote. A sentence that fails is greyed out with the reason. Click any sentence that passed and the source page opens with the words highlighted.</p>
-        <h3>Rules are code, not model</h3>
-        <p>Deadlines and notice checks follow the regulations directly, and the rules cite the regulation text, which goes through the same checker. The README also says what this can&rsquo;t prove: a real quote doesn&rsquo;t always mean the claim follows from it.</p>
-        <a class="btn" href="https://clause-p7uk.onrender.com">Try Clause</a>
+        <p class="meta">ML Build Challenge 3, 2026 on Devpost &middot; Solo build</p>
+        <h2 class="ttl" id="cl-h">Clause</h2>
+        <p class="pitch">Drafts a health insurance appeal where every sentence quotes the plan it rests on.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>Plans and regulations split into numbered, page-located clauses</li>
+          <li>A verifier that greys out any sentence whose quote doesn&rsquo;t hold</li>
+          <li>Deadline and notice checks written as code from the regulations</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Python</li><li>React</li><li>Vite</li><li>pdf.js</li><li>pdfplumber</li><li>Gemini Flash</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://clause-p7uk.onrender.com">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="https://github.com/DrunkWiz/clause">Code<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+        </div>
+      </div>
+      <figure class="shot">
+        <div class="browser">
+          <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>clause-p7uk.onrender.com</span></div>
+          <div class="screen fit"><img src="assets/shots/clause.webp" width="1100" height="733" loading="lazy" decoding="async" alt="Clause appeal draft beside the plan document, with the quoted clause highlighted on its source page."></div>
+        </div>
+        <figcaption>Screen from the repo</figcaption>
+      </figure>
+      <div class="story">
+        <p class="lead">When a US health insurer denies a claim, the answer is usually buried somewhere in a long plan document and a set of federal rules, and the appeal clock is already running. Clause reads your own plan and denial letter. It works out your appeal deadline, checks whether the denial notice included everything the law says it must, checks your bill against the plan, and drafts the appeal letter.</p>
+        <div>
+          <h3 class="story-h">Every sentence has to point</h3>
+          <p>Every plan, letter and regulation is split into numbered clauses with their page and position. The model may only make claims that quote one of them. Code then checks each quote: the clause exists, the words are really in it, the quote is long enough to mean something, and every number in the claim appears in the quote. A sentence that fails is greyed out with the reason. Click any sentence that passed and the source page opens with the words highlighted.</p>
+        </div>
+        <div>
+          <h3 class="story-h">Rules are code, not model</h3>
+          <p>Deadlines and notice checks follow the regulations directly, and the rules cite the regulation text, which goes through the same checker. The README also says what this can&rsquo;t prove: a real quote doesn&rsquo;t always mean the claim follows from it.</p>
+        </div>
         <p class="note">The plan documents and regulations are real. The denial letters are synthetic and say so on every page. Free server, so the first load can take up to a minute.</p>
       </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen cl">
-              <div class="notch"></div>
-              <div class="cl-top"><b>Your appeal</b><span class="cl-due">164 days left</span></div>
-              <div class="cl-sent">The plan covers medically necessary <mark>outpatient physical therapy, up to 20 visits</mark> a year, and I had used 6.<span class="cl-cite">&#10003; Plan, p. 41, &sect;3.2</span></div>
-              <div class="cl-src"><small>Plan, page 41</small>&hellip;covered services include <mark>outpatient physical therapy, up to 20 visits</mark> per calendar year when medically necessary&hellip;</div>
-              <div class="cl-fail"><b>Not shown as fact</b><s>The denial was sent after the 30-day limit.</s> The quote doesn&rsquo;t contain &ldquo;30&rdquo;.</div>
-            </div>
-        </div>
-        <figcaption class="caption">Illustration of a drafted sentence, its source, and one that failed the check.</figcaption>
-      </figure>
-    </div>
-  </section>
+    </article>
 
-  <section class="project" id="fridge-rescue" aria-labelledby="fr-title">
-    <div class="wrap">
+    <article class="feat" id="fridge-rescue" aria-labelledby="fr-h">
+      <span class="stamp sm" data-thunk>Shipped<small>RevenueCat Shipaton</small></span>
       <div>
-        <h2 id="fr-title">Fridge Rescue</h2>
-        <p class="meta">Submitted to RevenueCat Shipaton 2026. Solo build. React Native and Expo, RevenueCat for Pro, OpenStreetMap for food banks, Claude for Pro recipes.</p>
-        <p>Most food waste at home isn&rsquo;t one big mistake. It&rsquo;s the yoghurt found three days late, and the fourth tin of chickpeas bought because you forgot the other three. Fridge Rescue treats those as two problems. Perishables close to their date go into one recipe that uses all of them. Unopened, long-life surplus goes into a donation box, with the nearest drop-off point. Sprout, a pixel pet on the home screen, thrives when you rescue food and wilts when it goes in the bin.</p>
-        <h3>A food bank can&rsquo;t take Thursday&rsquo;s yoghurt</h3>
-        <p>Food banks need weeks to sort and hand out donations, so only shelf-stable, unopened food with more than 60 days left can ever be suggested. On top of that it needs a sign you won&rsquo;t eat it: more than two of the same thing, a duplicate, or a month untouched. Expired food is never put in a recipe, and the app asks &ldquo;did you eat it?&rdquo; before counting anything as wasted.</p>
-        <h3>A reason to open it before food goes off</h3>
-        <p>The app only works if you check it in time, so the game is built around that one habit: a waste-free streak, a pet that grows, outfits you earn and can&rsquo;t buy, and a weekly challenge. Adding food stays free, with typed or pasted lists parsed on the phone with no AI.</p>
-        <a class="btn" href="https://drunkwiz.github.io/fridge-rescue/">Try it in the browser</a>
+        <p class="meta">RevenueCat Shipaton 2026 &middot; Solo build</p>
+        <h2 class="ttl" id="fr-h">Fridge Rescue</h2>
+        <p class="pitch">A food-waste app where the food you save feeds a pixel pet, and surplus goes to a food bank.</p>
+        <p class="built-h">What I built</p>
+        <ul class="built">
+          <li>One recipe from everything that&rsquo;s about to expire</li>
+          <li>Donation rules: unopened, shelf-stable, more than 60 days left</li>
+          <li>Receipt scanning with Claude, cleaned up by tested pure functions</li>
+        </ul>
+        <ul class="tags" aria-label="Stack"><li>Expo</li><li>React Native</li><li>TypeScript</li><li>Claude</li><li>RevenueCat</li><li>OpenStreetMap</li></ul>
+        <div class="links">
+          <a class="btn solid sm" href="https://drunkwiz.github.io/fridge-rescue/">Try it<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+          <a class="btn sm" href="https://github.com/DrunkWiz/fridge-rescue">Code<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+        </div>
+      </div>
+      <figure class="shot">
+        <div class="phone">
+          <div class="screen"><img src="assets/shots/fridge-rescue.webp" width="560" height="1214" loading="lazy" decoding="async" alt="Fridge Rescue home screen: Sprout the pixel pet, a rescue card for food about to expire, and a donate card."></div>
+        </div>
+        <figcaption>Screen from the repo &middot; hover to scroll</figcaption>
+      </figure>
+      <div class="story">
+        <p class="lead">Most food waste at home isn&rsquo;t one big mistake. It&rsquo;s the yoghurt found three days late, and the fourth tin of chickpeas bought because you forgot the other three. Fridge Rescue treats those as two problems. Perishables close to their date go into one recipe that uses all of them. Unopened, long-life surplus goes into a donation box, with the nearest drop-off point. Sprout, a pixel pet on the home screen, thrives when you rescue food and wilts when it goes in the bin.</p>
+        <div>
+          <h3 class="story-h">A food bank can&rsquo;t take Thursday&rsquo;s yoghurt</h3>
+          <p>Food banks need weeks to sort and hand out donations, so only shelf-stable, unopened food with more than 60 days left can ever be suggested. On top of that it needs a sign you won&rsquo;t eat it: more than two of the same thing, a duplicate, or a month untouched. Expired food is never put in a recipe, and the app asks &ldquo;did you eat it?&rdquo; before counting anything as wasted.</p>
+        </div>
+        <div>
+          <h3 class="story-h">A reason to open it before food goes off</h3>
+          <p>The app only works if you check it in time, so the game is built around that one habit: a waste-free streak, a pet that grows, outfits you earn and can&rsquo;t buy, and a weekly challenge. Adding food stays free, with typed or pasted lists parsed on the phone with no AI.</p>
+        </div>
         <p class="note">The Android APK and a 1:34 demo video are linked from the repo. In the browser, the purchase screen is a preview.</p>
       </div>
-      <figure style="margin:0">
-        <div class="phone" aria-hidden="true">
-          <div class="screen fr">
-              <div class="notch"></div>
-              <div class="fr-pet"><div class="fr-sprite"><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="d"></i><i class="d"></i><i></i><i></i><i></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="d"></i><i class="b"></i><i class="b"></i><i class="d"></i><i class="b"></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="d"></i><i class="d"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i><i></i><i></i><i></i><i class="b"></i><i></i><i></i><i class="b"></i><i></i><i></i></div><div class="fr-status">sprout is hungry.</div><div class="fr-xp">[&#9632;&#9632;&#9632;&#9632;&#9632;&nbsp;&nbsp;&nbsp;] sapling &middot; &#128293; 6 days</div></div>
-              <div class="fr-box"><b>Rescue tonight</b><ul><li><span>spinach</span><span>1 day</span></li><li><span>chicken thighs</span><span>2 days</span></li><li><span>greek yoghurt</span><span>3 days</span></li></ul><span class="fr-act">make one recipe &rarr;</span></div>
-              <div class="fr-box donate"><b>Donate</b><p>7 items you&rsquo;ll probably never eat. That&rsquo;s about 5 meals for someone.</p><span class="fr-act">find a food bank &rarr;</span></div>
-            </div>
-        </div>
-        <figcaption class="caption">Illustration of the home screen.</figcaption>
-      </figure>
+    </article>
+
+    <div class="sec-head" style="margin-top:4rem"><h2>How I like to build</h2></div>
+    <ul class="rules">
+      <li>Put the model where judgement is needed, and keep it out where correctness is needed.</li>
+      <li>Degrade instead of breaking. A second model provider, a second map, offline data underneath.</li>
+      <li>Tests run with no network and no API key.</li>
+      <li>Say plainly what&rsquo;s real and what&rsquo;s simulated.</li>
+    </ul>
+  </main>
+
+  <footer class="end">
+    <div class="receipt">
+      <div class="r-head"><strong>drunkwiz</strong><span>End of receipt</span></div>
+      <div class="r-stamp" aria-hidden="true">PAID</div>
+      <hr class="r-rule">
+      <ul class="r-list">
+        <li class="r-total"><span>Subtotal</span><span>8 projects</span></li>
+        <li><span>Placed</span><span>3</span></li>
+        <li><span>Live demos</span><span>7</span></li>
+      </ul>
+      <hr class="r-rule">
+      <p class="ask">Questions?<br><a href="https://github.com/DrunkWiz">github.com/DrunkWiz</a></p>
+      <div class="barcode" aria-hidden="true"></div>
+      <p class="r-foot">Thank you. Come again.</p>
     </div>
-  </section>
-</main>
-
-<footer>
-  <div class="wrap">
-    <span class="bye">Thank you. Come again.</span>
-    <span><a href="index.html">Back to home</a></span>
-  </div>
-</footer>
-
-<script>
-document.querySelectorAll('.rc-btns').forEach(function (group) {
-  var out = group.parentNode.querySelector('.rc-result');
-  group.querySelectorAll('button').forEach(function (b) {
-    b.addEventListener('click', function () {
-      out.textContent = b.dataset.answer === 'yes'
-        ? 'Thanks. The charge stays on your statement and nothing else changes.'
-        : 'Dispute started and timestamped. Nothing you saw above affects your rights.';
-    });
-  });
-});
-</script>
+  </footer>
+</div>
 </body>
 </html>

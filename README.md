@@ -1,6 +1,6 @@
 # 🧾 drunkwiz.github.io
 
-> **A personal corner of the web that prints you a receipt.**
+> **I ship AI tools that show their working. The site prints you a receipt to prove it.**
 > 🔗 Live site: [drunkwiz.github.io](https://drunkwiz.github.io/)
 
 ---
@@ -13,15 +13,14 @@
  Lead Time                Track win
  Recall                         2nd
  Voucher Kaki              Finalist
- Pinch                    Submitted
- AgentShopper             Submitted
+ +5 more                    Shipped
  ----------------------------------
- TOTAL                   5 projects
+ TOTAL                   8 projects
 
       Thank you. Come again.
 ```
 
-Every visit starts with a thermal receipt printing out of a slot. It lists my hackathon builds and how each one placed, and then it's yours to tear off. The site is one hand-written HTML page plus a projects page: no framework, no build step, nothing to install.
+Every visit starts with a thermal receipt printing out of a slot beside a results strip (8 shipped · 1 track win · 1 runner-up · 1 finalist) that is counted from the receipt itself. Below it, every project gets a real screen, three things I built, its stack and a stamped result. The receipt is then yours to tear off. Hand-written HTML, CSS and JS: no framework, no build step, nothing to install.
 
 ---
 
@@ -35,7 +34,7 @@ Each colour comes from the receipt or the table it's printed on.
 | 🟫 **Slot** | `#123029` | The printer slot and the post slot |
 | 📜 **Paper** | `#FBFAF5` | The receipt itself |
 | ⬛ **Thermal ink** | `#34333A` | Everything printed on the receipt |
-| 🟥 **Stamp red** | `#C9372F` | The SHIPPED stamp and hard mode |
+| 🟥 **Stamp red** | `#C9372F` | Result stamps, the headline highlight and hard mode. Always inked on paper, never straight on green, so it stays readable |
 | ⬜ **Chalk** | `#EEF0E8` | Headings and buttons on the green |
 | 🩶 **Rim** | `#7FA49A` | The lip of the post slot, which flashes when something lands |
 
@@ -64,7 +63,7 @@ Hard mode is remembered in your browser. To reset it, paste this in the console:
 localStorage.removeItem('vk-hard'); location.reload();
 ```
 
-To make it easier or harder, change `FIT` near the top of the tear script in `index.html`. Higher numbers are more forgiving.
+To make it easier or harder, change `FIT` near the top of `assets/receipt.js`. Higher numbers are more forgiving.
 
 ---
 
@@ -85,13 +84,30 @@ To make it easier or harder, change `FIT` near the top of the tear script in `in
 
 ---
 
+## 🗂 What's where
+
+| File | What it is |
+| :--- | :--- |
+| `index.html` | Hero, receipt, the top three by result, the rest in a grid, the closing receipt |
+| `projects.html` | The ledger, then every project with its full story |
+| `404.html` | A voided receipt. Asset paths are absolute because Pages serves it at any missing URL |
+| `assets/site.css` | All styles for all three pages |
+| `assets/site.js` | Counts the results strip from the receipt, and thunks the stamps in as cards scroll into view |
+| `assets/receipt.js` | The tear-off game |
+| `assets/shots/` | Real screens as WebP, captured from the live demos or taken from each project's repo |
+| `assets/og.png` | The share card, a rendered receipt |
+
+Motion respects `prefers-reduced-motion`: the receipt appears without printing, the stamps are already down, and screens don't scroll.
+
+---
+
 ## ➕ Adding a project
 
-The carousel and the projects page hold everything. The receipt is the highlight reel, so it only gets projects that placed or reached finals, which keeps it short enough to tear.
-
-1. **`index.html`, the carousel:** copy one `<li class="card">` block. The counters update themselves.
-2. **`projects.html`:** add a row to the ledger table and a `<section class="project">` with the full story.
-3. **`index.html`, the receipt (placed or finalist only):** add a line to the list and bump the total.
+1. **Screen:** save a WebP in `assets/shots/` (about 1100px wide for desktop screens, 560px for phones).
+2. **`index.html`:** copy an `<article class="mini">` block into the grid. If it placed, it goes in the top section as an `<article class="feat">` instead, ordered by result.
+3. **`projects.html`:** add a ledger row and an `<article class="feat">` with the story.
+4. **The receipt in `index.html`:** a placed or finalist project gets its own line with `data-result="win|second|finalist"`. Otherwise bump `data-count` and the label on the `+N more` line. The results strip and total update themselves.
+5. Bump the counts in the closing receipt, the meta description and `og:description`.
 
 Push to `main` and [the workflow](.github/workflows/static.yml) publishes it in about 20 seconds.
 
@@ -111,7 +127,7 @@ Then visit **[http://localhost:8000](http://localhost:8000)**.
 
 <div align="center">
 
-Printed in Singapore by Nathan 🧾
+Printed in Singapore 🧾 · Questions? [github.com/DrunkWiz](https://github.com/DrunkWiz)
 
 *Thank you. Come again.*
 
