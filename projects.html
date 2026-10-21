@@ -32,17 +32,20 @@ window.addEventListener('pagereveal', function (e) {
   if (!e.viewTransition || !location.hash) return;
   var el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
   if (!el) return;
-  var t = el.querySelector('h3'), s = el.querySelector('.shot');
+  var t = el.querySelector('.ttl'), s = el.querySelector('.shot');
   if (t) t.style.viewTransitionName = 'p-title';
   if (s) s.style.viewTransitionName = 'p-shot';
   e.viewTransition.finished.finally(function () { if (t) t.style.viewTransitionName = ''; if (s) s.style.viewTransitionName = ''; });
 });
 </script>
 <script src="/assets/site.js" defer></script>
+<script src="/assets/deck.js" defer></script>
+<script src="/assets/demos.js" defer></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-out" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
   <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
 </svg>
 <a class="skip" href="#ledger">Skip to the projects</a>
@@ -59,7 +62,7 @@ window.addEventListener('pagereveal', function (e) {
   <header class="intro">
     <p class="eyebrow">Receipt, itemised</p>
     <h1>All projects</h1>
-    <p class="sub">Results first. Each one with a real screen, what I built, and the decision that shaped it.</p>
+    <p class="sub">Results first. Each one with a real screen, what I built, the decision that shaped it, and a small demo you can try.</p>
   </header>
 
   <!-- To add a project: add a row here and an <article class="feat"> below. If it placed, add it to the receipt on index.html too; otherwise bump "+N more" there. -->
@@ -79,7 +82,28 @@ window.addEventListener('pagereveal', function (e) {
   </table>
 
   <main>
-    <article class="feat" id="lead-time" aria-labelledby="lt-h">
+    <section class="deck" aria-roledescription="carousel" aria-label="Projects, one at a time">
+      <div class="deck-head">
+      <div class="deck-bar">
+        <p class="deck-count" aria-live="polite"><b class="d-now">1</b> / 8 <span class="d-name">Lead Time</span></p>
+        <div class="deck-nav">
+          <button type="button" class="deck-btn" data-dir="-1" aria-label="Previous project"><svg class="ico" aria-hidden="true"><use href="#i-left"/></svg></button>
+          <button type="button" class="deck-btn" data-dir="1" aria-label="Next project"><svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></button>
+        </div>
+      </div>
+      <div class="deck-dots" role="group" aria-label="Jump to a project">
+        <button type="button" class="dot" data-i="0" aria-label="Lead Time"><span>Lead Time</span></button>
+        <button type="button" class="dot" data-i="1" aria-label="Recall"><span>Recall</span></button>
+        <button type="button" class="dot" data-i="2" aria-label="Voucher Kaki"><span>Voucher Kaki</span></button>
+        <button type="button" class="dot" data-i="3" aria-label="AgentShopper"><span>AgentShopper</span></button>
+        <button type="button" class="dot" data-i="4" aria-label="Pinch"><span>Pinch</span></button>
+        <button type="button" class="dot" data-i="5" aria-label="ChainCheck"><span>ChainCheck</span></button>
+        <button type="button" class="dot" data-i="6" aria-label="Clause"><span>Clause</span></button>
+        <button type="button" class="dot" data-i="7" aria-label="Fridge Rescue"><span>Fridge Rescue</span></button>
+      </div>
+      </div>
+      <div class="deck-track" tabindex="0" aria-label="Swipe or use the arrow keys">
+    <article class="feat slide" id="lead-time" aria-labelledby="lt-h" aria-roledescription="slide" data-n="1">
       <span class="stamp" data-thunk>Track winner<small>ForgeHacks 2026</small></span>
       <div>
         <p class="meta">ForgeHacks Online 2026 &middot; Business + AI track &middot; Solo build</p>
@@ -116,9 +140,10 @@ window.addEventListener('pagereveal', function (e) {
         </div>
         <p class="note">Runs on a free server, so the first load can take up to a minute.</p>
       </div>
+      <div class="demo" data-demo="lead-time"></div>
     </article>
 
-    <article class="feat flip" id="recall" aria-labelledby="rc-h">
+    <article class="feat flip slide" id="recall" aria-labelledby="rc-h" aria-roledescription="slide" data-n="2">
       <span class="stamp" data-thunk>2nd place<small>Amex AI Hackathon</small></span>
       <div>
         <p class="meta">American Express AI Hackathon 2026</p>
@@ -153,9 +178,10 @@ window.addEventListener('pagereveal', function (e) {
           <p>The worst thing Recall could do is talk someone out of reporting real fraud. So the model only proposes. Every claim has to cite a real transaction, a second model from a different family checks it, and plain rules code makes every decision that touches money. When the history is too thin, Recall shows the raw details and says nothing at all. Silence is always an acceptable answer.</p>
         </div>
       </div>
+      <div class="demo" data-demo="recall"></div>
     </article>
 
-    <article class="feat" id="voucher-kaki" aria-labelledby="vk-h">
+    <article class="feat slide" id="voucher-kaki" aria-labelledby="vk-h" aria-roledescription="slide" data-n="3">
       <span class="stamp" data-thunk>Finalist<small>SimplifyNext IGNITE</small></span>
       <div>
         <p class="meta">SimplifyNext IGNITE Agentic AI Hackathon 2026 &middot; Team of four</p>
@@ -185,9 +211,10 @@ window.addEventListener('pagereveal', function (e) {
           <p>We built Google ratings into every result, then took them out. Many of the small shops in our data have no Google listing at all, so a ratings line would put a 4.5 with 800 reviews next to a blank. Someone choosing lunch on a phone picks the number. The whole point of the app is to surface the places people overlook, and a half-empty ratings column would have pushed them straight back to the famous ones.</p>
         </div>
       </div>
+      <div class="demo" data-demo="voucher-kaki"></div>
     </article>
 
-    <article class="feat" id="agentshopper" aria-labelledby="as-h">
+    <article class="feat slide" id="agentshopper" aria-labelledby="as-h" aria-roledescription="slide" data-n="4">
       <span class="stamp sm" data-thunk>Shipped<small>NUS LifeHack 2026</small></span>
       <div>
         <p class="meta">NUS LifeHack 2026 &middot; Rezolve AI challenge &middot; Team of three, I led engineering and AI reasoning</p>
@@ -224,9 +251,10 @@ window.addEventListener('pagereveal', function (e) {
         </div>
         <p class="note">The two built-in demo catalogues, running shoes and facial skincare, work without uploading anything. The app sleeps when idle; press its wake-up button and give it a minute.</p>
       </div>
+      <div class="demo" data-demo="agentshopper"></div>
     </article>
 
-    <article class="feat flip" id="pinch" aria-labelledby="pn-h">
+    <article class="feat flip slide" id="pinch" aria-labelledby="pn-h" aria-roledescription="slide" data-n="5">
       <span class="stamp sm" data-thunk>Shipped<small>Build With AI 2026</small></span>
       <div>
         <p class="meta">Build With AI: Basics 2026 on Devpost &middot; Solo build</p>
@@ -262,9 +290,10 @@ window.addEventListener('pagereveal', function (e) {
         </div>
         <p class="note">Runs on a free server, so the first load can take up to a minute. The built-in demo works without a microphone.</p>
       </div>
+      <div class="demo" data-demo="pinch"></div>
     </article>
 
-    <article class="feat" id="chaincheck" aria-labelledby="cc-h">
+    <article class="feat slide" id="chaincheck" aria-labelledby="cc-h" aria-roledescription="slide" data-n="6">
       <span class="stamp sm" data-thunk>Shipped<small>WarriorHacks 2.0</small></span>
       <div>
         <p class="meta">WarriorHacks 2.0, 2026 &middot; Solo build</p>
@@ -301,9 +330,10 @@ window.addEventListener('pagereveal', function (e) {
         </div>
         <p class="note">The MAS register on the demo uses invented firms and is labelled as demo data on screen, so a real firm is never called unlicensed. Free server, so the first load can take up to a minute.</p>
       </div>
+      <div class="demo" data-demo="chaincheck"></div>
     </article>
 
-    <article class="feat flip" id="clause" aria-labelledby="cl-h">
+    <article class="feat flip slide" id="clause" aria-labelledby="cl-h" aria-roledescription="slide" data-n="7">
       <span class="stamp sm" data-thunk>Shipped<small>ML Build Challenge 3</small></span>
       <div>
         <p class="meta">ML Build Challenge 3, 2026 on Devpost &middot; Solo build</p>
@@ -340,9 +370,10 @@ window.addEventListener('pagereveal', function (e) {
         </div>
         <p class="note">The plan documents and regulations are real. The denial letters are synthetic and say so on every page. Free server, so the first load can take up to a minute.</p>
       </div>
+      <div class="demo" data-demo="clause"></div>
     </article>
 
-    <article class="feat" id="fridge-rescue" aria-labelledby="fr-h">
+    <article class="feat slide" id="fridge-rescue" aria-labelledby="fr-h" aria-roledescription="slide" data-n="8">
       <span class="stamp sm" data-thunk>Shipped<small>RevenueCat Shipaton</small></span>
       <div>
         <p class="meta">RevenueCat Shipaton 2026 &middot; Solo build</p>
@@ -378,7 +409,9 @@ window.addEventListener('pagereveal', function (e) {
         </div>
         <p class="note">The Android APK and a 1:34 demo video are linked from the repo. In the browser, the purchase screen is a preview.</p>
       </div>
+      <div class="demo" data-demo="fridge-rescue"></div>
     </article>
+    </section>
 
     <div class="sec-head" style="margin-top:4rem"><h2>How I like to build</h2></div>
     <ul class="rules">

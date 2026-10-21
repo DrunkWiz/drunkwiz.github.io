@@ -107,7 +107,8 @@ Motion respects `prefers-reduced-motion`: the receipt appears without printing, 
 - **Sound.** Tearing makes a paper-rip sound, generated in the browser. The Sound button mutes it, and the choice is remembered.
 - **Posted receipts.** Every piece that fits the slot is pinned to a corkboard near the bottom of the page, kept in your browser only.
 - **Printed slips.** The top three projects print a small receipt of their event, team, stack and result when they scroll into view.
-- **Try the idea.** Each project has a small demo that runs its core rule in the browser, with no AI and no network (`assets/demos.js`).
+- **Try the idea.** Each project's slide on the projects page has a small demo that runs its core rule in the browser, with no AI and no network (`assets/demos.js`).
+- **One project per slide.** The projects page is a swipeable carousel (`assets/deck.js`). Its controls stick to the top while you read, the deck takes the height of the slide on show, and `projects.html#clause` opens on Clause.
 - **Screens scroll with the page** like a screen recording, and **Read the story** grows the card into its write-up where the browser supports view transitions.
 
 All of it switches off or goes still under `prefers-reduced-motion`.
@@ -116,7 +117,7 @@ All of it switches off or goes still under `prefers-reduced-motion`.
 
 1. **Screen:** save a WebP in `assets/shots/` (about 1100px wide for desktop screens, 560px for phones).
 2. **`index.html`:** copy an `<article class="mini">` block into the grid. If it placed, it goes in the top section as an `<article class="feat">` instead, ordered by result.
-3. **`projects.html`:** add a ledger row and an `<article class="feat">` with the story.
+3. **`projects.html`:** add a ledger row, an `<article class="feat slide">` with the story inside `.deck-track`, and a matching `<button class="dot">` in `.deck-dots`. For a demo, add `<div class="demo" data-demo="your-id"></div>` at the end of the article and a function under the same id in `assets/demos.js`. The slide counter updates itself.
 4. **The receipt in `index.html`:** a placed or finalist project gets its own line with `data-result="win|second|finalist"`. Otherwise bump `data-count` and the label on the `+N more` line. The results strip and total update themselves.
 5. Bump the counts in the closing receipt, the meta description and `og:description`.
 
