@@ -27,13 +27,15 @@
 <link rel="stylesheet" href="/assets/site.css">
 <script>document.documentElement.classList.add('js')</script>
 <script>
-/* Card-to-write-up transition: the opened project grows out of the card that was clicked. */
+/* Card-to-write-up transition: the clicked card's title and screen glide into place here. */
 window.addEventListener('pagereveal', function (e) {
   if (!e.viewTransition || !location.hash) return;
   var el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
   if (!el) return;
-  el.style.viewTransitionName = 'project';
-  e.viewTransition.finished.finally(function () { el.style.viewTransitionName = ''; });
+  var t = el.querySelector('h3'), s = el.querySelector('.shot');
+  if (t) t.style.viewTransitionName = 'p-title';
+  if (s) s.style.viewTransitionName = 'p-shot';
+  e.viewTransition.finished.finally(function () { if (t) t.style.viewTransitionName = ''; if (s) s.style.viewTransitionName = ''; });
 });
 </script>
 <script src="/assets/site.js" defer></script>

@@ -172,6 +172,7 @@
       t.pts.push([t.tipX, t.tipY + t.wob + (Math.random() - 0.5) * 1.5]);
       if (t.tipX === 0 || t.tipX === t.W) break;
     }
+    if (moved) emit('tearmove', { speed: moved / SPEED });
     draw();
     return t.tipX === (t.dir > 0 ? t.W : 0);
   }
@@ -329,7 +330,15 @@
       wrap.remove();
       postCount.textContent = String(posted).padStart(3, '0');
       var sorted = t.pts.slice().sort(function (a, b) { return a[0] - b[0]; });
-      emit('posted', { no: receipt.querySelector('.r-no').textContent, shape: shape.name, pct: score(t).pct,
+      var rr = receipt.getBoundingClientRect(), carried = [];   // fresh: the page may have scrolled
+      receipt.querySelectorAll('.r-list li').forEach(function (orig) {
+        var lr = orig.getBoundingClientRect(), cx = (lr.left + lr.width / 2) - rr.left;
+        if (lr.top - rr.top >= edgeAt(sorted, cx) - 4) {
+          var go = orig.querySelector('.go');
+          carried.push(go ? go.textContent : orig.firstElementChild.textContent);
+        }
+      });
+      emit('posted', { no: receipt.querySelector('.r-no').textContent, shape: shape.name, pct: score(t).pct, lines: carried,
         edge: sorted.filter(function (p, i) { return i % 4 === 0; }).map(function (p) { return [+(p[0] / t.W).toFixed(3), Math.round(p[1])]; }) });
       post.classList.remove('gulp');
       void post.offsetWidth;
@@ -363,6 +372,7 @@
   // Receipt lines with data-goto are shortcuts to their project.
   function jump(el) {
     if (!el || state === 'gone') return false;
+    pickAt(-1);
     emit('goto', { id: el.getAttribute('data-goto') });
     return true;
   }
@@ -384,7 +394,7 @@
       e.preventDefault();
     }
     var p = local(e);
-    drag = { id: e.pointerId, type: e.pointerType, sx: e.clientX, sy: e.clientY, x: p.x, y: p.y, downY: p.y, moved: false, line: e.target.closest('[data-goto]') };
+    drag = { id: e.pointerId, type: e.pointerType, sx: e.clientX, sy: e.clientY, x: p.x, y: p.y, downY: p.y, moved: false, line: e.pointerType === 'mouse' ? e.target.closest('[data-goto]') : null };
     try { sheet.setPointerCapture(e.pointerId); } catch (err) {}
     if (e.pointerType === 'mouse') sheet.classList.add('grabbing');
   });
@@ -415,12 +425,32 @@
   sheet.addEventListener('pointercancel', release);   // the browser took over to scroll; keep any partial tear
   sheet.addEventListener('click', function (e) {
     if (lastType === 'mouse' || suppressClick) return;
-    if (!tear && jump(e.target.closest('[data-goto]'))) return;
     rip(local(e).y);
   });
+  // Keyboard: arrows pick a project line, Enter jumps to it. With nothing picked, Enter tears.
+  var picked = -1;
+  function lines() { return [].slice.call(receipt.querySelectorAll('.go[data-goto]')); }
+  function pickAt(i) {
+    var ls = lines();
+    ls.forEach(function (l, k) { l.classList.toggle('pick', k === i); });
+    picked = i;
+    if (i >= 0) status.textContent = ls[i].textContent + '. Enter jumps to it. Escape goes back to tearing.';
+  }
   receipt.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rip(); }
+    var n = lines().length;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (state === 'gone') return;
+      pickAt(picked < 0 ? (e.key === 'ArrowDown' ? 0 : n - 1) : (picked + (e.key === 'ArrowDown' ? 1 : n - 1)) % n);
+    } else if (e.key === 'Escape' && picked >= 0) {
+      pickAt(-1); status.textContent = 'Enter tears the receipt.';
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (picked >= 0 && jump(lines()[picked])) return;
+      rip();
+    }
   });
+  receipt.addEventListener('blur', function () { if (picked >= 0) pickAt(-1); });
   window.addEventListener('resize', function () { if (!tear && state !== 'gone') drawShape(); });
 
   function setHard(on) {

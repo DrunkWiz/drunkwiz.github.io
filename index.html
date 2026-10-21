@@ -72,7 +72,7 @@
       <div class="slot" aria-hidden="true"></div>
       <div class="feed">
         <div class="sheet">
-        <div class="receipt printing" tabindex="0" role="button" aria-label="Tear off the receipt">
+        <div class="receipt printing" tabindex="0" role="button" aria-label="Tear off the receipt. Up and down arrows pick a project to jump to.">
           <div class="r-head">
             <strong>drunkwiz</strong>
             <span>Singapore</span>
@@ -82,10 +82,10 @@
                data-count: how many projects a line stands for. Placed or finalist projects get their own line;
                everything else is in "+N more". -->
           <ul class="r-list">
-            <li data-result="win" data-goto="lead-time" data-date="2026-10-10"><span class="r-item">Lead Time<small>ForgeHacks &middot; Oct 2026</small></span><span>Track win</span></li>
-            <li data-result="second" data-goto="recall" data-date="2026-09-16"><span class="r-item">Recall<small>Amex AI Hackathon &middot; Sep 2026</small></span><span>2nd</span></li>
-            <li data-result="finalist" data-goto="voucher-kaki" data-date="2026-09-19"><span class="r-item">Voucher Kaki<small>SimplifyNext IGNITE &middot; Sep 2026</small></span><span>Finalist</span></li>
-            <li data-result="shipped" data-count="5" data-goto="also" data-date="2026-09-27"><span class="r-item">+5 more<small>Aug&ndash;Oct 2026</small></span><span>Shipped</span></li>
+            <li data-result="win" data-date="2026-10-10"><span class="r-item"><span class="go" data-goto="lead-time">Lead Time</span><small>ForgeHacks &middot; Oct 2026</small></span><span>Track win</span></li>
+            <li data-result="second" data-date="2026-09-16"><span class="r-item"><span class="go" data-goto="recall">Recall</span><small>Amex AI Hackathon &middot; Sep 2026</small></span><span>2nd</span></li>
+            <li data-result="finalist" data-date="2026-09-19"><span class="r-item"><span class="go" data-goto="voucher-kaki">Voucher Kaki</span><small>SimplifyNext IGNITE &middot; Sep 2026</small></span><span>Finalist</span></li>
+            <li data-result="shipped" data-count="5" data-date="2026-09-27"><span class="r-item"><span class="go" data-goto="also">+5 more</span><small>Aug&ndash;Oct 2026</small></span><span>Shipped</span></li>
           </ul>
           <hr class="r-rule">
           <ul class="r-list">
@@ -104,10 +104,10 @@
           <polyline class="p-top" points=""/>
           <polyline class="p-rim" points=""/>
         </svg>
+        <a class="pinned-note" href="#board" hidden></a>
         <p class="post-label" aria-live="polite">Slot: <span class="post-name">wave</span> &middot; posted <span class="post-count">000</span></p>
       </div>
       <div class="mode"><button type="button" class="mode-btn" aria-pressed="false">Hard mode <span class="mode-state">off</span></button><button type="button" class="mode-btn sound-btn" aria-pressed="true" hidden>Sound <span class="mode-state">on</span></button></div>
-      <p class="line-hint">Click a line to jump to it. Older lines fade, like real thermal paper.</p>
       <p class="sr-only" role="status" aria-live="polite"></p>
     </div>
   </header>
@@ -160,7 +160,7 @@
           <li>Every claim cites a real transaction and is checked by a second model family</li>
           <li>Rules code makes every decision that touches money; silence is a valid answer</li>
         </ul>
-        <div class="slip" aria-label="Project receipt"><div class="slip-paper"><ul class="r-list"><li><span>Event</span><span>Amex AI Hackathon</span></li><li><span>Built</span><span>Proposer + verifier</span></li><li><span>Money</span><span>Rules code only</span></li></ul><hr class="r-rule"><ul class="r-list"><li class="r-total"><span>Result</span><span>2nd place</span></li></ul></div></div>
+        <div class="slip" aria-label="Project receipt"><div class="slip-paper"><ul class="r-list"><li><span>Event</span><span>Amex AI Hackathon</span></li><li><span>Stack</span><span>LLM proposer</span></li><li><span></span><span>Cross-family verifier</span></li><li><span></span><span>Rules engine</span></li></ul><hr class="r-rule"><ul class="r-list"><li class="r-total"><span>Result</span><span>2nd place</span></li></ul></div></div>
         <div class="links">
           <a class="btn sm" href="projects.html#recall">Read the story<svg class="ico" aria-hidden="true"><use href="#i-right"/></svg></a>
         </div>
