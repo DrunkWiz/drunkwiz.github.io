@@ -13,9 +13,9 @@
  Lead Time                Track win
  Recall                         2nd
  Voucher Kaki              Finalist
- +5 more                    Shipped
+ +9 more                    Shipped
  ----------------------------------
- TOTAL                   8 projects
+ TOTAL                  12 projects
 
       Thank you. Come again.
 ```
@@ -79,6 +79,10 @@ To make it easier or harder, change `FIT` near the top of `assets/receipt.js`. H
 | 📮 | [ChainCheck](https://chaincheck-dxj5.onrender.com) | Checks an investment offer against the scam playbook and never calls anything safe. *WarriorHacks 2.0* |
 | 📮 | [Clause](https://clause-p7uk.onrender.com) | Drafts a health insurance appeal where every sentence quotes the plan it rests on. *ML Build Challenge 3* |
 | 📮 | [Fridge Rescue](https://drunkwiz.github.io/fridge-rescue/) | A food-waste app with a pixel pet that sends surplus to a food bank. *RevenueCat Shipaton 2026* |
+| 📮 | [CareLoop SG](https://careloop-sg-qloo.onrender.com) | Plans good days for seniors with high blood pressure around what they love. *Qloo Agentic Hackathon* |
+| 📮 | [Glowline](https://glowline.onrender.com) | Tells you whether a skincare product is actually working, from your own photos. *YouCam Skin AI Hackathon* |
+| 📮 | [Settle](https://github.com/DrunkWiz/paypal-hackathon) | Resolves online-shop complaints; the model writes the reply, code decides every dollar. *PayPal hackathon* |
+| 🕯️ | [git seance](https://github.com/DrunkWiz/git-seance) | Lets a deleted function tell its story, through a model on your own laptop. *Side project* |
 
 🏆 track winner · 🥈 placed · 🏁 finalist · 📮 submitted
 
