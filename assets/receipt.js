@@ -271,6 +271,7 @@
       t.stub.style.transition = 'opacity .35s';
       t.stub.style.opacity = '0';
       setTimeout(function () { t.stub.remove(); sheet.classList.remove('tearing'); }, 400);
+      emit('fresh');
       count += 1;
       receipt.querySelector('.r-no').textContent = String(count).padStart(4, '0');
       shape = pick();
@@ -338,7 +339,12 @@
           carried.push(go ? go.textContent : orig.firstElementChild.textContent);
         }
       });
-      emit('posted', { no: receipt.querySelector('.r-no').textContent, shape: shape.name, pct: score(t).pct, lines: carried,
+      var ph = receipt.querySelector('.r-photo img'), photo = null;
+      if (ph) {
+        var prr = ph.getBoundingClientRect();
+        if (prr.top + prr.height / 2 - rr.top >= edgeAt(sorted, prr.left + prr.width / 2 - rr.left)) photo = ph.getAttribute('data-thumb') || null;
+      }
+      emit('posted', { no: receipt.querySelector('.r-no').textContent, shape: shape.name, pct: score(t).pct, lines: carried, photo: photo,
         edge: sorted.filter(function (p, i) { return i % 4 === 0; }).map(function (p) { return [+(p[0] / t.W).toFixed(3), Math.round(p[1])]; }) });
       post.classList.remove('gulp');
       void post.offsetWidth;
@@ -462,6 +468,24 @@
     if (state !== 'gone') hint.textContent = hintText();
   }
   modeBtn.addEventListener('click', function () { setHard(!hard); });
+
+  // Easter eggs (eggs.js) feed a fresh receipt through this; it only works while the printer is idle.
+  function feed(why) {
+    if (state !== 'idle' || tear) return false;
+    count += 1;
+    receipt.querySelector('.r-no').textContent = String(count).padStart(4, '0');
+    shape = pick();
+    drawShape();
+    status.textContent = why || 'A fresh receipt printed.';
+    if (reduce) return true;
+    state = 'printing';
+    hint.textContent = 'Printing…';
+    receipt.classList.remove('printing');
+    void receipt.offsetWidth;
+    receipt.classList.add('printing');
+    return true;
+  }
+  window.drunkwizPrinter = { feed: feed, idle: function () { return state === 'idle' && !tear; }, receipt: receipt, hint: hint };
 
   setHard(hard);
   drawShape();

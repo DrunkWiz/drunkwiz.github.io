@@ -55,7 +55,8 @@
     li.style.setProperty('--r', (((parseInt(p.no, 10) || 1) * 37) % 11 - 5) + 'deg');
     li.style.setProperty('--age', age(p.at || now).toFixed(3));
     li.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true"><polygon points="' + poly + '"/></svg>' +
-      '<div class="pin-txt"><b>No. ' + esc(p.no) + '</b>' +
+      (p.photo ? '<img class="pin-photo" alt="" src="' + esc(p.photo) + '">' : '') +
+      '<div class="pin-txt' + (p.photo ? ' has-photo' : '') + '"><b>No. ' + esc(p.no) + '</b>' +
       (lines.length ? '<ul>' + lines.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('') + '</ul>' : '<span class="blank">just the tail</span>') +
       '<span class="fit">' + esc(p.shape) + ' &middot; ' + p.pct + '%</span></div><i class="tack" aria-hidden="true"></i>';
     li.setAttribute('aria-label', 'Receipt ' + p.no + ', torn in a ' + p.shape + ' shape, ' + p.pct + '% match' + (lines.length ? ', carrying ' + lines.join(', ') : ''));

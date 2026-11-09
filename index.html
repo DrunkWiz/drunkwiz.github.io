@@ -29,6 +29,7 @@
 <script src="/assets/site.js" defer></script>
 <script src="/assets/receipt.js" defer></script>
 <script src="/assets/extras.js" defer></script>
+<script src="/assets/eggs.js" defer></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -92,7 +93,7 @@
             <li class="r-total"><span>Total</span><span data-tally="total">13 projects</span></li>
           </ul>
           <div class="r-stamp" aria-hidden="true">SHIPPED</div>
-          <div class="barcode" aria-hidden="true"></div>
+          <div class="barcode"><svg class="code128" viewBox="0 0 264 1" preserveAspectRatio="none" role="img" aria-label="Barcode: github.com/DrunkWiz"><rect x="10" width="2" height="1"/><rect x="13" width="1" height="1"/><rect x="16" width="1" height="1"/><rect x="21" width="1" height="1"/><rect x="24" width="2" height="1"/><rect x="27" width="1" height="1"/><rect x="32" width="1" height="1"/><rect x="37" width="2" height="1"/><rect x="40" width="1" height="1"/><rect x="43" width="1" height="1"/><rect x="46" width="4" height="1"/><rect x="51" width="1" height="1"/><rect x="54" width="1" height="1"/><rect x="57" width="2" height="1"/><rect x="63" width="1" height="1"/><rect x="65" width="1" height="1"/><rect x="68" width="4" height="1"/><rect x="74" width="1" height="1"/><rect x="76" width="1" height="1"/><rect x="79" width="1" height="1"/><rect x="84" width="2" height="1"/><rect x="87" width="1" height="1"/><rect x="90" width="2" height="1"/><rect x="94" width="3" height="1"/><rect x="98" width="1" height="1"/><rect x="103" width="1" height="1"/><rect x="105" width="2" height="1"/><rect x="109" width="1" height="1"/><rect x="113" width="4" height="1"/><rect x="118" width="1" height="1"/><rect x="120" width="4" height="1"/><rect x="125" width="3" height="1"/><rect x="129" width="1" height="1"/><rect x="131" width="1" height="1"/><rect x="133" width="3" height="1"/><rect x="138" width="2" height="1"/><rect x="142" width="1" height="1"/><rect x="144" width="2" height="1"/><rect x="149" width="1" height="1"/><rect x="153" width="1" height="1"/><rect x="156" width="1" height="1"/><rect x="159" width="4" height="1"/><rect x="164" width="1" height="1"/><rect x="167" width="4" height="1"/><rect x="173" width="1" height="1"/><rect x="175" width="2" height="1"/><rect x="181" width="1" height="1"/><rect x="183" width="1" height="1"/><rect x="186" width="2" height="1"/><rect x="192" width="1" height="1"/><rect x="195" width="1" height="1"/><rect x="197" width="3" height="1"/><rect x="201" width="1" height="1"/><rect x="205" width="2" height="1"/><rect x="208" width="1" height="1"/><rect x="213" width="2" height="1"/><rect x="216" width="1" height="1"/><rect x="219" width="2" height="1"/><rect x="222" width="4" height="1"/><rect x="227" width="2" height="1"/><rect x="230" width="2" height="1"/><rect x="234" width="2" height="1"/><rect x="237" width="2" height="1"/><rect x="241" width="2" height="1"/><rect x="246" width="3" height="1"/><rect x="250" width="1" height="1"/><rect x="252" width="2" height="1"/></svg><span class="bc-text">github.com/DrunkWiz</span></div>
           <p class="r-foot">Thank you. Come again.</p>
         </div>
         </div>
@@ -310,6 +311,15 @@
 
   <section class="board" id="board" aria-labelledby="board-h" hidden>
     <div class="sec-head"><h2 id="board-h">Posted receipts</h2><button type="button" class="board-clear" hidden>Unpin all</button></div>
+    <div class="kopi-card" role="group" aria-label="Kopi card">
+      <div class="kc-head"><strong>Kopi card</strong><span class="kc-count">0 of 10</span></div>
+      <p class="kc-sub">One stamp for every receipt you post.</p>
+      <ol class="kc-holes" aria-hidden="true"></ol>
+      <div class="kc-reward" hidden>
+        <p><b>Ten stamps. The kopi&rsquo;s on me.</b> Find me at a Singapore hackathon and show this card, or say hi on GitHub and I&rsquo;ll owe you one.</p>
+        <a class="btn solid sm" href="https://github.com/DrunkWiz">Say hi<svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+      </div>
+    </div>
     <p class="board-empty">Nothing pinned yet. Tear the receipt at the top in the slot&rsquo;s shape, and the piece you post ends up here.</p>
     <ol class="pins"></ol>
   </section>
@@ -322,14 +332,30 @@
       <ul class="r-list">
         <li class="r-total"><span>Subtotal</span><span>13 projects</span></li>
         <li><span>Placed</span><span>3</span></li>
-        <li><span>Live demos</span><span>7</span></li>
+        <li><span>Live demos</span><span>10</span></li>
       </ul>
       <hr class="r-rule">
       <p class="ask">Questions?<br><a href="https://github.com/DrunkWiz">github.com/DrunkWiz</a></p>
-      <div class="barcode" aria-hidden="true"></div>
+      <div class="barcode"><svg class="code128" viewBox="0 0 264 1" preserveAspectRatio="none" role="img" aria-label="Barcode: github.com/DrunkWiz"><rect x="10" width="2" height="1"/><rect x="13" width="1" height="1"/><rect x="16" width="1" height="1"/><rect x="21" width="1" height="1"/><rect x="24" width="2" height="1"/><rect x="27" width="1" height="1"/><rect x="32" width="1" height="1"/><rect x="37" width="2" height="1"/><rect x="40" width="1" height="1"/><rect x="43" width="1" height="1"/><rect x="46" width="4" height="1"/><rect x="51" width="1" height="1"/><rect x="54" width="1" height="1"/><rect x="57" width="2" height="1"/><rect x="63" width="1" height="1"/><rect x="65" width="1" height="1"/><rect x="68" width="4" height="1"/><rect x="74" width="1" height="1"/><rect x="76" width="1" height="1"/><rect x="79" width="1" height="1"/><rect x="84" width="2" height="1"/><rect x="87" width="1" height="1"/><rect x="90" width="2" height="1"/><rect x="94" width="3" height="1"/><rect x="98" width="1" height="1"/><rect x="103" width="1" height="1"/><rect x="105" width="2" height="1"/><rect x="109" width="1" height="1"/><rect x="113" width="4" height="1"/><rect x="118" width="1" height="1"/><rect x="120" width="4" height="1"/><rect x="125" width="3" height="1"/><rect x="129" width="1" height="1"/><rect x="131" width="1" height="1"/><rect x="133" width="3" height="1"/><rect x="138" width="2" height="1"/><rect x="142" width="1" height="1"/><rect x="144" width="2" height="1"/><rect x="149" width="1" height="1"/><rect x="153" width="1" height="1"/><rect x="156" width="1" height="1"/><rect x="159" width="4" height="1"/><rect x="164" width="1" height="1"/><rect x="167" width="4" height="1"/><rect x="173" width="1" height="1"/><rect x="175" width="2" height="1"/><rect x="181" width="1" height="1"/><rect x="183" width="1" height="1"/><rect x="186" width="2" height="1"/><rect x="192" width="1" height="1"/><rect x="195" width="1" height="1"/><rect x="197" width="3" height="1"/><rect x="201" width="1" height="1"/><rect x="205" width="2" height="1"/><rect x="208" width="1" height="1"/><rect x="213" width="2" height="1"/><rect x="216" width="1" height="1"/><rect x="219" width="2" height="1"/><rect x="222" width="4" height="1"/><rect x="227" width="2" height="1"/><rect x="230" width="2" height="1"/><rect x="234" width="2" height="1"/><rect x="237" width="2" height="1"/><rect x="241" width="2" height="1"/><rect x="246" width="3" height="1"/><rect x="250" width="1" height="1"/><rect x="252" width="2" height="1"/></svg><span class="bc-text">github.com/DrunkWiz</span></div>
       <p class="r-foot">Thank you. Come again.</p>
+      <button type="button" class="booth-btn" hidden aria-label="Photobooth: print a photo of yourself on the receipt" title="Photobooth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.4"/></svg></button>
     </div>
   </footer>
+
+  <dialog class="booth" aria-labelledby="booth-h">
+    <p id="booth-h" class="booth-h">Photobooth</p>
+    <div class="booth-view">
+      <video playsinline muted></video>
+      <span class="booth-rec"><i></i>LIVE</span>
+      <span class="booth-date"></span>
+    </div>
+    <p class="booth-msg" aria-live="polite"></p>
+    <div class="booth-row">
+      <button type="button" class="btn sm booth-close">Close</button>
+      <button type="button" class="booth-snap" aria-label="Take the photo" disabled><span></span></button>
+      <span class="booth-note">Prints on the receipt</span>
+    </div>
+  </dialog>
 </div>
 </body>
 </html>

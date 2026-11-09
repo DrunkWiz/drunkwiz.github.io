@@ -118,6 +118,8 @@ Motion respects `prefers-reduced-motion`: the receipt appears without printing, 
 
 All of it switches off or goes still under `prefers-reduced-motion`.
 
+There are also a few easter eggs (`assets/eggs.js`). The browser console has a hint.
+
 ## ➕ Adding a project
 
 1. **Screen:** save a WebP in `assets/shots/` (about 1100px wide for desktop screens, 560px for phones).
