@@ -13,9 +13,9 @@
  Lead Time                Track win
  Recall                         2nd
  Voucher Kaki              Finalist
- +9 more                    Shipped
+ +10 more                   Shipped
  ----------------------------------
- TOTAL                  12 projects
+ TOTAL                  13 projects
 
       Thank you. Come again.
 ```
@@ -82,7 +82,8 @@ To make it easier or harder, change `FIT` near the top of `assets/receipt.js`. H
 | 📮 | [CareLoop SG](https://careloop-sg-qloo.onrender.com) | Plans good days for seniors with high blood pressure around what they love. *Qloo Agentic Hackathon* |
 | 📮 | [Glowline](https://glowline.onrender.com) | Tells you whether a skincare product is actually working, from your own photos. *YouCam Skin AI Hackathon* |
 | 📮 | [Settle](https://github.com/DrunkWiz/paypal-hackathon) | Resolves online-shop complaints; the model writes the reply, code decides every dollar. *PayPal hackathon* |
-| 🕯️ | [git seance](https://github.com/DrunkWiz/git-seance) | Lets a deleted function tell its story, through a model on your own laptop. *Side project* |
+| 🕯️ | [git seance](https://github.com/DrunkWiz/git-seance) | Lets a deleted function tell its story, through a model on your own laptop. *Hacktoberfest 2026, week 4* |
+| 🛫 | [Born to Route](https://saf-kalimantan-prsbklhdba-as.a.run.app/) | Plans a sustainable aviation fuel network for Kalimantan at the lowest delivered cost. *Team build* |
 
 🏆 track winner · 🥈 placed · 🏁 finalist · 📮 submitted
 
