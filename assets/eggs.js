@@ -102,35 +102,71 @@
   });
 
   /* ---------------------------------------------------------------- 3. Kopi card
-     Secret. Only receipts posted in Hard mode count. Nothing shows until the 15th;
-     then the card appears with 15 of 20 stamps already on it. The count is kept with a
-     checksum, so editing localStorage by hand resets it to zero instead of filling it.
-     (Anyone reading this file can still forge it. It's a kopi.) */
+     Secret. Only hand-torn receipts posted in Hard mode count, and they arrive from the
+     printer through a private channel (drunkwizPrinter.connect), not the public event.
+     Each stamp is a record of the real tear (its edge, how long it took, how many moves),
+     chained to the one before with SHA-256, and the chain is sealed with an HMAC key the
+     browser makes and keeps non-extractable in IndexedDB. Edits, reorders and deletions
+     break the chain or the seal and the card starts again at zero.
+     The card appears at 15. At 20 it shows a kopi code and a proof. The proof is checked
+     off-site, by rules that are not in this repo. */
   var card = document.querySelector('.kopi-card');
-  if (card) {
-    var NEED = 20, REVEAL = 15, KEY = 'dw-kc';
+  if (card && P && P.connect && window.crypto && crypto.subtle && window.indexedDB) {
+    var NEED = 20, REVEAL = 15, KEY = 'dw-kc2', GAP = 4000;
     var holes = card.querySelector('.kc-holes'), reward = card.querySelector('.kc-reward'), cnt = card.querySelector('.kc-count');
+    var codeEl = card.querySelector('.kc-code'), copyBtn = card.querySelector('.kc-copy');
     for (var i = 0; i < NEED; i++) {
       var h = document.createElement('li');
       h.innerHTML = i === NEED - 1 ? '<span>FREE</span>' : '<span>' + (i + 1) + '</span>';
       holes.appendChild(h);
     }
-    var sum = function (t) {   // small string hash (FNV-1a), salted
-      var x = 2166136261, str = 'kopi-o-kosong|' + t.join(',');
-      for (var k = 0; k < str.length; k++) { x ^= str.charCodeAt(k); x = Math.imul(x, 16777619) >>> 0; }
-      return x.toString(36);
+    var enc = new TextEncoder();
+    var hex = function (buf) { return [].map.call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, '0'); }).join(''); };
+    var sha = function (str) { return crypto.subtle.digest('SHA-256', enc.encode(str)).then(hex); };
+    // stable JSON, so the same record always hashes the same way
+    var canon = function (r) { return JSON.stringify([r.shape, r.pct, r.W, r.dur, r.moves, r.at, r.pts]); };
+    var chain = function (log) {
+      return log.reduce(function (p, r) { return p.then(function (h) { return sha(h + '|' + canon(r)); }); }, sha('drunkwiz/kopi-card/v1'));
     };
+    // a per-browser HMAC key that page code can use but never read out
+    var keyP = new Promise(function (res, rej) {
+      var rq = indexedDB.open('dw-kopi', 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore('k'); };
+      rq.onerror = function () { rej(rq.error); };
+      rq.onsuccess = function () {
+        var db = rq.result, tx = db.transaction('k', 'readonly'), g = tx.objectStore('k').get('mac');
+        g.onsuccess = function () {
+          if (g.result) { res(g.result); return; }
+          crypto.subtle.generateKey({ name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']).then(function (k) {
+            var w = db.transaction('k', 'readwrite'); w.objectStore('k').put(k, 'mac');
+            w.oncomplete = function () { res(k); }; w.onerror = function () { rej(w.error); };
+          }, rej);
+        };
+        g.onerror = function () { rej(g.error); };
+      };
+    });
+    var seal = function (h) { return keyP.then(function (k) { return crypto.subtle.sign('HMAC', k, enc.encode(h)); }).then(hex); };
+    var unseal = function (h, mac) {
+      return keyP.then(function (k) {
+        var m = new Uint8Array((mac.match(/../g) || []).map(function (x) { return parseInt(x, 16); }));
+        return crypto.subtle.verify('HMAC', k, m, enc.encode(h));
+      });
+    };
+    var log = [], head = '';
     var load = function () {
-      try {
-        var o = JSON.parse(store(KEY) || 'null');
-        if (!o || !Array.isArray(o.t) || o.s !== sum(o.t)) return [];
-        // stamps must be real times, in order, at least 4 s apart (a reprint alone takes 3.5 s)
-        for (var k = 1; k < o.t.length; k++) if (o.t[k] - o.t[k - 1] < 4000) return [];
-        return o.t.slice(0, NEED);
-      } catch (e) { return []; }
+      var o; try { o = JSON.parse(store(KEY) || 'null'); } catch (e) { o = null; }
+      if (!o || !Array.isArray(o.log) || typeof o.mac !== 'string' || o.log.length > NEED) return Promise.resolve([]);
+      for (var k = 1; k < o.log.length; k++) if (!(o.log[k].at - o.log[k - 1].at >= GAP)) return Promise.resolve([]);
+      return chain(o.log).then(function (h) {
+        return unseal(h, o.mac).then(function (ok) { if (ok) head = h; return ok ? o.log : []; });
+      }).catch(function () { return []; });
     };
+    var save = function () {
+      return chain(log).then(function (h) { head = h; return seal(h); }).then(function (mac) { store(KEY, JSON.stringify({ v: 1, log: log, mac: mac })); });
+    };
+    var b64 = function (str) { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
     var paintCard = function (fresh) {
-      var t = load(), n = t.length;
+      var n = log.length;
       card.hidden = n < REVEAL;
       [].forEach.call(holes.children, function (h, k) {
         var on = k < n;
@@ -140,20 +176,27 @@
       cnt.textContent = n + ' of ' + NEED;
       card.setAttribute('aria-label', 'Kopi card, ' + n + ' of ' + NEED + ' stamps');
       reward.hidden = n < NEED;
+      if (n >= NEED) codeEl.textContent = 'KOPI-' + head.slice(0, 12).toUpperCase().match(/.{4}/g).join('-');
       if (fresh && n === REVEAL) {
         say('Fifteen in Hard mode. A kopi card has appeared on the board.');
         if (!reduce) card.classList.add('reveal');
       }
     };
-    document.addEventListener('receipt:posted', function (e) {
-      if (!e.detail || !e.detail.hard) return;
-      var t = load();
-      if (t.length >= NEED) return;
-      t.push(Date.now());
-      store(KEY, JSON.stringify({ t: t, s: sum(t) }));
-      paintCard(true);
+    var queue = load().then(function (l) { log = l; paintCard(false); });
+    P.connect(function (rec) {
+      queue = queue.then(function () {
+        if (log.length >= NEED) return;
+        if (log.length && rec.at - log[log.length - 1].at < GAP) return;
+        log.push(rec);
+        return save().then(function () { paintCard(true); });
+      }).catch(function () {});
     });
-    paintCard(false);
+    copyBtn.addEventListener('click', function () {
+      var proof = 'drunkwiz-kopi:' + b64(JSON.stringify({ v: 1, code: codeEl.textContent, log: log }));
+      var done = function () { copyBtn.querySelector('span').textContent = 'Copied'; setTimeout(function () { copyBtn.querySelector('span').textContent = 'Copy proof'; }, 2000); };
+      if (navigator.clipboard) navigator.clipboard.writeText(proof).then(done, function () { prompt('Copy your proof:', proof); });
+      else prompt('Copy your proof:', proof);
+    });
   }
 
   /* ---------------------------------------------------------------- 4. Closing time */

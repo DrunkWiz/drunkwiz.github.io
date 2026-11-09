@@ -152,7 +152,7 @@
     sheet.classList.add('tearing');
     var x0 = dir > 0 ? 0 : w;
     y = clamp(y, 16, H - 36);
-    tear = { dir: dir, W: w, H: H, tipX: x0, tipY: y, wob: 0, pts: [[x0, y]], stub: stub, sf: sf, pf: pf };
+    tear = { dir: dir, W: w, H: H, tipX: x0, tipY: y, wob: 0, pts: [[x0, y]], stub: stub, sf: sf, pf: pf, t0: performance.now(), moves: 0, by: 'hand' };
     draw();
     emit('tearstart');
   }
@@ -172,7 +172,7 @@
       t.pts.push([t.tipX, t.tipY + t.wob + (Math.random() - 0.5) * 1.5]);
       if (t.tipX === 0 || t.tipX === t.W) break;
     }
-    if (moved) emit('tearmove', { speed: moved / SPEED });
+    if (moved) { t.moves += 1; if (follow) t.by = 'printer'; emit('tearmove', { speed: moved / SPEED }); }
     draw();
     return t.tipX === (t.dir > 0 ? t.W : 0);
   }
@@ -240,6 +240,7 @@
     tear = null; drag = null; auto = null; state = 'gone';
     sheet.classList.remove('grabbing');
     var s = score(t);
+    t.dur = performance.now() - t.t0;
     emit('torn', { fits: s.fits, pct: s.pct });
 
     var r = receipt.getBoundingClientRect();
@@ -343,6 +344,15 @@
       if (ph) {
         var prr = ph.getBoundingClientRect();
         if (prr.top + prr.height / 2 - rr.top >= edgeAt(sorted, prr.left + prr.width / 2 - rr.left)) photo = ph.getAttribute('data-thumb') || null;
+      }
+      // Hard-mode tears go to the kopi card through a private channel, not the public event,
+      // with what the tear actually looked like: the card turns that into a signed, chained stamp.
+      if (stampSink && hard && t.by === 'hand') {
+        try {
+          var ev = sorted.filter(function (p, i) { return i % Math.max(1, Math.floor(sorted.length / 64)) === 0; })
+            .map(function (p) { return [Math.round(p[0] * 10) / 10, Math.round(p[1] * 10) / 10]; });
+          stampSink({ shape: shape.name, pct: score(t).pct, W: Math.round(t.W * 10) / 10, dur: Math.round(t.dur), moves: t.moves, at: Date.now(), pts: ev });
+        } catch (err) {}
       }
       emit('posted', { no: receipt.querySelector('.r-no').textContent, shape: shape.name, pct: score(t).pct, lines: carried, photo: photo, hard: hard,
         edge: sorted.filter(function (p, i) { return i % 4 === 0; }).map(function (p) { return [+(p[0] / t.W).toFixed(3), Math.round(p[1])]; }) });
@@ -485,7 +495,11 @@
     receipt.classList.add('printing');
     return true;
   }
-  window.drunkwizPrinter = { feed: feed, idle: function () { return state === 'idle' && !tear; }, receipt: receipt, hint: hint };
+  // connect() hands one listener the Hard-mode tear records, once. eggs.js claims it as the page loads;
+  // after that it is gone, so nothing typed into the console can attach a second listener.
+  var stampSink = null;
+  window.drunkwizPrinter = { feed: feed, idle: function () { return state === 'idle' && !tear; }, receipt: receipt, hint: hint,
+    connect: function (fn) { if (stampSink || typeof fn !== 'function') return false; stampSink = fn; delete window.drunkwizPrinter.connect; return true; } };
 
   setHard(hard);
   drawShape();

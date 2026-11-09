@@ -667,3 +667,6 @@ h3[tabindex="-1"]:focus{outline:none}
 @keyframes kdstamp{0%{opacity:0;transform:translate(-50%,-50%) rotate(-14deg) scale(2.2)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-14deg) scale(1)}}
 .r-discount b{display:block;font-size:2rem;letter-spacing:.04em;margin-top:.15rem}
 @media (prefers-reduced-motion:reduce){ .in-digicam .wrap,.dc-scan,.dc-track{animation:none} .dc-track{display:none} .r-discount{animation:none} }
+.kc-code{margin:.2rem 0 .9rem !important;font:700 1.15rem/1 var(--mono);letter-spacing:.08em;color:var(--ink);background:#EFEDE6;border:1.5px dashed #B9B7BE;border-radius:8px;padding:.7rem .8rem;text-align:center}
+.kc-actions{display:flex;flex-wrap:wrap;gap:.5rem}
+.kc-copy{color:var(--ink);border-color:#B9B7BE;background:transparent}
