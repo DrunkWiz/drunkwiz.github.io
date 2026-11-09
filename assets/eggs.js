@@ -337,8 +337,12 @@
     var date = stampDate(new Date());
     loadH2C().then(function (html2canvas) {
       var scale = 420 / window.innerWidth;
+      // html2canvas renders the page from its top-left, so the viewport's scroll offset is passed as a
+      // negative scrollX/scrollY (not as x/y, which would crop the top of the page every time).
+      var sx = window.scrollX || document.scrollingElement.scrollLeft || 0;
+      var sy = window.scrollY || document.scrollingElement.scrollTop || document.body.scrollTop || 0;
       return html2canvas(document.body, {
-        x: window.scrollX, y: window.scrollY, width: window.innerWidth, height: window.innerHeight,
+        x: 0, y: 0, scrollX: -sx, scrollY: -sy, width: window.innerWidth, height: window.innerHeight,
         windowWidth: document.documentElement.clientWidth, scale: scale, logging: false, useCORS: true,
         backgroundColor: getComputedStyle(document.body).backgroundColor || '#1E4B41',
         ignoreElements: function (el) { return el.classList && (el.classList.contains('digicam') || el.classList.contains('dc-flash') || el.classList.contains('snap-toast')); }
