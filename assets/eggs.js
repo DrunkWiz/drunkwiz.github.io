@@ -212,15 +212,27 @@
       cam = document.createElement('div');
       cam.className = 'digicam';
       cam.setAttribute('aria-hidden', 'true');
-      cam.innerHTML = '<div class="dc-blur"></div><div class="dc-grain"></div>' +
+      cam.innerHTML = '<svg class="dc-defs" aria-hidden="true"><filter id="vhs" x="-1%" y="0" width="102%" height="100%" color-interpolation-filters="sRGB">' +
+        // pull red right and blue left (chromatic aberration), smear sideways (colour bleed)
+        '<feGaussianBlur in="SourceGraphic" stdDeviation="0.9 0" result="soft"/>' +
+        '<feColorMatrix in="soft" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/><feOffset in="r" dx="3" result="r2"/>' +
+        '<feColorMatrix in="soft" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>' +
+        '<feColorMatrix in="soft" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/><feOffset in="b" dx="-3" result="b2"/>' +
+        '<feBlend in="r2" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b2" mode="screen"/></filter></svg>' +
+        '<div class="dc-blur"></div><div class="dc-scan"></div><div class="dc-track"></div><div class="dc-grain"></div>' +
         '<div class="dc-top"><span class="dc-rec"><i></i>REC</span><span class="dc-mode">P &nbsp;ISO 400 &nbsp;1/60 &nbsp;F2.8</span><span class="dc-bat"><i></i><i></i><i></i></span></div>' +
         '<div class="dc-frame"><i></i><i></i><i></i><i></i></div>' +
-        '<div class="dc-bot"><span>[ 2048 ] 7.2M &nbsp;D to exit</span><span class="dc-date">' + stampDate(new Date()) + '</span></div>';
+        '<div class="dc-bot"><span><b class="dc-play">&#9654; PLAY</b> &nbsp;SP &nbsp;<span class="dc-tc">0:00:00</span> &nbsp;&middot; D to exit</span><span class="dc-date">' + stampDate(new Date()) + '</span></div>';
       document.body.appendChild(cam);
       document.documentElement.classList.add('in-digicam');
+      var t0 = Date.now(), tc = cam.querySelector('.dc-tc');
+      cam._tick = setInterval(function () {   // tape counter
+        var s = Math.floor((Date.now() - t0) / 1000);
+        tc.textContent = Math.floor(s / 3600) + ':' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+      }, 1000);
       say('Digicam mode on. Press D or Escape to leave.');
     } else if (!on && cam) {
-      cam.remove(); cam = null;
+      clearInterval(cam._tick); cam.remove(); cam = null;
       document.documentElement.classList.remove('in-digicam');
       say('Digicam mode off.');
     }
@@ -232,6 +244,46 @@
     if (e.key === 'd' || e.key === 'D') { if (cam) digicam(false); else if (buf.trim() === 'd') digicam(true); }
   });
   document.addEventListener('pointerdown', function () { if (cam) flash(); }, true);
+
+  /* ---------------------------------------------------------------- 8. Konami code
+     Keyboard: up up down down left right left right B A.
+     Phone: swipe up, up, down, down, left, right, left, right, then tap twice. */
+  var KONAMI = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'], kseq = [];
+  function konamiStep(x) {
+    kseq.push(x); kseq = kseq.slice(-KONAMI.length);
+    if (kseq.join() === KONAMI.join()) { kseq = []; whenIdle(discount); }
+  }
+  function discount() {
+    var R = P.receipt;
+    if (R.querySelector('.r-discount')) return;
+    var st = document.createElement('div');
+    st.className = 'r-discount';
+    st.setAttribute('aria-hidden', 'true');
+    st.innerHTML = 'Employee<br>discount<b>100%</b>';
+    R.appendChild(st);
+    var tot = R.querySelector('[data-tally="total"]');
+    if (tot) tot.setAttribute('data-was', tot.textContent);
+    shutterSound();
+    say('Employee discount: 100%. Everything on this receipt is free.');
+  }
+  document.addEventListener('receipt:fresh', function () { var d = P && P.receipt.querySelector('.r-discount'); if (d) d.remove(); });
+  document.addEventListener('keydown', function (e) {
+    if (typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
+    var m = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', b: 'b', B: 'b', a: 'a', A: 'a' }[e.key];
+    if (m) konamiStep(m); else if (e.key.length === 1) kseq = [];
+  });
+  var tStart = null;
+  document.addEventListener('touchstart', function (e) { var t = e.changedTouches[0]; tStart = [t.clientX, t.clientY, Date.now()]; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (!tStart) return;
+    var t = e.changedTouches[0], dx = t.clientX - tStart[0], dy = t.clientY - tStart[1];
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 12 && Date.now() - tStart[2] < 300) {
+      konamiStep(kseq.length === 8 ? 'b' : 'a');   // the two taps stand in for B and A
+    } else if (Math.max(Math.abs(dx), Math.abs(dy)) > 40) {
+      konamiStep(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+    }
+    tStart = null;
+  }, { passive: true });
 
   /* ---------------------------------------------------------------- 7. Photobooth */
   var boothBtn = document.querySelector('.booth-btn'), dlg = document.querySelector('.booth');

@@ -646,3 +646,24 @@ h3[tabindex="-1"]:focus{outline:none}
 .kopi-card.reveal{animation:kcreveal .7s cubic-bezier(.2,.9,.3,1.2) both}
 @keyframes kcreveal{from{opacity:0;transform:translateY(-14px) rotate(-3deg) scale(.96)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){ .kopi-card.reveal{animation:none} }
+
+/* digicam mode, now with tape: RGB split, scanlines, tracking band, jitter */
+.dc-defs{position:absolute;width:0;height:0}
+.in-digicam .wrap{filter:url(#vhs) saturate(1.45) contrast(1.08) brightness(1.04);animation:vhsjit 3.2s steps(1) infinite}
+@keyframes vhsjit{0%,100%{transform:none}31%{transform:translateX(1.5px)}32%{transform:none}63%{transform:translate(-2px,1px)}64%{transform:none}88%{transform:translateX(3px) skewX(-.4deg)}89%{transform:none}}
+.dc-scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);mix-blend-mode:multiply;animation:vhsflick .12s steps(2) infinite}
+@keyframes vhsflick{50%{opacity:.82}}
+.dc-track{position:absolute;left:0;right:0;height:9%;top:-12%;
+  background:linear-gradient(180deg,transparent,rgba(255,255,255,.07) 30%,rgba(255,255,255,.16) 50%,rgba(255,255,255,.07) 70%,transparent),var(--grain);
+  -webkit-backdrop-filter:blur(1.5px) brightness(1.2);backdrop-filter:blur(1.5px) brightness(1.2);
+  animation:vhstrack 7s linear infinite}
+@keyframes vhstrack{0%{top:-12%}100%{top:105%}}
+.dc-grain{opacity:.22}
+.dc-play{color:#F6F2E8;letter-spacing:.06em;animation:none}
+.r-discount{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-14deg);z-index:4;pointer-events:none;
+  border:4px double var(--stamp);color:var(--stamp);border-radius:10px;padding:.5rem .9rem .55rem;text-align:center;
+  font:700 .9rem/1.15 var(--mono);letter-spacing:.14em;text-transform:uppercase;background:rgba(251,250,245,.55);mix-blend-mode:multiply;
+  animation:kdstamp .45s cubic-bezier(.2,.9,.3,1.25) both}
+@keyframes kdstamp{0%{opacity:0;transform:translate(-50%,-50%) rotate(-14deg) scale(2.2)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-14deg) scale(1)}}
+.r-discount b{display:block;font-size:2rem;letter-spacing:.04em;margin-top:.15rem}
+@media (prefers-reduced-motion:reduce){ .in-digicam .wrap,.dc-scan,.dc-track{animation:none} .dc-track{display:none} .r-discount{animation:none} }
