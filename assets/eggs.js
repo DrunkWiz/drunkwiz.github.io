@@ -3,7 +3,7 @@
    - a receipt in the developer console
    - type a kopitiam order anywhere ("kopi o kosong peng") and it prints on the receipt
    - a kopi card that stamps every posted receipt; ten stamps earn a kopi on me
-   - after midnight (the visitor's own clock) the shop is closing: lights dim, LAST ORDER, slow printing
+   - from 3:33 to 5:55am (the visitor's own clock) the shop is closing: lights dim, LAST ORDER, slow printing
    - shake a phone to feed a fresh receipt
    - press D for digicam mode
    - the camera in the footer is a photobooth that prints you as a thermal photo
@@ -40,7 +40,7 @@
       '└──────────────────────────────┘'
     ].join('\n');
     console.log('%c' + rec, 'font:13px/1.35 ui-monospace,Menlo,Consolas,monospace;color:#34333A;background:#FBFAF5;padding:10px 12px');
-    console.log('%cPS. Try typing a kopi order on the page. Or press D. Or come back after midnight.', 'font:12px ui-monospace,monospace;color:#C9372F');
+    console.log('%cPS. Try typing a kopi order on the page. Or press D. Or come back at 3:33am.', 'font:12px ui-monospace,monospace;color:#C9372F');
   } catch (e) {}
 
   /* ---------------------------------------------------------------- 2. Kopitiam orders */
@@ -200,8 +200,9 @@
   }
 
   /* ---------------------------------------------------------------- 4. Closing time */
-  var hr = new Date().getHours();
-  if (hr < 5) {   // midnight to 5am on the visitor's own clock
+  var now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
+  var OPEN_LATE = 3 * 60 + 33, CLOSE_LATE = 5 * 60 + 55;   // 3:33am to 5:55am on the visitor's own clock
+  if (mins >= OPEN_LATE && mins <= CLOSE_LATE) {
     document.documentElement.classList.add('after-hours');
     var where = P && P.receipt.querySelector('.r-head > span');
     if (where) where.textContent = 'LAST ORDER';
