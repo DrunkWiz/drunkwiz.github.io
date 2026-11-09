@@ -71,8 +71,11 @@ h1 em{font-style:normal;color:var(--paper);background:linear-gradient(transparen
 .receipt{
   background:var(--paper) var(--grain-ink);color:var(--ink);font:400 .8rem/1.55 var(--mono);
   padding:2.2rem 1.4rem 2.6rem;position:relative;
-  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%;
-          mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%;
+  /* zigzag edge; the second layer trims the last pixel row, which some screens drew as a hairline */
+  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%,linear-gradient(#000 calc(100% - 1.5px),#0000 0);
+  -webkit-mask-composite:source-in;
+          mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%,linear-gradient(#000 calc(100% - 1.5px),#0000 0);
+          mask-composite:intersect;
 }
 .printer .receipt{user-select:none;-webkit-user-select:none}
 .receipt.printing{animation:print var(--print-time,2.2s) steps(22,end) .35s both}
@@ -334,8 +337,11 @@ h3[tabindex="-1"]:focus{outline:none}
 .slip-paper{
   background:var(--paper) var(--grain-ink);color:var(--ink);font:400 .74rem/1.55 var(--mono);padding:.9rem 1rem 1.3rem;
   border-top:6px solid var(--table-deep);filter:drop-shadow(0 10px 12px rgba(0,0,0,.3));
-  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/12px 100%;
-          mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/12px 100%;
+  /* zigzag edge; the second layer trims the last pixel row, which some screens drew as a hairline */
+  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/12px 100%,linear-gradient(#000 calc(100% - 1.5px),#0000 0);
+  -webkit-mask-composite:source-in;
+          mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/12px 100%,linear-gradient(#000 calc(100% - 1.5px),#0000 0);
+          mask-composite:intersect;
 }
 .slip .r-list li > span:first-child{color:var(--ink-soft);text-transform:uppercase;font-size:.66rem;letter-spacing:.06em;padding-top:.1rem}
 .slip .r-list li > span:last-child{white-space:normal;text-align:right}
