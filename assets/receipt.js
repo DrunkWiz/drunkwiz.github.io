@@ -344,7 +344,7 @@
         var prr = ph.getBoundingClientRect();
         if (prr.top + prr.height / 2 - rr.top >= edgeAt(sorted, prr.left + prr.width / 2 - rr.left)) photo = ph.getAttribute('data-thumb') || null;
       }
-      emit('posted', { no: receipt.querySelector('.r-no').textContent, shape: shape.name, pct: score(t).pct, lines: carried, photo: photo,
+      emit('posted', { no: receipt.querySelector('.r-no').textContent, shape: shape.name, pct: score(t).pct, lines: carried, photo: photo, hard: hard,
         edge: sorted.filter(function (p, i) { return i % 4 === 0; }).map(function (p) { return [+(p[0] / t.W).toFixed(3), Math.round(p[1])]; }) });
       post.classList.remove('gulp');
       void post.offsetWidth;

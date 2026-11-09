@@ -101,29 +101,56 @@
     var ph = P && P.receipt.querySelector('.r-photo'); if (ph) ph.remove();
   });
 
-  /* ---------------------------------------------------------------- 3. Kopi card */
+  /* ---------------------------------------------------------------- 3. Kopi card
+     Secret. Only receipts posted in Hard mode count. Nothing shows until the 15th;
+     then the card appears with 15 of 20 stamps already on it. The count is kept with a
+     checksum, so editing localStorage by hand resets it to zero instead of filling it.
+     (Anyone reading this file can still forge it. It's a kopi.) */
   var card = document.querySelector('.kopi-card');
   if (card) {
+    var NEED = 20, REVEAL = 15, KEY = 'dw-kc';
     var holes = card.querySelector('.kc-holes'), reward = card.querySelector('.kc-reward'), cnt = card.querySelector('.kc-count');
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < NEED; i++) {
       var h = document.createElement('li');
-      h.innerHTML = i === 9 ? '<span>FREE</span>' : '<span>' + (i + 1) + '</span>';
+      h.innerHTML = i === NEED - 1 ? '<span>FREE</span>' : '<span>' + (i + 1) + '</span>';
       holes.appendChild(h);
     }
+    var sum = function (t) {   // small string hash (FNV-1a), salted
+      var x = 2166136261, str = 'kopi-o-kosong|' + t.join(',');
+      for (var k = 0; k < str.length; k++) { x ^= str.charCodeAt(k); x = Math.imul(x, 16777619) >>> 0; }
+      return x.toString(36);
+    };
+    var load = function () {
+      try {
+        var o = JSON.parse(store(KEY) || 'null');
+        if (!o || !Array.isArray(o.t) || o.s !== sum(o.t)) return [];
+        // stamps must be real times, in order, at least 4 s apart (a reprint alone takes 3.5 s)
+        for (var k = 1; k < o.t.length; k++) if (o.t[k] - o.t[k - 1] < 4000) return [];
+        return o.t.slice(0, NEED);
+      } catch (e) { return []; }
+    };
     var paintCard = function (fresh) {
-      var n = Math.min(10, parseInt(store('dw-stamps') || '0', 10) || 0);
+      var t = load(), n = t.length;
+      card.hidden = n < REVEAL;
       [].forEach.call(holes.children, function (h, k) {
         var on = k < n;
         h.classList.toggle('on', on);
         h.classList.toggle('new', !!fresh && on && k === n - 1 && !reduce);
       });
-      cnt.textContent = n + ' of 10';
-      card.setAttribute('aria-label', 'Kopi card, ' + n + ' of 10 stamps');
-      reward.hidden = n < 10;
+      cnt.textContent = n + ' of ' + NEED;
+      card.setAttribute('aria-label', 'Kopi card, ' + n + ' of ' + NEED + ' stamps');
+      reward.hidden = n < NEED;
+      if (fresh && n === REVEAL) {
+        say('Fifteen in Hard mode. A kopi card has appeared on the board.');
+        if (!reduce) card.classList.add('reveal');
+      }
     };
-    document.addEventListener('receipt:posted', function () {
-      var n = Math.min(10, (parseInt(store('dw-stamps') || '0', 10) || 0) + 1);
-      store('dw-stamps', String(n));
+    document.addEventListener('receipt:posted', function (e) {
+      if (!e.detail || !e.detail.hard) return;
+      var t = load();
+      if (t.length >= NEED) return;
+      t.push(Date.now());
+      store(KEY, JSON.stringify({ t: t, s: sum(t) }));
       paintCard(true);
     });
     paintCard(false);
