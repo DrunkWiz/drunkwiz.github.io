@@ -30,6 +30,7 @@
   var SPEED = 18;           // max px the tear advances per frame
   var FOLLOW = 0.5;         // how tightly the tear follows the cursor up and down (0 to 1)
   var FIT = { normal: 8.5, hard: 6.5 }; // how far off (px, on average) a tear can be and still fit
+  var SAMPLE_GAP = 2;       // px between samples when scoring a tear (was about 13 px, 24 samples)
   var LIP = 30;             // y of the slot's lip inside the slot drawing
   var NS = 'http://www.w3.org/2000/svg';
   // Other scripts (sound, the pinboard) listen for these instead of reaching in here.
@@ -152,7 +153,7 @@
     sheet.classList.add('tearing');
     var x0 = dir > 0 ? 0 : w;
     y = clamp(y, 16, H - 36);
-    tear = { dir: dir, W: w, H: H, tipX: x0, tipY: y, wob: 0, pts: [[x0, y]], stub: stub, sf: sf, pf: pf, t0: performance.now(), moves: 0, by: 'hand' };
+    tear = { dir: dir, W: w, H: H, tipX: x0, tipY: y, wob: 0, pts: [[x0, y]], dpts: [[x0, y]], stub: stub, sf: sf, pf: pf, t0: performance.now(), moves: 0, by: 'hand' };
     draw();
     emit('tearstart');
   }
@@ -169,7 +170,8 @@
       if (follow) t.tipY = t.anchor + prof(t.tipX / t.W);
       else t.tipY += (clamp(ty, 16, t.H - 36) - t.tipY) * FOLLOW;   // the tear lags the hand a little
       t.wob = clamp(t.wob + (Math.random() - 0.5) * 1.7, -2.8, 2.8); // slow wander of the fibres
-      t.pts.push([t.tipX, t.tipY + t.wob + (Math.random() - 0.5) * 1.5]);
+      t.pts.push([t.tipX, t.tipY]);   // the hand's path: this is what gets scored and recorded
+      t.dpts.push([t.tipX, t.tipY + t.wob + (Math.random() - 0.5) * 1.5]);   // the same path with paper fibres, for drawing only
       if (t.tipX === 0 || t.tipX === t.W) break;
     }
     if (moved) { t.moves += 1; if (follow) t.by = 'printer'; emit('tearmove', { speed: moved / SPEED }); }
@@ -181,7 +183,7 @@
     var t = tear, start = t.dir > 0 ? 0 : t.W, far = t.dir > 0 ? t.W : 0;
     var done = t.tipX === far;
     var lower = [], upper = [];
-    t.pts.forEach(function (p) {
+    t.dpts.forEach(function (p) {
       var gap = Math.min(5, Math.abs(t.tipX - p[0]) * 0.03); // the tear opens wider behind the tip
       lower.push([p[0], p[1] + gap * 0.75]);
       upper.push([p[0], p[1] - gap * 0.25]);
@@ -222,10 +224,12 @@
     }
     return pts[pts.length - 1][1];
   }
+  // Sample the edge about every SAMPLE_GAP px between 4% and 96% of the width (never fewer than 24).
+  function scoreSamples(w) { return Math.max(24, Math.round(w * 0.92 / SAMPLE_GAP)); }
   // How closely the torn edge matches the slot's shape. Height doesn't matter, only shape.
   function score(t) {
     var pts = t.pts.slice().sort(function (a, b) { return a[0] - b[0]; });
-    var diffs = [], n = 24;
+    var diffs = [], n = scoreSamples(t.W);
     for (var k = 0; k < n; k++) {
       var x = t.W * (0.04 + 0.92 * k / (n - 1));
       diffs.push(edgeAt(pts, x) - prof(x / t.W));
@@ -247,7 +251,8 @@
     var wrap = document.createElement('div');
     wrap.className = 'fall';
     wrap.setAttribute('aria-hidden', 'true');
-    wrap.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px';
+    // Page coordinates (absolute), so the piece stays with the page if it scrolls mid-fall.
+    wrap.style.cssText = 'left:' + (r.left + window.pageXOffset) + 'px;top:' + (r.top + window.pageYOffset) + 'px;width:' + r.width + 'px';
     var piece = receipt.cloneNode(true);
     strip(piece);
     wrap.appendChild(piece);
