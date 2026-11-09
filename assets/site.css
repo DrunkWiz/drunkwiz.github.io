@@ -670,3 +670,19 @@ h3[tabindex="-1"]:focus{outline:none}
 .kc-code{margin:.2rem 0 .9rem !important;font:700 1.15rem/1 var(--mono);letter-spacing:.08em;color:var(--ink);background:#EFEDE6;border:1.5px dashed #B9B7BE;border-radius:8px;padding:.7rem .8rem;text-align:center}
 .kc-actions{display:flex;flex-wrap:wrap;gap:.5rem}
 .kc-copy{color:var(--ink);border-color:#B9B7BE;background:transparent}
+
+/* digicam snapshots on the board */
+.pin.snap{background:#F7F4EC;padding:7px 7px 26px;border-radius:2px}
+.pin.snap img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;filter:sepia(calc(var(--age,0) * .8))}
+.snap-cap{position:absolute;left:0;right:0;bottom:6px;text-align:center;font:700 .7rem/1 "Courier New",monospace;color:#E07B12;letter-spacing:.06em}
+.pin.snap .tack{top:-6px}
+.snap-toast{position:fixed;left:50%;bottom:68px;transform:translateX(-50%);z-index:96;background:#F6F2E8;color:#141416;font:700 .8rem/1 var(--mono);letter-spacing:.06em;padding:.7rem 1rem;border-radius:999px;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:toastin .3s ease-out both}
+.snap-toast.out{opacity:0;transition:opacity .5s}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translateX(-50%)}}
+
+/* Konami trail */
+.k-trail{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:97;display:flex;gap:.3rem;padding:.45rem .6rem;border-radius:999px;background:rgba(14,36,31,.92);box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:0;transition:opacity .25s;pointer-events:none}
+.k-trail.show{opacity:1}
+.k-trail span{font:700 .9rem/1 var(--mono);color:rgba(246,242,232,.3);min-width:1.1em;text-align:center}
+.k-trail span.on{color:#F0A49E}
+@media (prefers-reduced-motion:reduce){ .snap-toast{animation:none} .k-trail{transition:none} }

@@ -286,15 +286,89 @@
     // D on its own, after a pause, so it never fires in the middle of an order like "milo dinosaur"
     if (e.key === 'd' || e.key === 'D') { if (cam) digicam(false); else if (buf.trim() === 'd') digicam(true); }
   });
-  document.addEventListener('pointerdown', function () { if (cam) flash(); }, true);
+  // Every click in digicam mode is a snapshot: the page as it looks right now, given a tape look, pinned to the board.
+  var lastSnap = 0, h2c = null;
+  function loadH2C() {
+    if (window.html2canvas) return Promise.resolve(window.html2canvas);
+    if (h2c) return h2c;
+    h2c = new Promise(function (res, rej) {
+      var sc = document.createElement('script');
+      sc.src = 'https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.11/dist/html2canvas-pro.min.js';
+      sc.onload = function () { res(window.html2canvas); };
+      sc.onerror = function () { h2c = null; rej(new Error('html2canvas')); };
+      document.head.appendChild(sc);
+    });
+    return h2c;
+  }
+  function toast(text) {
+    var t = document.createElement('a');
+    t.className = 'snap-toast'; t.href = '#board'; t.textContent = text;
+    document.body.appendChild(t);
+    setTimeout(function () { t.classList.add('out'); }, 3200);
+    setTimeout(function () { t.remove(); }, 3800);
+  }
+  function tape(src, date) {
+    // red right, blue left, scanlines, a little noise, then the date stamp burnt in
+    var W = src.width, H = src.height, c = document.createElement('canvas'); c.width = W; c.height = H;
+    var x = c.getContext('2d'), a = src.getContext('2d').getImageData(0, 0, W, H).data, out = x.createImageData(W, H), o = out.data, SH = 3;
+    for (var y = 0; y < H; y++) {
+      var line = (y % 3 === 0) ? 0.78 : 1, jitter = Math.random() < 0.015 ? 4 : 0;
+      for (var xx = 0; xx < W; xx++) {
+        var i = (y * W + xx) * 4, r = (y * W + Math.min(W - 1, Math.max(0, xx - SH - jitter))) * 4, b = (y * W + Math.min(W - 1, xx + SH)) * 4, n = (Math.random() - 0.5) * 18;
+        o[i] = Math.min(255, (a[r] * 1.08 + n) * line);
+        o[i + 1] = Math.min(255, (a[i + 1] + n) * line);
+        o[i + 2] = Math.min(255, (a[b + 2] * 1.1 + n) * line);
+        o[i + 3] = 255;
+      }
+    }
+    x.putImageData(out, 0, 0);
+    x.font = 'bold ' + Math.round(H * 0.075) + 'px "Courier New", monospace';
+    x.textAlign = 'right'; x.shadowColor = 'rgba(255,140,20,.8)'; x.shadowBlur = 6; x.fillStyle = '#FF9A1F';
+    x.fillText(date, W - W * 0.04, H - H * 0.06);
+    x.textAlign = 'left'; x.shadowColor = 'rgba(0,0,0,.6)'; x.fillStyle = '#F6F2E8';
+    x.font = 'bold ' + Math.round(H * 0.06) + 'px "Courier New", monospace';
+    x.fillText('\u25B6 PLAY', W * 0.04, H * 0.11);
+    return c.toDataURL('image/jpeg', 0.72);
+  }
+  function takeSnapshot() {
+    var now = Date.now();
+    if (now - lastSnap < 1500 || !window.drunkwizBoard) return;   // one snapshot a second and a half
+    lastSnap = now;
+    var date = stampDate(new Date());
+    loadH2C().then(function (html2canvas) {
+      var scale = 420 / window.innerWidth;
+      return html2canvas(document.body, {
+        x: window.scrollX, y: window.scrollY, width: window.innerWidth, height: window.innerHeight,
+        windowWidth: document.documentElement.clientWidth, scale: scale, logging: false, useCORS: true,
+        backgroundColor: getComputedStyle(document.body).backgroundColor || '#1E4B41',
+        ignoreElements: function (el) { return el.classList && (el.classList.contains('digicam') || el.classList.contains('dc-flash') || el.classList.contains('snap-toast')); }
+      });
+    }).then(function (canvas) {
+      if (window.drunkwizBoard.pinPhoto(tape(canvas, date), date)) toast('Snapshot pinned to the board \u2193');
+    }).catch(function (e) { try { console.warn('Digicam snapshot failed:', e); } catch (x) {} });
+  }
+  document.addEventListener('pointerdown', function () { if (cam) { flash(); takeSnapshot(); } }, true);
 
   /* ---------------------------------------------------------------- 8. Konami code
      Keyboard: up up down down left right left right B A.
      Phone: swipe up, up, down, down, left, right, left, right, then tap twice. */
   var KONAMI = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'], kseq = [];
+  var trail = null, trailT = 0, GLYPH = { up: '\u2191', down: '\u2193', left: '\u2190', right: '\u2192', b: 'B', a: 'A' };
+  function showTrail(n) {
+    if (!trail) { trail = document.createElement('div'); trail.className = 'k-trail'; trail.setAttribute('aria-hidden', 'true'); document.body.appendChild(trail); }
+    trail.innerHTML = KONAMI.map(function (k, i) { return '<span class="' + (i < n ? 'on' : '') + '">' + GLYPH[k] + '</span>'; }).join('');
+    trail.classList.add('show');
+    clearTimeout(trailT); trailT = setTimeout(function () { trail.classList.remove('show'); }, n === KONAMI.length ? 1600 : 2500);
+  }
   function konamiStep(x) {
     kseq.push(x); kseq = kseq.slice(-KONAMI.length);
-    if (kseq.join() === KONAMI.join()) { kseq = []; whenIdle(discount); }
+    // how much of the code has been entered so far, counting from the latest key
+    var n = 0;
+    for (var k = Math.min(kseq.length, KONAMI.length); k > 0; k--) {
+      if (kseq.slice(-k).join() === KONAMI.slice(0, k).join()) { n = k; break; }
+    }
+    if (n >= 3) showTrail(n);
+    if (n === KONAMI.length) { kseq = []; whenIdle(discount); }
   }
   function discount() {
     var R = P.receipt;
@@ -315,18 +389,23 @@
     var m = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', b: 'b', B: 'b', a: 'a', A: 'a' }[e.key];
     if (m) konamiStep(m); else if (e.key.length === 1) kseq = [];
   });
-  var tStart = null;
-  document.addEventListener('touchstart', function (e) { var t = e.changedTouches[0]; tStart = [t.clientX, t.clientY, Date.now()]; }, { passive: true });
-  document.addEventListener('touchend', function (e) {
+  var tStart = null, tLast = null;
+  document.addEventListener('touchstart', function (e) { var t = e.changedTouches[0]; tStart = [t.clientX, t.clientY, Date.now()]; tLast = [t.clientX, t.clientY]; }, { passive: true });
+  document.addEventListener('touchmove', function (e) { var t = e.changedTouches[0]; tLast = [t.clientX, t.clientY]; }, { passive: true });
+  var touchDone = function (e) {
     if (!tStart) return;
-    var t = e.changedTouches[0], dx = t.clientX - tStart[0], dy = t.clientY - tStart[1];
+    // a swipe that scrolls the page often ends as touchcancel, so fall back to the last known position
+    var t = e.type === 'touchend' ? e.changedTouches[0] : { clientX: tLast[0], clientY: tLast[1] };
+    var dx = t.clientX - tStart[0], dy = t.clientY - tStart[1];
     if (Math.max(Math.abs(dx), Math.abs(dy)) < 12 && Date.now() - tStart[2] < 300) {
       konamiStep(kseq.length === 8 ? 'b' : 'a');   // the two taps stand in for B and A
     } else if (Math.max(Math.abs(dx), Math.abs(dy)) > 40) {
       konamiStep(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
     }
     tStart = null;
-  }, { passive: true });
+  };
+  document.addEventListener('touchend', touchDone, { passive: true });
+  document.addEventListener('touchcancel', touchDone, { passive: true });
 
   /* ---------------------------------------------------------------- 7. Photobooth */
   var boothBtn = document.querySelector('.booth-btn'), dlg = document.querySelector('.booth');

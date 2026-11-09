@@ -42,7 +42,17 @@
   var saved = [];
   try { saved = JSON.parse(store('dw-pins') || '[]') || []; } catch (e) { saved = []; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function snapshot(p) {
+    var li = document.createElement('li');
+    li.className = 'pin snap';
+    li.style.setProperty('--r', (((p.at / 1000) | 0) % 11 - 5) + 'deg');
+    li.style.setProperty('--age', age(p.at || now).toFixed(3));
+    li.innerHTML = '<img alt="" src="' + esc(p.img) + '"><span class="snap-cap">' + esc(p.cap || '') + '</span><i class="tack" aria-hidden="true"></i>';
+    li.setAttribute('aria-label', 'Digicam snapshot of this page, ' + (p.cap || ''));
+    return li;
+  }
   function scrap(p) {
+    if (p.type === 'photo') return snapshot(p);
     // The posted piece is the part below the tear, so its torn edge is on top.
     var W = 160, TOP = 22, H = 180, ys = p.edge.map(function (q) { return q[1]; });
     var mid = (Math.max.apply(null, ys) + Math.min.apply(null, ys)) / 2;
@@ -86,6 +96,21 @@
     }
   });
   if (clear) clear.addEventListener('click', function () { saved = []; store('dw-pins', '[]'); renderBoard(); });
+
+  // Digicam snapshots (eggs.js) are pinned here too. Keep at most 6 of them, so they can't fill the browser's storage.
+  window.drunkwizBoard = {
+    pinPhoto: function (img, cap) {
+      if (!board) return false;
+      saved.push({ type: 'photo', img: img, cap: cap, at: Date.now() });
+      var photos = saved.filter(function (p) { return p.type === 'photo'; });
+      if (photos.length > 6) saved.splice(saved.indexOf(photos[0]), 1);
+      if (saved.length > 12) saved.shift();
+      try { localStorage.setItem('dw-pins', JSON.stringify(saved)); }
+      catch (e) { saved.pop(); return false; }   // storage full: don't pin what can't be kept
+      renderBoard(true);
+      return true;
+    }
+  };
   renderBoard();
 
   /* ---- Tall screens scroll with the page, like a screen recording.
