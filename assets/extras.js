@@ -164,6 +164,25 @@
     document.addEventListener('receipt:posted', thunk);
   }
 
+  /* ---- Shelf of the other builds: arrow buttons for mouse users ---- */
+  var tiles = document.querySelector('.tiles');
+  if (tiles) {
+    var sb = document.querySelectorAll('[data-shelf]');
+    var paintShelf = function () {
+      sb[0].disabled = tiles.scrollLeft < 8;
+      sb[1].disabled = tiles.scrollLeft + tiles.clientWidth > tiles.scrollWidth - 8;
+    };
+    sb.forEach(function (btn) {
+      btn.hidden = false;
+      btn.addEventListener('click', function () {
+        tiles.scrollBy({ left: +btn.getAttribute('data-shelf') * tiles.clientWidth * 0.8, behavior: reduce ? 'auto' : 'smooth' });
+      });
+    });
+    tiles.addEventListener('scroll', paintShelf, { passive: true });
+    window.addEventListener('resize', paintShelf);
+    paintShelf();
+  }
+
   /* ---- Card -> write-up: the title and screen glide to their place on projects.html ---- */
   function name(card, on) {
     var t = card.querySelector('h3'), s = card.querySelector('.shot');
@@ -172,10 +191,10 @@
   }
   document.addEventListener('click', function (e) {
     var a = e.target.closest('a[href^="projects.html#"]');
-    var card = a && a.closest('.feat, .mini');
+    var card = a && a.closest('.feat, .mini, .tile');
     if (card) name(card, true);
   });
   window.addEventListener('pageshow', function () {
-    document.querySelectorAll('.feat, .mini').forEach(function (c) { name(c, false); });
+    document.querySelectorAll('.feat, .mini, .tile').forEach(function (c) { name(c, false); });
   });
 })();

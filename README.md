@@ -121,7 +121,7 @@ All of it switches off or goes still under `prefers-reduced-motion`.
 ## ➕ Adding a project
 
 1. **Screen:** save a WebP in `assets/shots/` (about 1100px wide for desktop screens, 560px for phones).
-2. **`index.html`:** copy an `<article class="mini">` block into the grid. If it placed, it goes in the top section as an `<article class="feat">` instead, ordered by result.
+2. **`index.html`:** copy an `<li class="tile">` into the shelf under the top three, and update the "N more builds" and "Explore all N" counts. The home page features only the top three: if a new project places above one of them, it becomes an `<article class="feat">` and the one it replaces moves to the shelf.
 3. **`projects.html`:** add a ledger row, an `<article class="feat slide">` with the story inside `.deck-track`, and a matching `<button class="dot">` in `.deck-dots`. For a demo, add `<div class="demo" data-demo="your-id"></div>` at the end of the article and a function under the same id in `assets/demos.js`. The slide counter updates itself.
 4. **The receipt in `index.html`:** a placed or finalist project gets its own line with `data-result="win|second|finalist"`. Otherwise bump `data-count` and the label on the `+N more` line. The results strip and total update themselves.
 5. Bump the counts in the closing receipt, the meta description and `og:description`.
