@@ -549,3 +549,4 @@ h3[tabindex="-1"]:focus{outline:none}
 .shelf-nav a{margin-left:.5rem}
 .deck-btn.sm{width:40px;height:40px}
 @media (hover:none){ .shelf-nav .deck-btn{display:none} }
+.board[hidden]{display:none}

@@ -70,6 +70,7 @@
       pins.appendChild(el);
     });
     empty.hidden = saved.length > 0; clear.hidden = saved.length === 0;
+    board.hidden = saved.length === 0;   // the corkboard only appears once something is pinned
   }
   document.addEventListener('receipt:posted', function (e) {
     if (!board) return;
