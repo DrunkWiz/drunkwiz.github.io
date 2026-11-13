@@ -1,7 +1,7 @@
 /* index.html only. Loaded by extras.js when the arcade shelf scrolls near, after arcade-art.js.
    The arcade shelf: click a machine and the page zooms into it; each one runs a small fishing game.
-   Loop: aim, hold to charge, release to cast, wait (fake nibbles), bite, hook, reel on a tension bar,
-   catch or lose. Catches go to the fish log (dw-fish) and out as an arcade:catch event; this file
+   Loop: cast, wait (fake nibbles), bite, strike, then a fight that differs per machine:
+   pocket, line tension; TV game, the zone bar; desktop, point and follow with a net; terminal, type to reel. Catches go to the fish log (dw-fish) and out as an arcade:catch event; this file
    prints the slip and pins the fish. Nothing is sent anywhere.
    The game keeps its positions from 0 to 1; each machine draws them its own way. */
 (function () {
@@ -13,7 +13,7 @@
      Every number that changes how it plays or looks, with why. */
   var BOOT_MS = 1300;          // made-up boot; the spec caps it at 1.5 s and any key skips it
   var WAIT_MIN = 2000;         // shortest wait for a bite (spec: 2 to 8 s)
-  var WAIT_MAX = 8000;         // longest wait for a bite
+  var WAIT_MAX = 6000;         // longest wait for a bite: relaxed, so a little under the spec's 8 s
   var NIBBLES_MAX = 2;         // up to two fake nibbles per wait, so a twitch isn't always a bite
   var NIBBLE_CHANCE = 0.6;     // chance of each possible nibble happening
   var NIBBLE_MS = 260;         // a nibble twitches the float about this long
@@ -24,7 +24,6 @@
   var AIM_EDGE = 0.07;         // how close to the screen's sides you can aim
   var LOST_MS = 1500;          // how long a "got away" message stays before you can cast again
   var CARD_LOCK_MS = 700;      // the catch card ignores presses this long, so a held reel doesn't skip it
-  var START_PROGRESS = 0.3;    // a hooked fish starts with the meter a third full: a fair start, not a free one
   var BOUNCE = 0.35;           // the catch zone keeps 35% of its speed when it hits the bottom of the bar
   var FISH_PAUSE_MS = [200, 700];   // how long a fish holds still when it pauses
   var SHADOWS = 4;             // fish drifting about in the water, for something to look at
@@ -42,31 +41,54 @@
   var POP_MS = 1400;           // the pet bursting on the little screen
   var LCD_MAX_SCALE = 10;      // the egg's 32x16 screen stops growing here; bigger would just be blocks
 
-  // How each rarity fights. speed/dashSpeed: bar heights per second. dash, pause: chance per second / per stop.
-  // weight: how often it bites, against the others it shares the water with.
+  // How each rarity behaves, on the relaxed side: most fish land first or second try; rares take a few.
+  // weight: how often it bites, against the others in the same water. speed/dashSpeed: per second.
+  // dash: chance per second of a burst; pause: chance of holding still after a move.
+  // thrash: seconds between thrashes on the line (pocket). rounds, keys: the terminal's prompts per fish and keys per prompt.
   var RARITY = {
-    common:   { speed: 0.32, dashSpeed: 0.9, dash: 0.10, pause: 0.40, weight: 14 },   // 5 commons: about 70 together
-    uncommon: { speed: 0.45, dashSpeed: 1.2, dash: 0.25, pause: 0.30, weight: 18 },
-    rare:     { speed: 0.62, dashSpeed: 1.8, dash: 0.55, pause: 0.18, weight: 7 },    // the hardest regular fight
-    night:    { speed: 0.58, dashSpeed: 1.6, dash: 0.45, pause: 0.15, weight: 24 }    // only bites 3:33 to 5:55am, so it bites often then
+    common:   { weight: 14, speed: 0.22, dashSpeed: 0.6, dash: 0.06, pause: 0.50, thrash: [2.8, 4.2], rounds: 2, keys: 3 },   // 5 commons: about 70 together
+    uncommon: { weight: 18, speed: 0.30, dashSpeed: 0.8, dash: 0.12, pause: 0.40, thrash: [2.2, 3.4], rounds: 3, keys: 3 },
+    rare:     { weight: 7,  speed: 0.40, dashSpeed: 1.1, dash: 0.25, pause: 0.30, thrash: [1.6, 2.6], rounds: 3, keys: 4 },   // the hardest regular fight
+    night:    { weight: 24, speed: 0.38, dashSpeed: 1.0, dash: 0.22, pause: 0.30, thrash: [1.7, 2.8], rounds: 3, keys: 4 }    // only bites 3:33 to 5:55am, so it bites often then
+  };
+  // Each fight's numbers. Every one forgives once before the fish is lost.
+  var LINE = {                 // pocket: hold to reel, let go when it thrashes
+    reel: 0.17,                // distance wound in per second while holding (about 6 s for a whole fish)
+    up: 0.12,                  // tension per second while holding: you can hold a long while before it frays
+    down: 0.5,                 // tension eased per second when you let go
+    thrashUp: 1.0,             // tension per second if you keep holding through a thrash
+    slip: 0.03, thrashSlip: 0.07,   // distance the fish takes back per second when you let go, calm and thrashing
+    thrashMs: 800,             // a thrash lasts this long
+    first: [1.2, 2.0]          // seconds before the first thrash
+  };
+  var BAR = { start: 0.35 };   // TV game: the meter starts a third full; the machine sets the rest
+  var NET = {                  // desktop: keep the net on the fish
+    r: 0.15,                   // the net's radius, in pond heights
+    fill: 0.42, drain: 0.1,    // meter per second, inside and outside the net
+    start: 0.3,                // the meter starts here
+    grace: 1500,               // ms at an empty meter before the fish gets away
+    key: 0.7,                  // pond widths per second the net moves on the arrow keys
+    pace: 0.9                  // fish speed, as a share of its rarity's speed
+  };
+  var TYPE = {                 // terminal: type the keys shown
+    base: 2.2, per: 0.6,       // seconds to type a prompt: base plus this per key
+    misses: 3,                 // timeouts allowed before it gets away
+    keys: ['left', 'right', 'a', 'ent']   // the keys on the terminal's own key row
   };
 
-  // Machines, easiest first. Base difficulty: zone is the catch zone's share of the bar; lift and gravity in
-  // bar heights per s²; fill and drain in meters per second; hook is ms to strike after a bite.
-  // k: how many screen pixels make one drawing pixel (the desktop has more pixels than the pocket one).
+  // Machines, easiest first. hook: ms to strike after a bite. draw: how the screen is drawn; fight: how a hooked
+  // fish is landed. k: how many screen pixels make one drawing pixel (the desktop has more pixels than the pocket one).
+  // The TV game's bar: zone is the catch zone's share of the bar, lift and gravity per s², fill and drain per second.
   var MACHINES = {
-    pocket: { name: 'Pocket', label: 'Pocket console', draw: 'top', W: 160, H: 144, k: 1,
-      hook: 600, zone: 0.32, lift: 2.6, gravity: 1.6, fill: 0.42, drain: 0.24,
-      keys: 'Space, Enter or Z: cast, hook, reel. Arrows: aim. X: reel in. Esc: leave.' },
-    tv: { name: 'TV game', label: 'TV game', draw: 'side', W: 256, H: 240, k: 1,
-      hook: 500, zone: 0.28, lift: 2.8, gravity: 1.8, fill: 0.38, drain: 0.27,
-      keys: 'Space, Enter or Z: cast, hook, reel. X: reel in. Esc: leave.' },
-    desk: { name: 'Desktop', label: 'Desktop', draw: 'top', W: 512, H: 342, k: 2, onebit: true,
-      hook: 420, zone: 0.24, lift: 3.0, gravity: 2.0, fill: 0.34, drain: 0.30,
-      keys: 'Point to aim. Hold the mouse button, or Space, to cast, hook and reel. X: reel in. Esc: leave.' },
-    term: { name: 'Terminal', label: 'Terminal', draw: 'text', W: 320, H: 150, k: 1, cols: 80,
-      hook: 300, zone: 0.22, lift: 3.2, gravity: 2.2, fill: 0.36, drain: 0.28,
-      keys: 'Space or Enter: cast, hook, reel. Arrows: aim. X: reel in. Esc: leave.' },
+    pocket: { name: 'Pocket', label: 'Pocket console', draw: 'top', fight: 'line', W: 160, H: 144, k: 1, hook: 900,
+      keys: 'Space, Enter or Z: cast. Then hold to reel in, and let go while it thrashes. Arrows: aim. X: reel in. Esc: leave.' },
+    tv: { name: 'TV game', label: 'TV game', draw: 'side', fight: 'bar', W: 256, H: 240, k: 1, hook: 800,
+      zone: 0.38, lift: 2.4, gravity: 1.5, fill: 0.5, drain: 0.16,
+      keys: 'Space, Enter or Z: cast. Then hold to lift your zone and keep the fish inside it. X: reel in. Esc: leave.' },
+    desk: { name: 'Desktop', label: 'Desktop', draw: 'desk', fight: 'net', W: 512, H: 342, k: 2, onebit: true, hook: 800,
+      keys: 'Click the water to drop the lure. Click when a fish takes it, then keep the net on the fish. Arrows and Space work too. Esc: leave.' },
+    term: { name: 'Terminal', label: 'Terminal', draw: 'text', fight: 'type', W: 320, H: 150, k: 1, cols: 80, hook: 650,
+      keys: 'Space or Enter: cast and strike. Then type the keys shown: left, right, Space, Enter. Esc: leave.' },
     // The egg: no fishing, only feeding. Its fish come from the log; each feed uses one catch.
     egg: { name: 'Egg', label: 'Egg', draw: 'lcd', W: 32, H: 16, k: 1, max: LCD_MAX_SCALE,
       keys: 'A or arrows: pick a fish. B, Space or Enter: feed it. C or X: name and size. Esc: leave.' }
@@ -77,7 +99,7 @@
     tv: '<div class="arc-pad"><div class="arc-dpad">' + pad4() + '</div><div class="arc-sel" aria-hidden="true"><i></i><i></i></div><div class="arc-ab">' + btn('b', 'B: reel in', 'B') + btn('a', 'A: cast, hook, reel', 'A') + '</div></div>',
     desk: '<div class="arc-mouse">' + btn('a', 'Button: cast, hook, reel', '') + '</div>',
     egg: '<p class="arc-cap" aria-live="polite"></p><div class="arc-abc">' + btn('a', 'A: next fish', 'A') + btn('b', 'B: feed', 'B') + btn('c', 'C: name and size', 'C') + '</div>',
-    term: '<div class="arc-keyrow">' + btn('left', 'Aim left', '←') + btn('right', 'Aim right', '→') + btn('a', 'Space: cast, hook, reel', '␣') + btn('a', 'Enter: cast, hook, reel', '↵') + '</div>'
+    term: '<div class="arc-keyrow">' + btn('left', 'Left', '←') + btn('right', 'Right', '→') + btn('a', 'Space', '␣') + btn('ent', 'Enter', '↵') + '</div>'
   };
   function btn(k, label, t) { return '<button type="button" tabindex="-1" data-k="' + k + '" aria-label="' + label + '">' + t + '</button>'; }
   function pad4() { return btn('up', 'Up', '') + btn('left', 'Aim left', '') + btn('right', 'Aim right', '') + btn('down', 'Down', '') + '<i aria-hidden="true"></i>'; }
@@ -170,10 +192,14 @@
     cv.addEventListener('pointerdown', function (e) {
       e.preventDefault(); cv.focus({ preventScroll: true });
       try { cv.setPointerCapture(e.pointerId); } catch (x) {}
-      if (G.state === 'aim') G.aimX = clamp(toLogical(e).x, AIM_EDGE, 1 - AIM_EDGE);
+      if (M.fight === 'net') netPoint(e);
+      else if (G.state === 'aim') G.aimX = clamp(toLogical(e).x, AIM_EDGE, 1 - AIM_EDGE);
       press('a');
     });
-    cv.addEventListener('pointermove', function (e) { if (G.state === 'aim' && e.pointerType === 'mouse') G.aimX = clamp(toLogical(e).x, AIM_EDGE, 1 - AIM_EDGE); });
+    cv.addEventListener('pointermove', function (e) {
+      if (M.fight === 'net') { if (e.pointerType === 'mouse' || e.buttons) netPoint(e); return; }   // a finger drags the net
+      if (G.state === 'aim' && e.pointerType === 'mouse') G.aimX = clamp(toLogical(e).x, AIM_EDGE, 1 - AIM_EDGE);
+    });
     var cvUp = function () { release('a'); };
     cv.addEventListener('pointerup', cvUp); cv.addEventListener('pointercancel', cvUp);
     window.addEventListener('resize', function () { if (isOpen) layout(); });
@@ -274,20 +300,21 @@
     if (e.target === closeBtn && (e.key === 'Enter' || e.key === ' ')) return;
     e.stopPropagation();   // keep kopi orders, the Konami code and digicam (D) from firing underneath
     var k = (M && M.draw === 'lcd' ? EGG_KEYS : KEYS)[e.key];
+    if (k && M.fight === 'type' && e.key === 'Enter') k = 'ent';   // the terminal tells Enter and Space apart
     if (k) { e.preventDefault(); if (!e.repeat) press(k); }
     else if (G.state === 'boot') G.skip = true;
   }, true);
   window.addEventListener('keyup', function (e) {
     if (!isOpen) return;
     e.stopPropagation();
-    var k = (M && M.draw === 'lcd' ? EGG_KEYS : KEYS)[e.key]; if (k) release(k);
+    var k = (M && M.draw === 'lcd' ? EGG_KEYS : KEYS)[e.key]; if (k && M.fight === 'type' && e.key === 'Enter') k = 'ent'; if (k) release(k);
   }, true);
 
   /* ---------------------------------------------------------------- Game state, all from 0 to 1 */
   var G = {};
   function reset() {
     if (M.draw === 'lcd') { G = { state: window.drunkwizPet.get().pet ? 'pet' : 'egg', sel: eggSel, info: false, px: 2, dir: 1, t0: performance.now() }; held = {}; hit = {}; caption(); return; }
-    G = { state: 'boot', t0: performance.now(), aimX: 0.5, power: 0, msg: '', nibbles: [], ripple: [], shadows: [] };
+    G = { state: 'boot', t0: performance.now(), aimX: 0.5, power: 0, msg: '', nibbles: [], ripple: [], shadows: [], cx: 0.5, cy: 0.5 };
     var pool = ART.FISH[cur].filter(function (f) { return f.rarity === 'common'; });
     for (var i = 0; i < SHADOWS; i++) G.shadows.push({ x: between(0.05, 0.95), y: between(0.05, 0.95), v: (rnd() < 0.5 ? -1 : 1) * between(0.02, 0.06), f: pool[i % pool.length] });
     held = {}; hit = {};
@@ -309,8 +336,12 @@
     if (M.draw === 'lcd') { eggUpdate(now, dt); hit = {}; return; }
     var s = G.state;
     G.shadows.forEach(function (f) { f.x += f.v * dt; if (f.x < 0.03 || f.x > 0.97) { f.v = -f.v; f.x = clamp(f.x, 0.03, 0.97); } });
+    if (M.fight === 'type' && s !== 'reel') { if (hit.ent) hit.a = true; }   // outside a fight, Enter is just A
+    var A = held.a || (M.fight === 'type' && s !== 'reel' && held.ent);
     if (s === 'boot') {
-      if (G.skip || hit.a || hit.b || now - G.t0 > BOOT_MS) { G.state = 'aim'; announce(M.name + ' pond. Hold A to charge, let go to cast.'); }
+      if (G.skip || hit.a || hit.b || now - G.t0 > BOOT_MS) { G.state = 'aim'; announce(M.name + ' pond. ' + M.keys); }
+    } else if (M.fight === 'net' && (s === 'aim' || s === 'wait' || s === 'bite')) {
+      netCast(now, dt);
     } else if (s === 'aim' || s === 'charge') {
       if (held.left) G.aimX -= AIM_SPEED * dt;
       if (held.right) G.aimX += AIM_SPEED * dt;
@@ -319,7 +350,7 @@
       else {
         var p = ((now - G.c0) / CHARGE_MS) % 2; G.power = p > 1 ? 2 - p : p;
         if (hit.b) G.state = 'aim';
-        else if (!held.a) { sfx('cast'); G.state = 'cast'; G.c0 = now; G.zone = G.power < NEAR_SPLIT ? 'near' : 'far'; G.to = { x: G.aimX, d: G.power }; G.q = 0; }
+        else if (!A) { sfx('cast'); G.state = 'cast'; G.c0 = now; G.zone = G.power < NEAR_SPLIT ? 'near' : 'far'; G.to = { x: G.aimX, d: G.power }; G.q = 0; }
       }
     } else if (s === 'cast') {
       G.q = Math.min(1, (now - G.c0) / CAST_MS);
@@ -347,36 +378,165 @@
     hit = {};
   }
 
-  /* ---------------------------------------------------------------- The fight: a vertical bar.
-     0 is the bottom, 1 the top. Holding A lifts your zone, letting go lets it fall. The meter fills while
-     the fish is inside the zone and drains while it's outside. Full: caught. Empty: the line snaps. */
+  /* ---------------------------------------------------------------- The fights. Each machine lands a fish its own way.
+     start sets it up; step runs every frame and ends in caught() or lose(). G.progress (0 to 1) is how close it is. */
   function startReel(now) {
-    var R = RARITY[G.fish.rarity];
-    G.state = 'reel'; G.c0 = now; G.progress = START_PROGRESS;
-    G.zy = 0; G.zv = 0; G.fy = between(0.3, 0.7); G.ft = between(0, 1); G.fs = R.speed; G.pause = 0; G.lastStat = 0; G.where = '';
-    announce('Hooked. Hold to lift your zone, keep the fish inside it.');
+    G.state = 'reel'; G.c0 = now; G.lastStat = 0; G.where = ''; G.second = false;
+    FIGHTS[M.fight].start(now, RARITY[G.fish.rarity]);
   }
-  function reel(now, dt) {
-    var R = RARITY[G.fish.rarity], zone = M.zone;
-    G.zv += (held.a ? M.lift : -M.gravity) * dt;
-    G.zy += G.zv * dt;
-    if (G.zy < 0) { G.zy = 0; G.zv = -G.zv * BOUNCE; if (G.zv < 0.05) G.zv = 0; }
-    if (G.zy > 1 - zone) { G.zy = 1 - zone; G.zv = 0; }
-    if (now >= G.pause) {
-      if (rnd() < R.dash * dt) { G.ft = G.fy > 0.5 ? between(0, 0.3) : between(0.7, 1); G.fs = R.dashSpeed; }   // a dash, to the far side
-      var d = G.ft - G.fy, step = G.fs * dt;
-      if (Math.abs(d) <= step) {
-        G.fy = G.ft; G.fs = R.speed; G.ft = between(0.05, 0.95);
-        if (rnd() < R.pause) G.pause = now + between(FISH_PAUSE_MS[0], FISH_PAUSE_MS[1]);
-      } else G.fy += Math.sign(d) * step;
+  function reel(now, dt) { FIGHTS[M.fight].step(now, dt, RARITY[G.fish.rarity]); }
+  function status(now, text) { if (text !== G.where && now - G.lastStat > STATUS_GAP_MS) { G.where = text; G.lastStat = now; tstat.textContent = text; } }
+  function landed() { sfx('catch'); tstat.textContent = ''; caught(performance.now()); }
+  function gone(msg, say) { sfx('snap'); tstat.textContent = ''; lose(msg, say); }
+  // a fish wandering about from 0 to 1 on one axis, with pauses and dashes (the bar and the net use it)
+  function wander(now, dt, R, k, axis) {
+    var o = G[axis];
+    if (now < o.pause) return;
+    if (rnd() < R.dash * dt) { o.t = o.v > 0.5 ? between(0, 0.3) : between(0.7, 1); o.s = R.dashSpeed * k; }
+    var d = o.t - o.v, step = o.s * dt;
+    if (Math.abs(d) <= step) { o.v = o.t; o.s = R.speed * k; o.t = between(0.05, 0.95); if (rnd() < R.pause) o.pause = now + between(FISH_PAUSE_MS[0], FISH_PAUSE_MS[1]); }
+    else o.v += Math.sign(d) * step;
+  }
+  function track(R, k) { return { v: between(0.3, 0.7), t: between(0.05, 0.95), s: R.speed * k, pause: 0 }; }
+
+  var FIGHTS = {
+    // Pocket: line tension. Hold to wind it in; the gauge climbs. When it thrashes, let go or the line frays,
+    // then snaps the second time. Wind the distance to nothing to land it.
+    line: {
+      start: function (now, R) {
+        G.dist = 1; G.ten = 0; G.thrashEnd = 0; G.nextThrash = now + between(LINE.first[0], LINE.first[1]) * 1000;
+        announce('Hooked. Hold to reel it in. Let go while it thrashes.');
+      },
+      step: function (now, dt, R) {
+        var thr = now < G.thrashEnd;
+        if (!thr && now >= G.nextThrash) {
+          G.thrashEnd = now + LINE.thrashMs; G.nextThrash = G.thrashEnd + between(R.thrash[0], R.thrash[1]) * 1000; thr = true;
+          sfx('plip'); announce('It is thrashing. Let go.');
+        }
+        if (held.a) { G.dist -= LINE.reel * dt * (thr ? 0.3 : 1); G.ten += (thr ? LINE.thrashUp : LINE.up) * dt; if (now - (G.tick || 0) > TICK_MS) { G.tick = now; sfx('tick'); } }
+        else { G.ten -= LINE.down * dt; G.dist += (thr ? LINE.thrashSlip : LINE.slip) * dt; }
+        G.ten = clamp(G.ten, 0, 1); G.dist = clamp(G.dist, 0, 1); G.progress = 1 - G.dist;
+        status(now, thr ? 'Thrashing: let go' : G.ten > 0.75 ? 'Line tight: ease off' : 'Line steady');
+        if (G.ten >= 1) {
+          if (!G.second) { G.second = true; G.ten = 0.3; G.dist = Math.min(1, G.dist + 0.2); G.frayAt = now; sfx('snap'); announce('The line frayed. Once more and it snaps.'); }
+          else gone('LINE SNAPPED.', 'The line snapped. The ' + G.fish.name + ' got away.');
+        } else if (G.dist <= 0) landed();
+      }
+    },
+    // TV game: the zone bar. 0 is the bottom, 1 the top. Holding lifts your zone, letting go lets it fall.
+    // The meter fills while the fish is inside the zone and drains outside. The first time it empties the fish slips
+    // and the meter comes back to a third; the second time it is gone.
+    bar: {
+      start: function (now, R) {
+        G.progress = BAR.start; G.zy = 0; G.zv = 0; G.f = track(R, 1);
+        announce('Hooked. Hold to lift your zone, keep the fish inside it.');
+      },
+      step: function (now, dt, R) {
+        var zone = M.zone;
+        G.zv += (held.a ? M.lift : -M.gravity) * dt; G.zy += G.zv * dt;
+        if (G.zy < 0) { G.zy = 0; G.zv = -G.zv * BOUNCE; if (G.zv < 0.05) G.zv = 0; }
+        if (G.zy > 1 - zone) { G.zy = 1 - zone; G.zv = 0; }
+        wander(now, dt, R, 1, 'f'); G.fy = G.f.v;
+        var inside = G.fy >= G.zy && G.fy <= G.zy + zone;
+        G.progress = clamp(G.progress + (inside ? M.fill : -M.drain) * dt, 0, 1);
+        if (held.a && now - (G.tick || 0) > TICK_MS) { G.tick = now; sfx('tick'); }
+        status(now, inside ? 'Fish in your zone' : G.fy > G.zy ? 'Fish above your zone' : 'Fish below your zone');
+        if (G.progress >= 1) landed();
+        else if (G.progress <= 0) {
+          if (!G.second) { G.second = true; G.progress = BAR.start; sfx('plip'); announce('It nearly slipped off. One more chance.'); }
+          else gone('IT SLIPPED OFF.', 'It slipped off the hook. The ' + G.fish.name + ' got away.');
+        }
+      }
+    },
+    // Desktop: the hooked fish darts about the pond; keep the net (the pointer) on it until the meter fills.
+    net: {
+      start: function (now, R) {
+        G.progress = NET.start; G.zeroAt = 0;
+        G.nx = track(R, NET.pace); G.ny = track(R, NET.pace); G.nx.v = G.lure.x; G.ny.v = G.lure.y;
+        announce('Hooked. Keep the net on it until the meter fills.');
+      },
+      step: function (now, dt, R) {
+        netKeys(dt);
+        wander(now, dt, R, NET.pace, 'nx'); wander(now, dt, R, NET.pace * 0.8, 'ny');
+        G.fx = G.nx.v; G.fyy = G.ny.v;
+        var g = deskGeo(), d = Math.hypot((G.cx - G.fx) * g.PW, (G.cy - G.fyy) * g.PH) / g.PH, inside = d < NET.r;
+        G.progress = clamp(G.progress + (inside ? NET.fill : -NET.drain) * dt, 0, 1);
+        if (inside && now - (G.tick || 0) > TICK_MS * 2) { G.tick = now; sfx('tick'); }
+        status(now, inside ? 'Fish in the net' : 'Fish ' + (G.fyy < G.cy ? 'above' : 'below') + (G.fx < G.cx ? ' left of' : ' right of') + ' the net');
+        if (G.progress >= 1) landed();
+        else if (G.progress <= 0) { if (!G.zeroAt) G.zeroAt = now; else if (now - G.zeroAt > NET.grace) gone('IT SWAM OFF.', 'It swam off. The ' + G.fish.name + ' got away.'); }
+        else G.zeroAt = 0;
+      }
+    },
+    // Terminal: each round shows a few keys; type them before the time runs out. A wrong key does nothing.
+    // A round run out of time costs a round back; three of those and it gets away.
+    type: {
+      start: function (now, R) { G.round = 0; G.rounds = R.rounds; G.miss = 0; G.progress = 0; prompt(now, R); announce('Hooked. Type the keys shown.'); },
+      step: function (now, dt, R) {
+        var k = TYPE.keys.filter(function (x) { return hit[x]; })[0];
+        if (k) {
+          if (k === G.seq[G.pos]) {
+            G.pos++; sfx('tick');
+            if (G.pos === G.seq.length) {
+              G.round++; G.progress = G.round / G.rounds;
+              if (G.round >= G.rounds) { landed(); return; }
+              sfx('plip'); prompt(now, R);
+            }
+          } else G.wrong = now;
+        }
+        if (now > G.deadline) {
+          G.miss++; G.round = Math.max(0, G.round - 1); G.progress = G.round / G.rounds;
+          if (G.miss >= TYPE.misses) { gone('IT GOT AWAY.', 'Too slow. The ' + G.fish.name + ' got away.'); return; }
+          sfx('snap'); announce('Too slow. It pulled back.'); prompt(now, R);
+        }
+      }
     }
-    var inside = G.fy >= G.zy && G.fy <= G.zy + zone;
-    G.progress = clamp(G.progress + (inside ? M.fill : -M.drain) * dt, 0, 1);
-    var where = inside ? 'Fish in your zone' : G.fy > G.zy ? 'Fish above your zone' : 'Fish below your zone';
-    if (where !== G.where && now - G.lastStat > STATUS_GAP_MS) { G.where = where; G.lastStat = now; tstat.textContent = where; }
-    if (held.a && now - (G.tick || 0) > TICK_MS) { G.tick = now; sfx('tick'); }
-    if (G.progress >= 1) { sfx('catch'); caught(now); }
-    else if (G.progress <= 0) { sfx('snap'); tstat.textContent = ''; lose('LINE SNAPPED.', 'The line snapped. The ' + G.fish.name + ' got away.'); }
+  };
+  var SAY = { left: 'left', right: 'right', a: 'space', ent: 'enter' };
+  function prompt(now, R) {
+    G.seq = []; for (var i = 0; i < R.keys; i++) G.seq.push(TYPE.keys[Math.floor(rnd() * TYPE.keys.length)]);
+    G.pos = 0; G.deadline = now + (TYPE.base + TYPE.per * R.keys) * 1000;
+    tstat.textContent = 'Type: ' + G.seq.map(function (k) { return SAY[k]; }).join(', ');
+  }
+
+  /* ---------------------------------------------------------------- The desktop's own cast: click the water to drop the
+     lure, a fish comes over to look, click when it takes it. Coordinates are 0 to 1 across the pond window. */
+  function deskGeo() {
+    var VW = M.W / K, VH = M.H / K, WX = 10, WY = 16, WW = VW - 20, WH = VH - 24;
+    return { VW: VW, VH: VH, WX: WX, WY: WY, WW: WW, WH: WH, PX: WX + 1, PY: WY + 11, PW: WW - 2, PH: WH - 12 };
+  }
+  function netPoint(e) {
+    var g = deskGeo(), p = toLogical(e);
+    G.cx = clamp((p.x * g.VW - g.PX) / g.PW, 0.02, 0.98); G.cy = clamp((p.y * g.VH - g.PY) / g.PH, 0.03, 0.97);
+  }
+  function netKeys(dt) {
+    if (held.left) G.cx -= NET.key * dt; if (held.right) G.cx += NET.key * dt;
+    if (held.up) G.cy -= NET.key * dt * 1.4; if (held.down) G.cy += NET.key * dt * 1.4;
+    G.cx = clamp(G.cx, 0.02, 0.98); G.cy = clamp(G.cy, 0.03, 0.97);
+  }
+  function netCast(now, dt) {
+    var s = G.state;
+    netKeys(dt);
+    if (s === 'aim') {
+      if (hit.a) {
+        sfx('cast'); G.lure = { x: G.cx, y: G.cy }; G.zone = G.cy < 0.5 ? 'far' : 'near'; G.ripple.push(now);
+        var wait = between(WAIT_MIN, WAIT_MAX), a = rnd() * Math.PI * 2;
+        G.state = 'wait'; G.c0 = now; G.biteAt = now + wait; G.nibbles = [];
+        for (var n = 0; n < NIBBLES_MAX; n++) if (rnd() < NIBBLE_CHANCE) G.nibbles.push(now + between(600, Math.max(700, wait - 700)));
+        G.from = { x: clamp(G.lure.x + Math.cos(a) * 0.45, 0.05, 0.95), y: clamp(G.lure.y + Math.sin(a) * 0.45, 0.05, 0.95) };
+      }
+    } else if (s === 'wait') {
+      G.nib = G.nibbles.some(function (nt) { return now >= nt && now < nt + NIBBLE_MS; });
+      var q = Math.min(1, (now - G.c0) / (G.biteAt - G.c0) * 0.85 + (G.nib ? 0.1 : 0));   // a fish comes over, with a look or two
+      G.sx = G.from.x + (G.lure.x - G.from.x) * q; G.sy = G.from.y + (G.lure.y - G.from.y) * q;
+      if (hit.a) lose('TOO EARLY.', 'Too early. It swam off.');
+      else if (hit.b) G.state = 'aim';
+      else if (now >= G.biteAt) { G.fish = pickFish(G.zone); G.state = 'bite'; G.c0 = now; G.sx = G.lure.x; G.sy = G.lure.y; sfx('plip'); announce('It took the lure. Click!'); }
+    } else if (s === 'bite') {
+      if (hit.a) startReel(now);
+      else if (hit.b) G.state = 'aim';
+      else if (now - G.c0 > M.hook) lose('IT GOT AWAY.', 'Too slow. It got away.');
+    }
   }
   function pad(n) { return String(n).padStart(2, '0'); }
   function caught(now) {
@@ -495,11 +655,18 @@
       if (one) { ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, M.W, M.H); ctx.globalCompositeOperation = 'source-over'; }
       else { ctx.globalAlpha = 0.7; px(0, 0, VW, VH, 0); ctx.globalAlpha = 1; }
     }
-    if (s === 'reel') {
-      line(tip.x, tip.y, tx, ty, 3);
-      px(tx - 4 + ((now / 80) | 0) % 3, ty + 1, 9, 1, 0);
-      bar(VW - 28, 16, 16, VH - 52, [3, 0, 1, 2, 3, 2]);
-      txt(held.a ? 'REEL!' : (one ? 'HOLD' : 'HOLD A'), 8, VH - 13, 0);
+    if (s === 'reel') {   // line tension: the fish comes in along the line; a gauge shows the strain
+      var thr = now < G.thrashEnd, fx2 = tip.x + (tx - tip.x) * G.dist, fy2 = tip.y + (ty - tip.y) * G.dist;
+      if (thr) fx2 += Math.sin(now / 28) * 2.5;
+      line(tip.x, tip.y, fx2, fy2, 3);
+      px(fx2 - 4, fy2, 9, 3, 2); px(fx2 - 3, fy2 - 1, 7, 1, 2); px(fx2 - 6, fy2 + 1, 2, 1, 2);
+      px(fx2 - 6 + ((now / 90) | 0) % 4, fy2 + 4, 12, 1, 0);
+      if (thr && blink(110)) spr(ART.sheet('bite', ART.BITE, PAL), fx2, fy2 - 9);
+      var gw = 58, danger = G.ten > 0.75;
+      px(8, VH - 16, gw + 2, 7, 3); px(9, VH - 15, gw, 5, 0); px(9, VH - 15, Math.round(gw * G.ten), 5, danger && blink(120) ? 3 : 2);
+      px(9 + Math.round(gw * 0.75), VH - 16, 1, 7, 3);
+      txt(thr ? 'LET GO!' : danger ? 'EASE OFF' : held.a ? 'REELING' : 'HOLD A', 72, VH - 14, 0);
+      if (G.second) txt('FRAYED', VW - 4, VH - 14, 0, 'right');
     }
     if (s === 'card') topCard();
     if (s === 'lost') { box(cx - 56, VH / 2 - 20, 112, 28); txt(G.msg, cx, VH / 2 - 8, 3, 'center'); }
@@ -515,7 +682,55 @@
     txt(c.len + ' CM', cx, top + 66, 2, 'center');
     if (f.rarity !== 'common') txt(f.rarity, cx, top + 74, 3, 'center');
     txt('NO.' + String(c.no).padStart(3, '0') + '  ' + c.time + '  ' + M.name, cx, top + 84, 2, 'center');
-    if (performance.now() - G.c0 > CARD_LOCK_MS) txt(M.onebit ? 'CLICK: OK' : 'A: OK', cx, top + 93, 3, 'center');
+    if (performance.now() - G.c0 > CARD_LOCK_MS) txt(M.fight === 'net' ? 'CLICK: OK' : 'A: OK', cx, top + 93, 3, 'center');
+  }
+
+  /* ---------------------------------------------------------------- The desktop: a window onto the pond, one bit.
+     Shades: 0 white, 1 light dither, 2 dark dither, 3 black. */
+  function drawDesk(now) {
+    var g = deskGeo(), VW = g.VW, VH = g.VH, s = G.state, t = now / 1000;
+    function P(x, y) { return { x: g.PX + x * g.PW, y: g.PY + y * g.PH }; }
+    if (s === 'boot') {
+      px(0, 0, VW, VH, 2);
+      var q = Math.min(1, (now - G.t0) / (BOOT_MS * 0.6)), w = Math.round(30 + q * 110), h = Math.round(16 + q * 50);
+      px(VW / 2 - w / 2, VH / 2 - h / 2, w, h, 3); px(VW / 2 - w / 2 + 1, VH / 2 - h / 2 + 1, w - 2, h - 2, 0);
+      if (q >= 1) txt('DESKTOP', VW / 2, VH / 2 - 3, 3, 'center');
+      return;
+    }
+    px(0, 0, VW, VH, 2);                                                   // the desktop behind the window
+    px(0, 0, VW, 9, 0); px(0, 9, VW, 1, 3);                                // menu bar
+    txt('DESKTOP', 4, 2, 3); txt(caughtIn(cur) + '/' + ART.FISH[cur].length + ' CAUGHT', VW - 4, 2, 3, 'right');
+    px(g.WX + 2, g.WY + 2, g.WW, g.WH, 3);                                 // the window, its shadow and title bar
+    px(g.WX, g.WY, g.WW, g.WH, 3); px(g.WX + 1, g.WY + 1, g.WW - 2, 9, 0); px(g.WX, g.WY + 10, g.WW, 1, 3);
+    px(g.WX + 4, g.WY + 3, 5, 5, 3); px(g.WX + 5, g.WY + 4, 3, 3, 0);
+    txt('THE POND', g.WX + g.WW / 2, g.WY + 3, 3, 'center');
+    px(g.PX, g.PY, g.PW, g.PH, 1);                                         // the water
+    for (var i = 0; i < 14; i++) px(g.PX + ((i * 47 + t * (3 + i % 3)) % g.PW), g.PY + 3 + (i * 31) % (g.PH - 6), 4 + (i % 3), 1, 0);
+    G.shadows.forEach(function (f) { var p = P(f.x, f.y); px(p.x - 4, p.y, 9, 3, 2); px(f.v > 0 ? p.x - 6 : p.x + 5, p.y + 1, 2, 1, 2); });
+    function fishAt(x, y, dark) { px(x - 5, y - 1, 11, 4, dark ? 3 : 2); px(x - 7, y, 2, 2, dark ? 3 : 2); px(x + 3, y, 1, 1, 0); }
+    if (s === 'wait' || s === 'bite') {
+      var lp = P(G.lure.x, G.lure.y), sp2 = P(G.sx, G.sy);
+      fishAt(sp2.x, sp2.y, s === 'bite');
+      px(lp.x - 1, lp.y - 1, 3, 3, 3); px(lp.x, lp.y, 1, 1, 0);
+      ripples(now, function (a) { var rr = 2 + a * 8; px(lp.x - rr, lp.y + 3, rr * 2, 1, 0); });
+      if (s === 'bite' && blink(90)) txt('!', lp.x, lp.y - 9, 3, 'center');
+    }
+    if (s === 'reel') {   // the net: a ring and a handle on the pointer, and the meter in the title bar
+      var fp = P(G.fx, G.fyy), cp = P(G.cx, G.cy), r = NET.r * g.PH;
+      fishAt(fp.x, fp.y, true);
+      for (var a2 = 0; a2 < 40; a2++) { var an = a2 / 40 * Math.PI * 2; px(cp.x + Math.cos(an) * r, cp.y + Math.sin(an) * r, 1, 1, 3); }
+      line(cp.x + r * 0.7, cp.y + r * 0.7, cp.x + r * 1.4, cp.y + r * 1.4, 3);
+      var mx = g.WX + g.WW - 56;
+      px(mx, g.WY + 3, 50, 5, 3); px(mx + 1, g.WY + 4, 48, 3, 0); px(mx + 1, g.WY + 4, Math.round(48 * G.progress), 3, 3);
+    } else if (s === 'aim' || s === 'wait' || s === 'bite') {   // the pointer, as a lure on a line
+      var c2 = P(G.cx, G.cy);
+      if (s === 'aim') { line(c2.x, g.PY, c2.x, c2.y - 2, 3); px(c2.x - 1, c2.y - 1, 3, 3, 3); }
+    }
+    var hint = { aim: 'CLICK THE WATER TO DROP THE LURE', wait: 'WAIT FOR A BITE', bite: 'CLICK!', reel: 'KEEP THE NET ON IT' }[s];
+    if (hint) { var hw = ART.textWidth(hint) + 6; px(g.WX + g.WW / 2 - hw / 2, g.PY + g.PH - 10, hw, 9, 0); txt(hint, g.WX + g.WW / 2, g.PY + g.PH - 8, 3, 'center'); }
+    if (s === 'bite' && now - G.c0 < FLASH_MS) { ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, M.W, M.H); ctx.globalCompositeOperation = 'source-over'; }
+    if (s === 'card') topCard();
+    if (s === 'lost') { box(VW / 2 - 56, VH / 2 - 14, 112, 28); txt(G.msg, VW / 2, VH / 2 - 2, 3, 'center'); }
   }
 
   /* ---------------------------------------------------------------- Side view: the TV game, 16 colours.
@@ -641,18 +856,23 @@
       if (s === 'bite') { at(fc, fr - 1, '!', 0); at(1, 22, '*BEL* STRIKE NOW', 0); }
       if (s === 'wait') at(1, 22, 'WAITING' + (blink() ? '_' : ''), 1);
     }
-    if (s === 'reel') {
-      dots(tc, tr);
+    if (s === 'reel') {   // type to reel: the fish comes a little closer with every prompt typed
+      var k3 = G.progress, fc2 = Math.round(tc + (mid - tc) * k3 * 0.8), fr2 = Math.round(tr + (17 - tr) * k3 * 0.8);
       var a = G.fish.ascii, wig = ((now / 120) | 0) % 2;
-      at(clamp(tc - (a.length >> 1) + wig, 0, C - a.length - 8), tr, a, 0);   // the fish on the line, read it if you can
-      var bc = C - 4, top = 3, h = 16;
-      for (var br = 0; br < h; br++) { at(bc - 1, top + br, '|', 2); at(bc + 1, top + br, '|', 2); }
-      var z0 = Math.round(G.zy * (h - 1)), z1 = Math.round((G.zy + M.zone) * (h - 1));
-      for (var zr = z0; zr <= z1; zr++) at(bc, top + h - 1 - zr, '#', 1);
-      at(bc, top + h - 1 - Math.round(G.fy * (h - 1)), '<', 0);
-      var m = Math.round(G.progress * h);
-      for (var mr = 0; mr < h; mr++) at(bc - 3, top + h - 1 - mr, mr < m ? '█' : '.', mr < m ? 1 : 2);
-      at(1, 22, held.a ? 'REELING...' : 'HOLD SPACE TO REEL', 0);
+      dots(fc2, fr2);
+      at(clamp(fc2 - (a.length >> 1) + wig, 0, C - a.length), fr2, a, 0);   // the fish on the line, read it if you can
+      var GLYPH = { left: '\u2190', right: '\u2192', a: '\u2423', ent: '\u21B5' }, x0 = (mid + 3) * 4, y0 = 20 * 6 + 2;
+      G.seq.forEach(function (k, i) {
+        var done = i < G.pos, here = i === G.pos;
+        ART.text(ctx, GLYPH[k], x0 + i * 12, y0, PALR[done ? 2 : here ? 0 : 1], 'left', 2);
+        if (here && blink(250)) px(x0 + i * 12, y0 + 11, 6, 1, 0);
+      });
+      if (G.wrong && now - G.wrong < 200) at(mid + 3 + G.seq.length * 3, 21, '?', 0);   // a wrong key: nothing lost
+      var left = clamp((G.deadline - now) / ((TYPE.base + TYPE.per * G.seq.length) * 1000), 0, 1), n2 = Math.round(left * 12);
+      at(mid + 3, 23, '[' + new Array(n2 + 1).join('#') + new Array(13 - n2).join('-') + ']', left < 0.3 ? 0 : 1);
+      at(1, 21, 'TYPE IT', 0);
+      at(1, 22, 'ROUND ' + Math.min(G.round + 1, G.rounds) + '/' + G.rounds, 1);
+      at(1, 23, new Array(G.miss + 1).join('X') + new Array(TYPE.misses - G.miss + 1).join('.'), 1);
     }
     if (s === 'card') {
       var cd = G.card, f = cd.f, w = Math.min(C - 4, 34), x0 = Math.floor((C - w) / 2), y0 = 5, rows = 11;
@@ -741,7 +961,7 @@
     if (p.size >= window.drunkwizPet.WARN_AT && ((now / 300) | 0) % 2 === 0) ART.text(ctx, '!!', W - 8, 1, ink);
     if (G.nofood && now - G.nofood < 900) ART.text(ctx, '0', W - 4, 9, ink);
   }
-  var DRAW = { top: drawTop, side: drawSide, text: drawText, lcd: drawLcd };
+  var DRAW = { top: drawTop, side: drawSide, desk: drawDesk, text: drawText, lcd: drawLcd };
 
   /* ---------------------------------------------------------------- Loop: only while a machine is open and the tab is visible */
   var raf = 0, last = 0;
@@ -950,6 +1170,7 @@
     close: requestClose,
     seed: function (n) { seed = n >>> 0; },   // for tests: makes bites and fights repeatable
     pick: function (pond, zone) { var c = cur; cur = pond; var f = pickFish(zone); cur = c; return f.id; },   // for tests: what would bite
-    state: function () { if (M && M.draw === 'lcd') return { open: isOpen, machine: cur, state: G.state, sel: G.sel, info: G.info, feed: log.feed }; return { open: isOpen, machine: cur, state: G.state, fish: G.fish && G.fish.id, zy: G.zy, zv: G.zv, fy: G.fy, zone: M && M.zone, progress: G.progress, power: G.power, msg: G.msg }; }
+    state: function () { if (M && M.draw === 'lcd') return { open: isOpen, machine: cur, state: G.state, sel: G.sel, info: G.info, feed: log.feed }; return { open: isOpen, machine: cur, fight: M && M.fight, state: G.state, fish: G.fish && G.fish.id, zy: G.zy, zv: G.zv, fy: G.fy, zone: M && M.zone, progress: G.progress, power: G.power, msg: G.msg,
+      ten: G.ten, thrash: performance.now() < (G.thrashEnd || 0), dist: G.dist, cx: G.cx, cy: G.cy, fx: G.fx, fyy: G.fyy, seq: G.seq, pos: G.pos, round: G.round, deskGeo: M && M.fight === 'net' ? deskGeo() : null }; }
   };
 })();
