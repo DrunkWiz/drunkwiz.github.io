@@ -768,8 +768,10 @@ h3[tabindex="-1"]:focus{outline:none}
 .arc-shell{position:relative;padding:26px 28px 18px;border-radius:26px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .arc-bezel{position:relative;padding:0}
 .arc-cv{display:block;image-rendering:pixelated;image-rendering:crisp-edges;outline:none}
-.arc-cv:focus-visible{outline:3px solid var(--chalk);outline-offset:4px}
-.arc-led{position:absolute;left:-17px;top:30%;width:7px;height:7px;border-radius:50%;background:#E8483A;box-shadow:0 0 6px #E8483A}
+.arc-cv:focus-visible{outline:2px solid rgba(255,255,255,.22);outline-offset:3px}
+.arc-led{display:none;position:absolute;left:-17px;top:30%;width:7px;height:7px;border-radius:50%;background:#E8483A;box-shadow:0 0 6px #E8483A}
+.arc-shell[data-m=pocket] .arc-led{display:block}
+.arc-scr{position:relative;line-height:0}
 .arc-brand{margin:.7rem 0 0;font:700 .9rem/1 var(--mono);letter-spacing:.32em}
 .arc-ctl{display:flex;justify-content:space-between;align-items:center;height:132px;padding:0 6px}
 .arc-ctl button{-webkit-tap-highlight-color:transparent;cursor:pointer;touch-action:none}
@@ -842,3 +844,42 @@ h3[tabindex="-1"]:focus{outline:none}
 .flog-detail span{display:block;margin-top:.25rem;font:400 .72rem/1.4 var(--mono);color:var(--ink-soft)}
 @media (max-width:620px){ .flog{padding:1rem .8rem 1rem;box-shadow:0 30px 80px rgba(0,0,0,.6)} .flog-head,.flog-pond{padding-left:0} .flog-detail{margin-left:0} .flog-grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
 @media (prefers-reduced-motion:reduce){ .ms-paper.printing{animation:none} }
+
+/* TV game: a wooden set with a round-cornered tube and scanlines, a wired pad in front */
+.arc-shell[data-m=tv]{padding:22px 24px 14px;border-radius:22px;background:linear-gradient(#6A5543,#4B3C2F);box-shadow:inset 0 -10px 0 rgba(0,0,0,.2),inset 0 3px 0 rgba(255,235,200,.15),0 24px 60px rgba(0,0,0,.55)}
+.arc-shell[data-m=tv] .arc-bezel{background:#1A1816;padding:16px;border-radius:20px;box-shadow:inset 0 0 0 3px #2C2824}
+.arc-shell[data-m=tv] .arc-cv{border-radius:14px}
+.arc-shell[data-m=tv] .arc-scr::after,.arc-shell[data-m=term] .arc-scr::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:14px;
+  background:repeating-linear-gradient(rgba(0,0,0,.22) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.45) 100%)}
+.arc-shell[data-m=tv] .arc-brand{margin:.6rem 0 .5rem;color:#E9D9A8;text-align:right;font-size:.75rem}
+.arc-pad{display:flex;align-items:center;justify-content:space-between;gap:14px;width:min(340px,100%);margin:0 auto;padding:14px 18px;border-radius:40px;background:linear-gradient(#C9C5BC,#A9A59C);box-shadow:0 6px 0 rgba(0,0,0,.3)}
+.arc-shell[data-m=tv] .arc-ctl{height:auto;justify-content:center;padding:4px 0 6px}
+.arc-pad .arc-dpad{width:84px;height:84px}
+.arc-pad .arc-dpad button,.arc-pad .arc-dpad i{width:28px;height:28px}
+.arc-pad .arc-dpad [data-k=up]{left:28px}.arc-pad .arc-dpad [data-k=down]{left:28px;top:56px}
+.arc-pad .arc-dpad [data-k=left]{top:28px}.arc-pad .arc-dpad [data-k=right]{left:56px;top:28px}
+.arc-pad .arc-dpad i{left:28px;top:28px}
+.arc-sel{display:flex;gap:8px}
+.arc-sel i{width:22px;height:7px;border-radius:4px;background:#4B4844;transform:rotate(-20deg)}
+.arc-pad .arc-ab{flex-direction:row;transform:none;gap:12px;align-items:center}
+.arc-pad .arc-ab button{width:48px;height:48px;background:#A8323A;color:#F4F1E6}
+/* Desktop: a grey all-in-one; on touch screens a single big button, like a mouse */
+.arc-shell[data-m=desk]{padding:22px 26px 16px;border-radius:10px;background:linear-gradient(#B4BEBA,#919C98);box-shadow:inset -6px -6px 0 rgba(0,0,0,.1),0 24px 60px rgba(0,0,0,.55)}
+.arc-shell[data-m=desk] .arc-bezel{background:#39403E;padding:10px;border-radius:6px}
+.arc-shell[data-m=desk] .arc-brand{margin:.7rem 0 0;color:#39403E;font-size:.72rem;display:flex;align-items:center;gap:12px}
+.arc-shell[data-m=desk] .arc-brand::after{content:"";flex:none;margin-left:auto;width:90px;height:6px;border-radius:2px;background:#2E3331}
+.arc-shell[data-m=desk] .arc-ctl{display:none}
+.arc-mouse{width:100%;display:flex;justify-content:center}
+.arc-mouse button{width:min(220px,70%);height:96px;border:0;border-radius:14px 14px 48px 48px;background:linear-gradient(#D9DEDB,#B9C0BD);box-shadow:inset 0 -26px 0 rgba(0,0,0,.06),0 5px 0 rgba(0,0,0,.3)}
+@media (hover:none),(pointer:coarse){ .arc-shell[data-m=desk] .arc-ctl{display:flex;height:120px;justify-content:center} }
+/* Terminal: a dark box, an amber tube, a row of keys */
+.arc-shell[data-m=term]{padding:20px 22px 14px;border-radius:12px;background:linear-gradient(#34322F,#242321);box-shadow:inset 0 2px 0 rgba(255,255,255,.06),0 24px 60px rgba(0,0,0,.6)}
+.arc-shell[data-m=term] .arc-bezel{background:#0D0B08;padding:18px;border-radius:16px;box-shadow:inset 0 0 0 2px #1A1712}
+.arc-shell[data-m=term] .arc-cv{border-radius:10px;filter:drop-shadow(0 0 3px rgba(255,170,40,.45))}
+.arc-shell[data-m=term] .arc-scr::after{border-radius:10px}
+.arc-shell[data-m=term] .arc-brand{margin:.6rem 0 .4rem;color:#8A7A60;font-size:.7rem}
+.arc-shell[data-m=term] .arc-ctl{height:auto;padding:4px 0 2px}
+.arc-keyrow{display:flex;gap:6px;width:100%}
+.arc-keyrow button{height:44px;flex:1;border:0;border-radius:5px;background:#3A3936;color:#D9C8A6;font:600 1.05rem/1 var(--mono);box-shadow:0 4px 0 #1C1B19}
+.arc-keyrow [aria-label^=Space]{flex:4}
+@media (max-width:620px){ .arc-shell[data-m=tv] .arc-bezel{padding:10px} .arc-shell[data-m=term] .arc-bezel{padding:10px} .arc-shell[data-m=desk] .arc-bezel{padding:6px} }

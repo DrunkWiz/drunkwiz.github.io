@@ -6,8 +6,17 @@
 (function () {
   /* ---- Palettes: four shades per machine, lightest first. Made up, not sampled from any real screen. */
   var PAL = {
-    pocket: ['#E1ECBA', '#9FBE76', '#4F7745', '#1C3326']
+    pocket: ['#E1ECBA', '#9FBE76', '#4F7745', '#1C3326'],
+    // TV game: a limited set of 16. Each fish picks four of them (its own small palette, light to outline).
+    tv: ['#0B0B12', '#F4F1E6', '#8A8A93', '#3B3B48', '#1E3F8A', '#3B7BD6', '#8CC3F0', '#1F6B3A',
+         '#4DAE5A', '#C7E07A', '#8A4A1E', '#D98C3A', '#F2D26B', '#A8323A', '#E8718A', '#6B3FA0'],
+    // Desktop: one bit. The two middle shades are dither patterns: d25 is a quarter black, d75 three quarters.
+    desk: ['#FFFFFF', 'd25', 'd75', '#000000'],
+    // Terminal: amber phosphor, brightest first, the black of the tube last.
+    term: ['#FFB838', '#C9821C', '#6B420B', '#140C02']
   };
+  // A fish's own four colours on a machine.
+  function fishPal(pond, f) { return pond === 'tv' ? f.c.map(function (i) { return PAL.tv[i]; }) : PAL[pond]; }
 
   /* ---- 3x5 font: five rows of three bits, top to bottom. Glyphs are 3 wide with 1px between. */
   var F = {
@@ -21,36 +30,60 @@
     9: '111101111001110', '.': '000000000000010', ':': '000010000010000', '!': '010010010000010', '?': '110001010000010',
     '-': '000000111000000', '/': '001001010100100', "'": '010010000000000', ',': '000000000010100', '(': '001010010010001',
     ')': '100010010010100', '#': '101111101111101', '+': '000010111010000', '>': '100010001010100', '<': '001010100010001',
-    '%': '101001010100101', '=': '000111000111000', '*': '000101010101000', ' ': '000000000000000'
+    '%': '101001010100101', '=': '000111000111000', '*': '000101010101000', ' ': '000000000000000',
+    '[': '110100100100110', ']': '011001001001011', '{': '011010110010011', '}': '110010011010110', '~': '000011110000000',
+    '^': '010101000000000', '_': '000000000000111', '|': '010010010010010', ';': '000010000010100', '\u00B0': '010101010000000',
+    '@': '010101111100011', '\u2591': '101010101010101', '\u2588': '111111111111111'
   };
   function textWidth(s) { return String(s).length * 4 - 1; }
   // Draws text in one colour. align: 'left' | 'center' | 'right'.
-  function text(ctx, s, x, y, color, align) {
-    s = String(s).toUpperCase();
-    if (align === 'center') x = Math.round(x - textWidth(s) / 2);
-    else if (align === 'right') x = x - textWidth(s);
+  // k: pixel size, for machines with more pixels than the pocket one.
+  function text(ctx, s, x, y, color, align, k) {
+    s = String(s).toUpperCase(); k = k || 1;
+    if (align === 'center') x = Math.round(x - textWidth(s) * k / 2);
+    else if (align === 'right') x = x - textWidth(s) * k;
     ctx.fillStyle = color;
     for (var i = 0; i < s.length; i++) {
       var g = F[s[i]] || F['?'];
-      for (var b = 0; b < 15; b++) if (g[b] === '1') ctx.fillRect(x + i * 4 + (b % 3), y + ((b / 3) | 0), 1, 1);
+      for (var b = 0; b < 15; b++) if (g[b] === '1') ctx.fillRect(x + (i * 4 + (b % 3)) * k, y + ((b / 3) | 0) * k, k, k);
     }
+  }
+  // Dither patterns for one-bit screens, as canvas patterns made on the context that uses them.
+  function fill(ctx, c) {
+    if (c !== 'd25' && c !== 'd75' && c !== 'd50') return c;
+    var t = document.createElement('canvas'); t.width = t.height = 2;
+    var x = t.getContext('2d'), ink = c === 'd75' ? '#FFFFFF' : '#000000', ground = c === 'd75' ? '#000000' : '#FFFFFF';
+    x.fillStyle = ground; x.fillRect(0, 0, 2, 2); x.fillStyle = ink; x.fillRect(0, 0, 1, 1);
+    if (c === 'd50') x.fillRect(1, 1, 1, 1);
+    return ctx.createPattern(t, 'repeat');
   }
 
   /* ---- Sprite sheets: one canvas per sprite per palette, drawn once and cached. */
   var cache = {};
   function sheet(key, rows, pal, flip) {
-    var k = key + '|' + pal.join() + (flip ? '|f' : '');
+    var k = key + '|' + pal.join() + (flip ? '|f' : '');   // palette entries are strings, so join() is a fair key
     if (cache[k]) return cache[k];
     var h = rows.length, w = rows[0].length, c = document.createElement('canvas');
     c.width = w; c.height = h;
-    var x = c.getContext('2d');
+    var x = c.getContext('2d'), inks = pal.map(function (p) { return fill(x, p); });
     for (var y = 0; y < h; y++) for (var i = 0; i < w; i++) {
       var ch = rows[y][flip ? w - 1 - i : i];
       if (ch === '.') continue;
-      x.fillStyle = pal[+ch]; x.fillRect(i, y, 1, 1);
+      x.fillStyle = inks[parseInt(ch, 16)]; x.fillRect(i, y, 1, 1);   // hex, so a sprite can use all 16 TV colours
     }
     return (cache[k] = c);
   }
+  // Terminal fish are ASCII: drawn in the 3x5 font on a scrap of tube, so they still read on paper.
+  function asciiSheet(str, pal) {
+    var k = 'ascii|' + str + '|' + pal.join();
+    if (cache[k]) return cache[k];
+    var c = document.createElement('canvas'); c.width = textWidth(str) + 4; c.height = 9;
+    var x = c.getContext('2d'); x.fillStyle = pal[3]; x.fillRect(0, 0, c.width, c.height);
+    text(x, str, 2, 2, pal[0]);
+    return (cache[k] = c);
+  }
+  // Any fish as a canvas, in a given palette (or its own machine's).
+  function sprite(pond, f, pal) { pal = pal || fishPal(pond, f); return f.ascii ? asciiSheet(f.ascii, pal) : sheet(f.id, f.px, pal); }
 
   /* ---- Fish. Per pond: 5 commons, 1 uncommon, 1 rare, 1 night fish. All made up.
      The pocket pond is old playgrounds and childhood games; its rare is the dragon playground.
@@ -81,6 +114,87 @@
       { id: 'pk-eel', name: 'Pontianak Eel', rarity: 'night', where: 'near', size: [30, 60],
         desc: 'Smells of frangipani. Do not say it looks nice.',
         px: ['................................', '.........333333333333333333.....', '333...333000000000000000300333..', '30033300000000000000000000000033', '30033300000000000000000000000033', '333...333000000000000000000333..', '.........333333333333333333.....', '................................'] }
+    ],
+    // TV game: old legends. Its rare is the swordfish that came at the shore.
+    tv: [
+      { id: 'tv-dory', name: 'Crown-Toss Dory', rarity: 'common', where: 'near', size: [8, 18],
+        desc: 'A prince threw his crown in to calm a storm. This one kept it.',
+        c: [12, 11, 10, 0], px: ['...........333......', '33......333222333...', '313....31112221113..', '3113..3111122213013.', '31113311111222111113', '31111111111222111113', '31111111111222111113', '31113311111222111113', '3113..3111122211113.', '313....31112221113..', '33......333222333...', '...........333......'] },
+      { id: 'tv-barb', name: 'Banana Trunk Barb', rarity: 'common', where: 'near', size: [6, 14],
+        desc: 'Its family built the wall that stopped the swordfish. Still brings it up.',
+        c: [9, 8, 7, 0], px: ['..........333.......', '333......31213333...', '.3333..331121112333.', '....3332111211121113', '....3332111211121113', '.3333..331121112133.', '333......33333333...', '....................'] },
+      { id: 'tv-stone', name: 'Singapore Stonefish', rarity: 'common', where: 'far', size: [14, 30],
+        desc: 'Covered in writing nobody can read. Was blown up once, in 1843.',
+        c: [1, 2, 3, 0], px: ['........3333........', '.3......3111333333..', '313...3311112111113.', '3113.312111111130123', '31113111111112111113', '31113111211111111113', '3113.311111111211113', '313...3312111111113.', '.3......3333333333..', '....................'] },
+      { id: 'tv-mullet', name: "Sisters' Mullet", rarity: 'common', where: 'far', size: [16, 34],
+        desc: 'Always in pairs. Do not ask which one is older.',
+        c: [6, 5, 4, 0], px: ['...........3333.........', '333......332222333333...', '.3333..3322222222223033.', '....33311111111111111113', '....33311111111111111113', '.3333..3300000000000033.', '333......333333333333...', '........................'] },
+      { id: 'tv-shell', name: 'Kusu Shellback', rarity: 'common', where: 'any', size: [10, 26],
+        desc: 'Turned into an island once to save two fishermen. Now quite shy.',
+        c: [12, 10, 3, 0], px: ['.........333333.....', '.......3311111133...', '33....311111211113..', '313..31211111113013.', '31133111111112111113', '31111111211111111113', '31111111111111211113', '31133111121111111113', '313..31111111112113.', '33....311121111113..', '.......3311111133...', '.........333333.....'] },
+      { id: 'tv-grouper', name: 'Badang Grouper', rarity: 'uncommon', where: 'far', size: [30, 60],
+        desc: 'Ate what a river spirit left behind. Now throws rocks across the river.',
+        c: [11, 10, 3, 0], px: ['.............33333..........', '............311112333333....', '..3.......3321111111111233..', '3313.....311111111211111113.', '311133..3111121111111130213.', '3111113321111111111211111113', '3111111111111121111111111213', '3111111112111111111121111113', '3111113311111112111111111123', '311133..3121111111111211113.', '3313.....311111121111111113.', '..3.......3311111111112133..', '............333333333333....', '............................'] },
+      { id: 'tv-todak', name: 'Temasek Todak', rarity: 'rare', where: 'far', size: [60, 120],
+        desc: 'Came at the shore in a school, nose first. Bring banana trunks.',
+        c: [6, 5, 4, 0], px: ['............3333................', '33..........32223333............', '3333.....33322222222333.........', '...333..3222222222223023........', '....3133111111111111111133333333', '....313311111111111111113.......', '...333..3000000000000003........', '3333.....33300000000333.........', '33..........33333333............', '................................'] },
+      { id: 'tv-mud', name: 'Monkey Man Mudskipper', rarity: 'night', where: 'near', size: [8, 20],
+        desc: 'Seen near the reservoir after midnight. Nobody has a clear photo.',
+        c: [11, 10, 3, 0], px: ['..................333...', '...........333333311133.', '3333....333121111111113.', '311133.31111111111230113', '311111311111121111111113', '311111312111111111121113', '311133.31111112111111113', '3333....333111111111213.', '...........333333311133.', '..................333...'] }
+    ],
+    // Desktop: the estate. One bit, dithered.
+    desk: [
+      { id: 'dk-gar', name: 'Karang Guni Garfish', rarity: 'common', where: 'far', size: [25, 55],
+        desc: 'Calls out at seven on Saturday. Pays for old newspaper by the kilo.',
+        px: ['...........33333................', '33.......3322222333333..........', '.333..3332222222222230333.......', '...33311111111111111111113333333', '...33311111111111111111113......', '.333..3331111111111111333.......', '33.......3333333333333..........', '................................'] },
+      { id: 'dk-pipe', name: 'Bamboo Pole Pipefish', rarity: 'common', where: 'near', size: [18, 40],
+        desc: 'Hangs out of the kitchen window to dry.',
+        px: ['................................', '........3333333333333333333.....', '33...3333000300030003000300333..', '30333000300030003000300030000033', '30333000300030003000300030000033', '33...3333000300030003000300333..', '........3333333333333333333.....', '................................'] },
+      { id: 'dk-rasbora', name: 'Rubbish Chute Rasbora', rarity: 'common', where: 'near', size: [3, 8],
+        desc: 'Lives on the fourteenth floor. Comes down fast.',
+        px: ['........33......', '33.....3023333..', '.333..300222303.', '...3330002220003', '...3330002220003', '.333..300222003.', '33.....3333333..', '................'] },
+      { id: 'dk-blenny', name: 'Letterbox Blenny', rarity: 'common', where: 'any', size: [6, 14],
+        desc: 'Stuffed with flyers. Reads none of them.',
+        px: ['...............33...', '.3.......3333331133.', '313....3311131111113', '31133.33111111130133', '31111311111113111113', '31111311311111111113', '31133.31111111311113', '313....3331111111113', '.3.......3333333133.', '...............33...'] },
+      { id: 'dk-gourami', name: 'Void Deck Gourami', rarity: 'common', where: 'far', size: [10, 22],
+        desc: 'Weddings on Saturday, funerals on Sunday. Same tables.',
+        px: ['..............333.......', '33.........333001333....', '303......3301000100033..', '3303....300010001000003.', '..3333..300010001003003.', '....30331000100010000003', '....30001000100010000003', '....30001000100010000003', '....30331000100010000003', '..3333..300010001000003.', '3303....300010001000003.', '303......3301000100033..', '33.........333001333....', '..............333.......'] },
+      { id: 'dk-sardine', name: 'Mama Shop Sardine', rarity: 'uncommon', where: 'near', size: [8, 18],
+        desc: 'Sold loose, one at a time, next to the phone cards.',
+        px: ['..........333.......', '333......32223333...', '.3333..332222222333.', '....3330000000000003', '....3330000000000003', '.3333..330000000033.', '333......33333333...', '....................'] },
+      { id: 'dk-arowana', name: 'Feng Shui Arowana', rarity: 'rare', where: 'far', size: [45, 90],
+        desc: 'Faces the door for luck. Has outlived two owners.',
+        px: ['..............333333............', '...............3100033..........', '3.33.......333301000103333......', '33003....33010001000100010333...', '3000033.30001000100010001300033.', '30000003100010001000100010000003', '30000003100010001000100010000003', '3000033.31111111111111111111133.', '33003....33111111111111111333...', '3.33.......333311111113333......', '...............3333333..........', '................................'] },
+      { id: 'dk-snake', name: 'Seventh Month Snakehead', rarity: 'night', where: 'far', size: [30, 70],
+        desc: 'Surfaces while the bins burn offerings. Leave it a plate.',
+        px: ['.............3333333............', '.............322232233333.......', '3333.....33332222222222323333...', '322233.332222222223222223022233.', '32222232222223222222222232222223', '32222232322222222223222222222233', '322233.332222232222222222322233.', '3333.....33332222222322223333...', '.............333333333333.......', '................................'] }
+    ],
+    // Terminal: the sea and the outlying islands. ASCII, read straight off the screen.
+    term: [
+      { id: 'tm-silver', name: 'Kelong Silverside', rarity: 'common', where: 'near', size: [3, 8],
+        desc: 'Gathers under the kelong lamps. Easily impressed.',
+        ascii: "><>" },
+      { id: 'tm-sand', name: 'Semakau Sandperch', rarity: 'common', where: 'far', size: [8, 18],
+        desc: 'Lives off an island made of rubbish. Seems fine.',
+        ascii: "><:::>" },
+      { id: 'tm-blue', name: 'Ubin Bluespot', rarity: 'common', where: 'any', size: [6, 15],
+        desc: 'Rents a bicycle, rides round the island once, returns it late.',
+        ascii: "><(o)>" },
+      { id: 'tm-fly', name: 'Changi Flyingfish', rarity: 'common', where: 'far', size: [15, 30],
+        desc: 'Leaves at 2am, lands at 7. Never brings anything back.',
+        ascii: ">~~\u00b0>" },
+      { id: 'tm-bream', name: 'Bumboat Bream', rarity: 'common', where: 'near', size: [12, 28],
+        desc: 'Takes people up the river. Tells the same three jokes.',
+        ascii: "><[==]\u00b0>" },
+      { id: 'tm-grouper', name: 'Gantry Grouper', rarity: 'uncommon', where: 'far', size: [40, 80],
+        desc: 'Moves forty boxes an hour. Never looks up.',
+        ascii: "><(((#)))\u00b0>" },
+      { id: 'tm-ray', name: 'Hantu Ghostray', rarity: 'rare', where: 'far', size: [60, 140],
+        desc: 'Seen off Pulau Hantu. Only ever on the way back.',
+        ascii: "<=={\u00b0}==>~" },
+      { id: 'tm-lantern', name: 'Last Ferry Lanternfish', rarity: 'night', where: 'near', size: [4, 10],
+        desc: 'Lights itself. Waits at the jetty for a ferry that left hours ago.',
+        ascii: "*><(((\u00b0>" }
     ]
   };
 
@@ -88,6 +202,9 @@
   var ANGLER = ['....3333....', '...322223...', '.3333333333.', '..32222223..', '..32222223..', '...333333...', '..30000003..', '.3000000003.', '300000000003', '300033000003', '300000000003', '333333333333'];
   var FLOAT = ['.3.', '323', '303', '.3.'];
   var BITE = ['.3.', '.3.', '.3.', '...', '.3.'];   // the "!" over the float
+  // The TV game's angler, side on, in the TV's 16 colours (hex indices): red cap, blue shirt, navy trousers.
+  var ANGLER_TV = ['...dddd...', '..dddddd..', '...bbbb...', '...bb0b...', '...bbbb...', '....bb....', '..55555...', '.5555555..',
+    '.55.555bb.', '.55.555...', '...4444...', '...44.44..', '...44.44..', '...44.44..', '..000.000.', '..........'];
 
-  window.drunkwizArt = { PAL: PAL, FISH: FISH, ANGLER: ANGLER, FLOAT: FLOAT, BITE: BITE, sheet: sheet, text: text, textWidth: textWidth };
+  window.drunkwizArt = { PAL: PAL, FISH: FISH, ANGLER: ANGLER, ANGLER_TV: ANGLER_TV, FLOAT: FLOAT, BITE: BITE, sheet: sheet, sprite: sprite, fishPal: fishPal, fill: fill, text: text, textWidth: textWidth };
 })();
