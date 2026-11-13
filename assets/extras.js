@@ -142,25 +142,25 @@
   renderBoard();
   renderCatches();
 
-  /* ---- Arcade shelf: its code (arcade-art.js, arcade.js) loads only when the shelf scrolls near,
-     so the hero stays fast. A click before then loads it and opens the machine. ---- */
+  /* ---- Arcade shelf and pet: their code loads late, so the hero stays fast.
+     arcade-art.js + arcade.js when the shelf scrolls near (or on a click before then);
+     arcade-art.js + pet.js once the page is idle, only if there is a pet or skeletons to show. ---- */
   var shelf = document.querySelector('.arcade');
+  var V = shelf ? shelf.getAttribute('data-v') || '' : '';
+  var scripts = {};
+  function load(name) {
+    if (scripts[name]) return scripts[name];
+    scripts[name] = new Promise(function (res, rej) {
+      var sc = document.createElement('script'); sc.src = '/assets/' + name + '.js?v=' + V; sc.onload = res;
+      sc.onerror = function () { delete scripts[name]; rej(new Error(name)); };
+      document.head.appendChild(sc);
+    });
+    return scripts[name];
+  }
+  window.drunkwizLoad = function (name) { return load('arcade-art').then(function () { return load(name); }); };
   if (shelf) {
     var LOAD_MARGIN = '600px 0px';   // start loading about a screen before the shelf is in view
-    var loading = null;
-    var loadArcade = function () {
-      if (loading) return loading;
-      var v = shelf.getAttribute('data-v') || '';
-      var add = function (src) {
-        return new Promise(function (res, rej) {
-          var sc = document.createElement('script'); sc.src = src + '?v=' + v; sc.onload = res; sc.onerror = rej;
-          document.head.appendChild(sc);
-        });
-      };
-      loading = add('/assets/arcade-art.js').then(function () { return add('/assets/arcade.js'); });
-      loading.catch(function () { loading = null; });
-      return loading;
-    };
+    var loadArcade = function () { var p = window.drunkwizLoad('arcade'); p.catch(function () {}); return p; };
     shelf.addEventListener('click', function (e) {
       var b = e.target.closest('.mach');
       if (!b || b.disabled || window.drunkwizArcade) return;   // once loaded, arcade.js handles clicks itself
@@ -172,6 +172,12 @@
       }, { rootMargin: LOAD_MARGIN });
       lo.observe(shelf);
     } else loadArcade();
+    var petSaved = null;
+    try { petSaved = JSON.parse(localStorage.getItem('dw-pet') || 'null'); } catch (e) {}
+    if (petSaved && (petSaved.pet || (petSaved.skel && petSaved.skel.length) || (petSaved.gone && petSaved.gone.length))) {
+      var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 1200); };
+      idle(function () { window.drunkwizLoad('pet').catch(function () {}); }, { timeout: 4000 });
+    }
   }
 
   /* ---- Tall screens scroll with the page, like a screen recording.

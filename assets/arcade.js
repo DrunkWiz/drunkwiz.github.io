@@ -37,6 +37,10 @@
   var CHROME_H = 36;           // room for the key help line under the machine (the close button floats)
   var TOAST_MS = 4200;         // an unlock toast stays this long: long enough to read twice
   var SPARKLE_MS = 160;        // the shiny rod's glints move on this often
+  var CRACK_MS = 1100;         // the egg cracking before it hatches
+  var EAT_MS = 650;            // a fish going down
+  var POP_MS = 1400;           // the pet bursting on the little screen
+  var LCD_MAX_SCALE = 10;      // the egg's 32x16 screen stops growing here; bigger would just be blocks
 
   // How each rarity fights. speed/dashSpeed: bar heights per second. dash, pause: chance per second / per stop.
   // weight: how often it bites, against the others it shares the water with.
@@ -62,13 +66,17 @@
       keys: 'Point to aim. Hold the mouse button, or Space, to cast, hook and reel. X: reel in. Esc: leave.' },
     term: { name: 'Terminal', label: 'Terminal', draw: 'text', W: 320, H: 150, k: 1, cols: 80,
       hook: 300, zone: 0.22, lift: 3.2, gravity: 2.2, fill: 0.36, drain: 0.28,
-      keys: 'Space or Enter: cast, hook, reel. Arrows: aim. X: reel in. Esc: leave.' }
+      keys: 'Space or Enter: cast, hook, reel. Arrows: aim. X: reel in. Esc: leave.' },
+    // The egg: no fishing, only feeding. Its fish come from the log; each feed uses one catch.
+    egg: { name: 'Egg', label: 'Egg', draw: 'lcd', W: 32, H: 16, k: 1, max: LCD_MAX_SCALE,
+      keys: 'A or arrows: pick a fish. B, Space or Enter: feed it. C or X: name and size. Esc: leave.' }
   };
   // On-screen controls in each shell. Each button is [key, label, text].
   var CONTROLS = {
     pocket: '<div class="arc-dpad">' + pad4() + '</div><div class="arc-ab">' + btn('b', 'B: reel in', 'B') + btn('a', 'A: cast, hook, reel', 'A') + '</div>',
     tv: '<div class="arc-pad"><div class="arc-dpad">' + pad4() + '</div><div class="arc-sel" aria-hidden="true"><i></i><i></i></div><div class="arc-ab">' + btn('b', 'B: reel in', 'B') + btn('a', 'A: cast, hook, reel', 'A') + '</div></div>',
     desk: '<div class="arc-mouse">' + btn('a', 'Button: cast, hook, reel', '') + '</div>',
+    egg: '<p class="arc-cap" aria-live="polite"></p><div class="arc-abc">' + btn('a', 'A: next fish', 'A') + btn('b', 'B: feed', 'B') + btn('c', 'C: name and size', 'C') + '</div>',
     term: '<div class="arc-keyrow">' + btn('left', 'Aim left', '←') + btn('right', 'Aim right', '→') + btn('a', 'Space: cast, hook, reel', '␣') + btn('a', 'Enter: cast, hook, reel', '↵') + '</div>'
   };
   function btn(k, label, t) { return '<button type="button" tabindex="-1" data-k="' + k + '" aria-label="' + label + '">' + t + '</button>'; }
@@ -108,6 +116,11 @@
     shelf.querySelectorAll('.mach').forEach(function (b) {
       var id = b.getAttribute('data-mach'), m = MACHINES[id];
       if (id === 'log') { b.setAttribute('aria-label', 'Fish log. ' + caughtAll() + ' of ' + PONDS.length * 8 + ' caught.'); return; }
+      if (id === 'egg') {
+        var P = window.drunkwizPet && window.drunkwizPet.get();
+        b.setAttribute('aria-label', P && P.pet ? 'Egg machine. ' + P.pet.name + ' the ' + P.pet.kind + ', size ' + Math.min(P.pet.size, 100) + '.' : 'Egg machine. An egg, warm to the touch.');
+        return;
+      }
       if (!m) return;
       b.disabled = false;
       b.setAttribute('aria-label', m.label + '. Pond: ' + caughtIn(id) + ' of ' + ART.FISH[id].length + ' caught.');
@@ -116,7 +129,7 @@
   labelShelf();
   if (shelf) shelf.addEventListener('click', function (e) {
     var b = e.target.closest('.mach');
-    if (b && !b.disabled && b.getAttribute('data-mach') !== 'egg') open(b.getAttribute('data-mach'), b);
+    if (b && !b.disabled) open(b.getAttribute('data-mach'), b);
   });
 
   /* ---------------------------------------------------------------- The dialog around a machine */
@@ -185,6 +198,7 @@
     var ah = window.innerHeight - PAGE_MARGIN * 2 - by - CHROME_H;
     var fit = Math.max(0.3, Math.min(aw / M.W, ah / M.H)), whole = Math.floor(fit);
     var s = whole >= 1 && (fit - whole) / fit <= INT_SCALE_LOSS ? whole : fit;
+    if (M.max) s = Math.min(s, M.max);
     cv.style.width = Math.floor(M.W * s) + 'px'; cv.style.height = Math.floor(M.H * s) + 'px';
     cv.style.imageRendering = s < 1 ? 'auto' : '';   // shrinking below 1:1 drops pixels; smooth it instead
   }
@@ -193,8 +207,12 @@
   function open(id, btnEl) {
     if (id === 'log') { openLog(btnEl); return; }
     if (isOpen || !MACHINES[id]) return;
+    if (id === 'egg' && !window.drunkwizPet) {
+      if (window.drunkwizLoad) window.drunkwizLoad('pet').then(function () { if (window.drunkwizPet) open(id, btnEl); });
+      return;
+    }
     if (!dlg) build();
-    cur = id; M = MACHINES[id]; PAL = ART.PAL[id]; K = M.k; from = btnEl || shelf.querySelector('[data-mach="' + id + '"]');
+    cur = id; M = MACHINES[id]; PAL = ART.PAL[id] || ART.LCD; K = M.k; from = btnEl || shelf.querySelector('[data-mach="' + id + '"]');
     if (M.draw === 'text') { M.cols = window.innerWidth < TERM_NARROW ? 40 : 80; M.W = M.cols * 4; }
     if (id === 'desk') { var half = window.innerWidth < DESK_NARROW; M.W = half ? 256 : 512; M.H = half ? 171 : 342; M.k = half ? 1 : 2; }
     K = M.k;
@@ -246,6 +264,7 @@
 
   /* ---------------------------------------------------------------- Input */
   var KEYS = { ' ': 'a', Enter: 'a', z: 'a', Z: 'a', x: 'b', X: 'b', Backspace: 'b', ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' };
+  var EGG_KEYS = { a: 'a', A: 'a', ArrowRight: 'a', ArrowDown: 'a', ArrowLeft: 'prev', ArrowUp: 'prev', ' ': 'b', Enter: 'b', z: 'b', Z: 'b', b: 'b', B: 'b', c: 'c', C: 'c', x: 'c', X: 'c' };
   var held = {}, hit = {};
   function press(k) { if (!held[k]) hit[k] = true; held[k] = true; }
   function release(k) { held[k] = false; }
@@ -253,19 +272,20 @@
     if (!isOpen || e.key === 'Escape' || e.key === 'Tab') return;
     if (e.target === closeBtn && (e.key === 'Enter' || e.key === ' ')) return;
     e.stopPropagation();   // keep kopi orders, the Konami code and digicam (D) from firing underneath
-    var k = KEYS[e.key];
+    var k = (M && M.draw === 'lcd' ? EGG_KEYS : KEYS)[e.key];
     if (k) { e.preventDefault(); if (!e.repeat) press(k); }
     else if (G.state === 'boot') G.skip = true;
   }, true);
   window.addEventListener('keyup', function (e) {
     if (!isOpen) return;
     e.stopPropagation();
-    var k = KEYS[e.key]; if (k) release(k);
+    var k = (M && M.draw === 'lcd' ? EGG_KEYS : KEYS)[e.key]; if (k) release(k);
   }, true);
 
   /* ---------------------------------------------------------------- Game state, all from 0 to 1 */
   var G = {};
   function reset() {
+    if (M.draw === 'lcd') { G = { state: window.drunkwizPet.get().pet ? 'pet' : 'egg', sel: eggSel, info: false, px: 2, dir: 1, t0: performance.now() }; held = {}; hit = {}; caption(); return; }
     G = { state: 'boot', t0: performance.now(), aimX: 0.5, power: 0, msg: '', nibbles: [], ripple: [], shadows: [] };
     var pool = ART.FISH[cur].filter(function (f) { return f.rarity === 'common'; });
     for (var i = 0; i < SHADOWS; i++) G.shadows.push({ x: between(0.05, 0.95), y: between(0.05, 0.95), v: (rnd() < 0.5 ? -1 : 1) * between(0.02, 0.06), f: pool[i % pool.length] });
@@ -285,6 +305,7 @@
   function announce(s) { if (live) { live.textContent = ''; setTimeout(function () { live.textContent = s; }, 30); } }
 
   function update(now, dt) {
+    if (M.draw === 'lcd') { eggUpdate(now, dt); hit = {}; return; }
     var s = G.state;
     G.shadows.forEach(function (f) { f.x += f.v * dt; if (f.x < 0.03 || f.x > 0.97) { f.v = -f.v; f.x = clamp(f.x, 0.03, 0.97); } });
     if (s === 'boot') {
@@ -643,7 +664,82 @@
     }
     if (s === 'lost') { at(mid - (G.msg.length >> 1), 10, G.msg, 0); }
   }
-  var DRAW = { top: drawTop, side: drawSide, text: drawText };
+  /* ---------------------------------------------------------------- The egg: a 32x16 two-tone LCD.
+     A picks the next fish from the log, B feeds it (one catch from the stock), C shows its name and size. */
+  var eggSel = 0;   // the fish picked last time, kept between visits
+  var KINDS = { fish: 'koi', cat: 'cat', lion: 'lion', dragon: 'dragon', kraken: 'kraken', phoenix: 'phoenix' };
+  function food() { var l = []; PONDS.forEach(function (p) { (ART.FISH[p.id] || []).forEach(function (f) { if (log.fish[f.id]) l.push(f); }); }); return l; }
+  function caption() {
+    var cap = ctl.querySelector('.arc-cap'); if (!cap) return;
+    var P = window.drunkwizPet.get(), l = food(), f = l[G.sel % Math.max(1, l.length)], stock = log.feed || 0;
+    if (!P.pet) { cap.textContent = G.state === 'crack' ? 'It is hatching.' : 'An egg. Press any button.'; return; }
+    var p = P.pet;
+    cap.innerHTML = '<b>' + esc(p.name) + ' the ' + KINDS[p.kind] + '</b> &middot; size ' + Math.min(p.size, 100) + (p.size >= window.drunkwizPet.WARN_AT ? ' &middot; too full' : '') + '<br>' +
+      (stock > 0 && f ? 'Next: ' + esc(f.name) + ' (+' + window.drunkwizPet.FEED[f.rarity] + ') &middot; ' + stock + ' catch' + (stock === 1 ? '' : 'es') + ' to feed' : 'Nothing to feed. Go fishing.');
+  }
+  function eggUpdate(now, dt) {
+    var Pet = window.drunkwizPet, s = G.state, l = food();
+    if (s === 'egg') {
+      if (hit.a || hit.b || hit.c || hit.prev) { G.state = 'crack'; G.c0 = now; caption(); announce('The egg is cracking.'); }
+    } else if (s === 'crack') {
+      if (now - G.c0 > CRACK_MS) {
+        var p = Pet.hatch(); G.state = 'pet'; G.c0 = now; caption();
+        announce('It hatched: ' + p.name + ' the ' + KINDS[p.kind] + '. Feed it fish from your log with B.');
+      }
+    } else if (s === 'pet') {
+      G.px += G.dir * 6 * dt; if (G.px < 1) { G.px = 1; G.dir = 1; } if (G.px > 17) { G.px = 17; G.dir = -1; }
+      if (l.length && hit.a) { G.sel = eggSel = (G.sel + 1) % l.length; caption(); announce('Next: ' + l[G.sel].name + '.'); }
+      if (l.length && hit.prev) { G.sel = eggSel = (G.sel + l.length - 1) % l.length; caption(); announce('Next: ' + l[G.sel].name + '.'); }
+      if (hit.c) { G.info = !G.info; }
+      if (hit.b) {
+        var f = l[G.sel % Math.max(1, l.length)];
+        if (!f || (log.feed || 0) <= 0) { announce('Nothing to feed. Go fishing.'); G.nofood = now; return; }
+        log.feed--; saveLog();
+        var r = Pet.feed(f.rarity);
+        G.state = 'eat'; G.c0 = now; G.pop = r.burst; G.info = false;
+        caption();
+        if (r.burst) announce('Fed it a ' + f.name + '. That was one too many.');
+        else announce('Fed it a ' + f.name + '. Size ' + r.size + '.' + (r.warn ? ' It looks too full.' : ''));
+      }
+    } else if (s === 'eat') {
+      if (now - G.c0 > EAT_MS) { G.state = G.pop ? 'pop' : 'pet'; G.c0 = now; caption(); }
+    } else if (s === 'pop') {
+      if (now - G.c0 > POP_MS) { G.state = 'egg'; G.c0 = now; caption(); announce('It burst. Only bones left. A new egg is waiting.'); }
+    }
+  }
+  function drawLcd(now) {
+    var W = M.W, H = M.H, s = G.state, Pet = window.drunkwizPet.get(), p = Pet.pet;
+    ctx.fillStyle = ART.LCD[0]; ctx.fillRect(0, 0, W, H);
+    var ink = ART.LCD[1];
+    function sp(c, x, y) { ctx.drawImage(c, Math.round(x), Math.round(y)); }
+    if (s === 'egg' || s === 'crack') {
+      var shake = s === 'crack' ? ((now / 60) | 0) % 3 - 1 : (((now / 450) | 0) % 4 === 0 ? 1 : 0);
+      sp(ART.sheet('lcd-egg' + (s === 'crack' ? 'c' : ''), s === 'crack' ? ART.EGG_CRACK : ART.EGG, ART.LCD), 12 + shake, 4);
+      return;
+    }
+    if (s === 'pop') {
+      var q = (now - G.c0) / POP_MS; ctx.fillStyle = ink;
+      for (var i = 0; i < 18; i++) { var a = i * 2.4, r = 2 + q * 18; ctx.fillRect(Math.round(16 + Math.cos(a) * r), Math.round(8 + Math.sin(a) * r * 0.6), 1, 1); }
+      if (q < 0.5) ART.text(ctx, 'POP', 10, 6, ink);
+      return;
+    }
+    if (!p) return;
+    var img = ART.pet(p.kind, 'lcd', G.dir < 0);
+    if (G.info) {
+      ART.text(ctx, p.name.slice(0, 8), 1, 2, ink);
+      ART.text(ctx, 'SZ ' + Math.min(p.size, 100), 1, 9, ink);
+      return;
+    }
+    var x = s === 'eat' ? 3 : G.px, y = H - img.height;
+    sp(img, x, y);
+    if (s === 'eat') {   // a fish flies in from the right
+      var e = Math.min(1, (now - G.c0) / EAT_MS), fx = 30 - e * (30 - x - img.width + 2);
+      ctx.fillStyle = ink; ctx.fillRect(Math.round(fx), 7, 3, 1); ctx.fillRect(Math.round(fx) + 3, 6, 1, 3);
+    }
+    if (p.size >= window.drunkwizPet.WARN_AT && ((now / 300) | 0) % 2 === 0) ART.text(ctx, '!!', W - 8, 1, ink);
+    if (G.nofood && now - G.nofood < 900) ART.text(ctx, '0', W - 4, 9, ink);
+  }
+  var DRAW = { top: drawTop, side: drawSide, text: drawText, lcd: drawLcd };
 
   /* ---------------------------------------------------------------- Loop: only while a machine is open and the tab is visible */
   var raf = 0, last = 0;
@@ -811,17 +907,12 @@
     }
   }
   checkUnlocks(false);
-  if (eggBtn) eggBtn.addEventListener('click', function () {
-    // The egg's own machine comes in the next stage; for now it only wobbles.
-    eggBtn.classList.remove('wobble'); void eggBtn.offsetWidth; if (!reduce) eggBtn.classList.add('wobble');
-    toast('It is warm. Something is moving inside.');
-  });
 
   window.drunkwizArcade = {
     open: open,
     close: requestClose,
     seed: function (n) { seed = n >>> 0; },   // for tests: makes bites and fights repeatable
     pick: function (pond, zone) { var c = cur; cur = pond; var f = pickFish(zone); cur = c; return f.id; },   // for tests: what would bite
-    state: function () { return { open: isOpen, machine: cur, state: G.state, fish: G.fish && G.fish.id, zy: G.zy, fy: G.fy, zone: M && M.zone, progress: G.progress, power: G.power, msg: G.msg }; }
+    state: function () { if (M && M.draw === 'lcd') return { open: isOpen, machine: cur, state: G.state, sel: G.sel, info: G.info, feed: log.feed }; return { open: isOpen, machine: cur, state: G.state, fish: G.fish && G.fish.id, zy: G.zy, fy: G.fy, zone: M && M.zone, progress: G.progress, power: G.power, msg: G.msg }; }
   };
 })();
