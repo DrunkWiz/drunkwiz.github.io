@@ -54,7 +54,7 @@
     return 'fish';
   }
   function card(p, how, at) { return { kind: p.kind, name: p.name, born: p.born, lost: at, fed: p.fed, how: how }; }
-  function remember(c) { S.gone.push(c); if (S.gone.length > GONE_MAX) S.gone.shift(); }
+  function remember(c) { S.gone.push(c); if (S.gone.length > GONE_MAX) S.gone.shift(); setTimeout(board, 0); }   // the board shows it straight away
   var KINDS = { fish: 'koi', cat: 'cat', lion: 'lion', dragon: 'dragon', kraken: 'kraken', phoenix: 'phoenix' };
 
   // Neglect: 3 smaller for every full day since the last feed. At nothing it fades: no skeleton, a slip on the
@@ -104,7 +104,7 @@
   }
 
   /* ---------------------------------------------------------------- The page canvas, behind everything */
-  var cv = null, ctx = null, dpr = 1, vw = 0, vh = 0, raf = 0, lastT = 0, running = false;
+  var cv = null, ctx = null, dpr = 1, vw = window.innerWidth, vh = window.innerHeight, raf = 0, lastT = 0, running = false;   // known before the canvas exists, so the first placing is on screen
   var E = { x: 40, y: 200, dir: 1, lane: 200, laneAt: 0 }, SK = [], parts = [], pending = null, dust = null;
   function widthFor(size) { return W_MIN + (W_MAX - W_MIN) * Math.min(size, SIZE_MAX) / SIZE_MAX; }
   function ensure() {
@@ -113,7 +113,7 @@
     cv.className = 'pet-sea'; cv.setAttribute('aria-hidden', 'true');
     document.body.insertBefore(cv, document.body.firstChild);
     ctx = cv.getContext('2d');
-    window.addEventListener('resize', function () { size(); if (reduce) draw(performance.now()); });
+    window.addEventListener('resize', function () { size(); if (reduce) { place(); syncSkel(); draw(performance.now()); } });
     document.addEventListener('visibilitychange', function () { if (!document.hidden) wake(); });
     size();
   }

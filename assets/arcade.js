@@ -227,6 +227,7 @@
     layout();
     reset();
     isOpen = true;
+    sfx('boot-' + id);
     var show = function () { dlg.showModal(); cv.focus({ preventScroll: true }); };
     if (reduce || !from) { dlg.classList.add('fade'); show(); }
     else if (document.startViewTransition) {
@@ -318,7 +319,7 @@
       else {
         var p = ((now - G.c0) / CHARGE_MS) % 2; G.power = p > 1 ? 2 - p : p;
         if (hit.b) G.state = 'aim';
-        else if (!held.a) { G.state = 'cast'; G.c0 = now; G.zone = G.power < NEAR_SPLIT ? 'near' : 'far'; G.to = { x: G.aimX, d: G.power }; G.q = 0; }
+        else if (!held.a) { sfx('cast'); G.state = 'cast'; G.c0 = now; G.zone = G.power < NEAR_SPLIT ? 'near' : 'far'; G.to = { x: G.aimX, d: G.power }; G.q = 0; }
       }
     } else if (s === 'cast') {
       G.q = Math.min(1, (now - G.c0) / CAST_MS);
@@ -331,7 +332,7 @@
       G.nib = G.nibbles.some(function (nt) { return now >= nt && now < nt + NIBBLE_MS; });
       if (hit.a) lose('TOO EARLY.', 'Too early. Nothing on the line.');
       else if (hit.b) G.state = 'aim';
-      else if (now >= G.biteAt) { G.fish = pickFish(G.zone); G.state = 'bite'; G.c0 = now; G.ripple.push(now); announce('Bite!'); }
+      else if (now >= G.biteAt) { G.fish = pickFish(G.zone); G.state = 'bite'; G.c0 = now; G.ripple.push(now); sfx(M.draw === 'text' ? 'bell' : 'plip'); announce('Bite!'); }
     } else if (s === 'bite') {
       if (hit.a) startReel(now);
       else if (hit.b) G.state = 'aim';
@@ -373,8 +374,9 @@
     G.progress = clamp(G.progress + (inside ? M.fill : -M.drain) * dt, 0, 1);
     var where = inside ? 'Fish in your zone' : G.fy > G.zy ? 'Fish above your zone' : 'Fish below your zone';
     if (where !== G.where && now - G.lastStat > STATUS_GAP_MS) { G.where = where; G.lastStat = now; tstat.textContent = where; }
-    if (G.progress >= 1) caught(now);
-    else if (G.progress <= 0) { tstat.textContent = ''; lose('LINE SNAPPED.', 'The line snapped. The ' + G.fish.name + ' got away.'); }
+    if (held.a && now - (G.tick || 0) > TICK_MS) { G.tick = now; sfx('tick'); }
+    if (G.progress >= 1) { sfx('catch'); caught(now); }
+    else if (G.progress <= 0) { sfx('snap'); tstat.textContent = ''; lose('LINE SNAPPED.', 'The line snapped. The ' + G.fish.name + ' got away.'); }
   }
   function pad(n) { return String(n).padStart(2, '0'); }
   function caught(now) {
@@ -683,7 +685,7 @@
       if (hit.a || hit.b || hit.c || hit.prev) { G.state = 'crack'; G.c0 = now; caption(); announce('The egg is cracking.'); }
     } else if (s === 'crack') {
       if (now - G.c0 > CRACK_MS) {
-        var p = Pet.hatch(); G.state = 'pet'; G.c0 = now; caption();
+        var p = Pet.hatch(); G.state = 'pet'; G.c0 = now; caption(); sfx('hatch');
         announce('It hatched: ' + p.name + ' the ' + KINDS[p.kind] + '. Feed it fish from your log with B.');
       }
     } else if (s === 'pet') {
@@ -694,7 +696,7 @@
       if (hit.b) {
         var f = l[G.sel % Math.max(1, l.length)];
         if (!f || (log.feed || 0) <= 0) { announce('Nothing to feed. Go fishing.'); G.nofood = now; return; }
-        log.feed--; saveLog();
+        log.feed--; saveLog(); sfx('feed');
         var r = Pet.feed(f.rarity);
         G.state = 'eat'; G.c0 = now; G.pop = r.burst; G.info = false;
         caption();
@@ -702,7 +704,7 @@
         else announce('Fed it a ' + f.name + '. Size ' + r.size + '.' + (r.warn ? ' It looks too full.' : ''));
       }
     } else if (s === 'eat') {
-      if (now - G.c0 > EAT_MS) { G.state = G.pop ? 'pop' : 'pet'; G.c0 = now; caption(); }
+      if (now - G.c0 > EAT_MS) { G.state = G.pop ? 'pop' : 'pet'; G.c0 = now; caption(); if (G.pop) sfx('burst'); }
     } else if (s === 'pop') {
       if (now - G.c0 > POP_MS) { G.state = 'egg'; G.c0 = now; caption(); announce('It burst. Only bones left. A new egg is waiting.'); }
     }
@@ -853,23 +855,58 @@
   /* ---------------------------------------------------------------- Unlocks
      Every pond's rare: the egg appears on the shelf. All 32: the shiny rod, and a stamp on the footer receipt.
      Kept in dw-fish (unlocks), so the chime and toast happen once. */
-  var CHIME = [784, 988, 1319];   // three rising notes for the egg (Hz)
   var eggBtn = document.querySelector('.mini-egg'), master = document.querySelector('.r-master'), toastQ = [];
+  /* ---------------------------------------------------------------- Sound: chiptune bleeps made on the fly, no files.
+     Follows the site's Sound on/off toggle (dw-sound). The context is only made after the visitor has clicked or
+     pressed something (opening a machine is one), so nothing plays before that. */
+  var VOL = 0.05;              // master level: a bleep, not a fanfare
+  var TICK_MS = 95;            // the reel ticks this often while it is being wound in
   function sound() { try { return localStorage.getItem('dw-sound') !== '0'; } catch (e) { return true; } }
-  var actx = null;
-  function chime(notes) {
+  var actx = null, gestured = false;
+  ['pointerdown', 'keydown'].forEach(function (t) { window.addEventListener(t, function () { gestured = true; }, { capture: true, passive: true }); });
+  function ac() {
     var AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC || !sound()) return;
-    try {
-      actx = actx || new AC(); if (actx.state === 'suspended') actx.resume();
-      notes.forEach(function (f, i) {
-        var t = actx.currentTime + i * 0.12, o = actx.createOscillator(), g = actx.createGain();
-        o.type = 'square'; o.frequency.value = f;
-        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-        o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.25);
-      });
-    } catch (e) {}
+    var used = gestured || (navigator.userActivation && navigator.userActivation.hasBeenActive);   // a click before this file loaded counts
+    if (!AC || !used || !sound()) return null;
+    try { actx = actx || new AC(); if (actx.state === 'suspended') actx.resume(); return actx; } catch (e) { return null; }
   }
+  // one note: wave, start and end pitch (Hz), start time and length (s), loudness
+  function tone(c, type, f0, f1, t, d, v) {
+    var o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + d);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(VOL * (v || 1), t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + d + 0.02);
+  }
+  function noise(c, t, d, v, f0, f1) {
+    var b = c.createBuffer(1, Math.max(1, Math.floor(c.sampleRate * d)), c.sampleRate), x = b.getChannelData(0);
+    for (var i = 0; i < x.length; i++) x[i] = Math.random() * 2 - 1;
+    var src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    f.type = 'lowpass'; f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + d);
+    g.gain.setValueAtTime(VOL * v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    src.buffer = b; src.connect(f).connect(g).connect(c.destination); src.start(t);
+  }
+  function notes(c, type, list, step, d, v) { list.forEach(function (f, i) { tone(c, type, f, f, c.currentTime + i * step, d, v); }); }
+  var SFX = {
+    cast:  function (c) { tone(c, 'square', 260, 900, c.currentTime, 0.14, 0.8); },
+    plip:  function (c) { tone(c, 'triangle', 1400, 620, c.currentTime, 0.09, 1.2); },
+    bell:  function (c) { tone(c, 'square', 880, 880, c.currentTime, 0.18, 0.9); },          // the terminal's bell
+    tick:  function (c) { tone(c, 'square', 1900, 1900, c.currentTime, 0.018, 0.35); },
+    catch: function (c) { notes(c, 'square', [523, 659, 784, 1047], 0.085, 0.12, 0.9); },
+    snap:  function (c) { noise(c, c.currentTime, 0.16, 1.4, 4000, 300); tone(c, 'square', 220, 55, c.currentTime, 0.22, 0.8); },
+    burst: function (c) { noise(c, c.currentTime, 0.5, 2, 6000, 120); tone(c, 'square', 400, 40, c.currentTime + 0.02, 0.45, 0.9); },
+    feed:  function (c) { tone(c, 'square', 700, 500, c.currentTime, 0.05, 0.6); tone(c, 'square', 700, 500, c.currentTime + 0.08, 0.05, 0.6); },
+    hatch: function (c) { notes(c, 'triangle', [880, 1175, 1568], 0.07, 0.1, 1); },
+    chime: function (c) { notes(c, 'square', [784, 988, 1319], 0.12, 0.22, 1.2); },
+    all:   function (c) { notes(c, 'square', [784, 988, 1319, 1568], 0.12, 0.22, 1.2); },
+    // made-up boots, one per machine
+    'boot-pocket': function (c) { notes(c, 'square', [988, 1976], 0.09, 0.16, 0.9); },
+    'boot-tv':     function (c) { notes(c, 'triangle', [262, 330, 392, 523, 659], 0.06, 0.1, 1.2); },
+    'boot-desk':   function (c) { tone(c, 'sine', 440, 880, c.currentTime, 0.35, 1.3); },
+    'boot-term':   function (c) { tone(c, 'square', 1200, 1200, c.currentTime, 0.06, 0.6); notes(c, 'square', [150, 150, 150], 0.09, 0.02, 0.5); },
+    'boot-egg':    function (c) { notes(c, 'square', [2093, 2637], 0.07, 0.05, 0.6); }
+  };
+  function sfx(name) { var c = ac(); if (c && SFX[name]) try { SFX[name](c); } catch (e) {} }
+  window.drunkwizSfx = sfx;   // the pet uses it too
   function toast(text) {
     var t = document.createElement('a');
     t.className = 'snap-toast'; t.href = '#board'; t.textContent = text;
@@ -895,13 +932,13 @@
     paintUnlocks();
     if (!live) return;
     if (fresh.indexOf('egg') >= 0) {
-      chime(CHIME);
+      sfx('chime');
       announce('Every rare caught. Something has appeared on the shelf.');
       tell('An egg has appeared on the shelf.');
       if (eggBtn && !reduce) eggBtn.classList.add('new');
     }
     if (fresh.indexOf('rod') >= 0) {
-      chime(CHIME.concat([1568]));
+      sfx('all');
       announce('All thirty-two caught. Your rod is shiny now.');
       tell('All 32. The rod shines now. The receipt says so too.');
     }
@@ -913,6 +950,6 @@
     close: requestClose,
     seed: function (n) { seed = n >>> 0; },   // for tests: makes bites and fights repeatable
     pick: function (pond, zone) { var c = cur; cur = pond; var f = pickFish(zone); cur = c; return f.id; },   // for tests: what would bite
-    state: function () { if (M && M.draw === 'lcd') return { open: isOpen, machine: cur, state: G.state, sel: G.sel, info: G.info, feed: log.feed }; return { open: isOpen, machine: cur, state: G.state, fish: G.fish && G.fish.id, zy: G.zy, fy: G.fy, zone: M && M.zone, progress: G.progress, power: G.power, msg: G.msg }; }
+    state: function () { if (M && M.draw === 'lcd') return { open: isOpen, machine: cur, state: G.state, sel: G.sel, info: G.info, feed: log.feed }; return { open: isOpen, machine: cur, state: G.state, fish: G.fish && G.fish.id, zy: G.zy, zv: G.zv, fy: G.fy, zone: M && M.zone, progress: G.progress, power: G.power, msg: G.msg }; }
   };
 })();

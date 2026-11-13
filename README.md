@@ -118,7 +118,7 @@ Motion respects `prefers-reduced-motion`: the receipt appears without printing, 
 
 All of it switches off or goes still under `prefers-reduced-motion`.
 
-There are also a few easter eggs (`assets/eggs.js`). The browser console has a hint.
+There are also a few easter eggs (`assets/eggs.js`). The browser console has a hint. The shelf next to the board rewards coming back, and some of what lives there keeps closing-time hours.
 
 ## ➕ Adding a project
 
