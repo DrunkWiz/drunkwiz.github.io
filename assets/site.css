@@ -913,3 +913,23 @@ h3[tabindex="-1"]:focus{outline:none}
 @media (max-width:620px){ .arc-shell[data-m=egg]{padding:48px 30px 28px} }
 /* the pet's sea: one canvas behind everything on the page */
 .pet-sea{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+
+/* remembered: a slip for each pet that burst or faded, pinned on cork like the rest of the board */
+.remembered{margin-top:1.4rem;padding:1.1rem 1.4rem 1.5rem;background:#6E5236 radial-gradient(rgba(0,0,0,.12) 1px,transparent 1.4px) 0 0/7px 7px;border-radius:14px;box-shadow:inset 0 0 0 6px #4E3A25,inset 0 4px 14px rgba(0,0,0,.4)}
+.remembered[hidden]{display:none}
+.remembered h3{margin:0 0 1rem;font:600 .72rem/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--chalk);opacity:.85}
+.rm-slips{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:1.2rem 1rem}
+.rm-slip{position:relative;transform:rotate(var(--r,0deg));filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}
+.rm-paper{display:flex;flex-direction:column;align-items:center;padding:1.3rem .7rem 1.2rem;font:400 .6rem/1.4 var(--mono);text-align:center;
+  background:color-mix(in srgb,#E9DEC4 calc(var(--age,0) * 100%),var(--paper)) var(--grain-ink);color:color-mix(in srgb,#9C9384 calc(var(--age,0) * 100%),var(--ink));
+  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/10px 100%;mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/10px 100%}
+.rm-paper img{width:48px;height:auto;image-rendering:pixelated;margin-bottom:4px;filter:grayscale(.35)}
+.rm-paper b{font-size:.76rem;font-weight:600;letter-spacing:.04em}
+.rm-kind{color:var(--ink-soft);margin-bottom:.35rem}
+.rm-paper .r-list{width:100%;padding:.3rem 0;border-block:1px dashed #C9C6CC}
+.rm-paper .r-list li{gap:.4rem}
+.rm-paper .r-list li > span:first-child{color:var(--ink-soft)}
+.rm-how{margin-top:.55rem;padding:.1rem .45rem;border:1.5px solid var(--stamp);border-radius:4px;color:var(--stamp);text-transform:uppercase;letter-spacing:.1em;transform:rotate(-6deg);opacity:.85}
+.rm-slip .tack{top:6px}
+@media (max-width:620px){ .remembered{padding:1rem} .rm-slips{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem .8rem} }
+.pet-welcome{max-width:min(520px,calc(100% - 32px));white-space:normal;text-align:center;line-height:1.4;width:max-content}

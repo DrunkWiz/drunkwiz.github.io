@@ -118,7 +118,30 @@
     catchEmpty.hidden = catches.length > 0;
   }
 
+  /* ---- Remembered: a strip of the board for pets that burst and crumbled, or faded. pet.js keeps the list
+     (dw-pet); this prints a slip for each, newest first, older ones fainter. Hidden until there is one. ---- */
+  var rem = document.querySelector('.remembered'), remList = [];
+  var MONTHS = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ');
+  function day(t) { var d = new Date(t); return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); }
+  function renderRemembered() {
+    if (!rem) return;
+    rem.hidden = !remList.length;
+    rem.querySelector('.rm-slips').innerHTML = remList.map(function (c, i) {
+      return '<li class="rm-slip" style="--r:' + ((i * 37) % 7 - 3) + 'deg;--age:' + age(c.lost).toFixed(3) + '"><div class="rm-paper">' +
+        '<img alt="" src="' + esc(c.img || '') + '"><b>' + esc(c.name) + '</b><span class="rm-kind">the ' + esc(c.creature || c.kind) + '</span>' +
+        '<ul class="r-list"><li><span>Hatched</span><span>' + day(c.born) + '</span></li><li><span>Lost</span><span>' + day(c.lost) + '</span></li>' +
+        '<li><span>Fed</span><span>' + c.fed + '&times;</span></li></ul><span class="rm-how">' + (c.how === 'faded' ? 'Faded' : 'Burst') + '</span>' +
+        '</div><i class="tack" aria-hidden="true"></i></li>';
+    }).join('');
+  }
+
   window.drunkwizBoard = {
+    // one pet, or the whole list (newest first)
+    remember: function (c) {
+      if (Array.isArray(c)) remList = c.slice(0, 12); else if (c) remList = [c].concat(remList).slice(0, 12);
+      renderRemembered();
+      return true;
+    },
     pinCatch: function (f) {
       if (!catchesEl || !f || !f.name) return false;
       catches.unshift({ id: f.id, name: f.name, len: f.len, pond: f.pond, rarity: f.rarity, img: f.img, no: f.no, at: f.at || Date.now() });

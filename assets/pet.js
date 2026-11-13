@@ -2,7 +2,8 @@
    machine when it opens. Needs arcade-art.js first.
    The pet: hatched from the egg on the shelf, fed with catches, it swims across the page behind the content.
    It grows from 1 to 100; past 80 it struggles; at 100 it bursts and leaves a skeleton, and a new egg waits.
-   Skeletons drift too, at most 10. Older ones crumble and are remembered on the board (next stage).
+   Skeletons drift too, at most 10; older ones crumble to dust. Left unfed it shrinks a little each day and,
+   at nothing, fades. Pets that crumble or fade get a slip on the board, under Remembered.
    Kept in localStorage (dw-pet). Nothing is sent anywhere. */
 (function () {
   var ART = window.drunkwizArt;
@@ -27,6 +28,10 @@
   var SKEL_SPEED = [8, 16];    // px per second
   var SKEL_W = 64;             // a skeleton's width on the page
   var GONE_MAX = 12;           // remembered pets kept
+  var DAY = 864e5;
+  var SHRINK = 3;              // size lost for each full day without a feed, worked out on load
+  var WELCOME_MS = 9000;       // the welcome-back note stays this long: it's sad news, give it time
+  var DUST_MS = 1600;          // a crumbling skeleton's dust
   var BURST_MS = 1400;         // the explosion on the page
   var FIRST_RUN = ['fish', 'cat', 'lion', 'dragon', 'kraken', 'phoenix'];   // the first six hatch in this order
   var LATER = { fish: 3, cat: 3, lion: 3, kraken: 3, dragon: 1, phoenix: 1 };   // after that, at random; dragon and phoenix are rare
@@ -38,6 +43,7 @@
   var S;
   try { S = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { S = null; }
   if (!S || S.v !== 1) S = fresh();
+  if (!S.gone) S.gone = [];
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
   function nextKind() {
@@ -49,6 +55,23 @@
   }
   function card(p, how, at) { return { kind: p.kind, name: p.name, born: p.born, lost: at, fed: p.fed, how: how }; }
   function remember(c) { S.gone.push(c); if (S.gone.length > GONE_MAX) S.gone.shift(); }
+  var KINDS = { fish: 'koi', cat: 'cat', lion: 'lion', dragon: 'dragon', kraken: 'kraken', phoenix: 'phoenix' };
+
+  // Neglect: 3 smaller for every full day since the last feed. At nothing it fades: no skeleton, a slip on the
+  // board dated the day it ran out, a new egg, and a note for when the visitor comes back.
+  function neglect(now) {
+    var p = S.pet; if (!p) return;
+    var days = Math.floor((now - p.last) / DAY), owed = days - (p.decayed || 0);
+    if (owed <= 0) return;
+    var atFeed = p.size + (p.decayed || 0) * SHRINK;   // its size when it was last fed
+    p.size -= owed * SHRINK; p.decayed = days;
+    if (p.size <= 0) {
+      remember(card(p, 'faded', p.last + Math.ceil(atFeed / SHRINK) * DAY));
+      S.welcome = { name: p.name, kind: p.kind };
+      S.pet = null; S.egg = true;
+    }
+    save();
+  }
 
   function hatch() {
     if (!S.egg || S.pet) return S.pet;
@@ -60,17 +83,21 @@
   }
   function feed(rarity) {
     var p = S.pet; if (!p) return null;
-    p.size += FEED[rarity] || 1; p.fed++; p.last = Date.now();
+    p.size += FEED[rarity] || 1; p.fed++; p.last = Date.now(); p.decayed = 0;
     var out = { size: Math.min(p.size, SIZE_MAX), warn: p.size >= WARN_AT, burst: p.size >= SIZE_MAX, pet: p };
     if (out.burst) burst();
     save(); wake();
     return out;
   }
-  // At 100 it bursts: the skeleton stays, the 11th skeleton crumbles and is remembered, and a new egg waits.
+  // At 100 it bursts: the skeleton stays, the 11th skeleton crumbles and is remembered on the board, and a new egg waits.
   function burst() {
     var p = S.pet, now = Date.now();
     S.skel.push({ kind: p.kind, name: p.name, born: p.born, died: now, fed: p.fed });
-    if (S.skel.length > SKEL_MAX) { var old = S.skel.shift(); remember({ kind: old.kind, name: old.name, born: old.born, lost: now, fed: old.fed, how: 'burst' }); }
+    if (S.skel.length > SKEL_MAX) {
+      var old = S.skel.shift(), k = SK.shift();
+      if (k) dust = { kind: old.kind, x: k.x, y: k.y, dir: k.dir };   // it crumbles where it was drifting
+      remember({ kind: old.kind, name: old.name, born: old.born, lost: now, fed: old.fed, how: 'burst' });
+    }
     pending = { kind: p.kind, size: p.size, x: E.x, y: E.y, dir: E.dir };
     S.pet = null; S.egg = true;
     syncSkel();
@@ -78,7 +105,7 @@
 
   /* ---------------------------------------------------------------- The page canvas, behind everything */
   var cv = null, ctx = null, dpr = 1, vw = 0, vh = 0, raf = 0, lastT = 0, running = false;
-  var E = { x: 40, y: 200, dir: 1, lane: 200, laneAt: 0 }, SK = [], parts = [], pending = null;
+  var E = { x: 40, y: 200, dir: 1, lane: 200, laneAt: 0 }, SK = [], parts = [], pending = null, dust = null;
   function widthFor(size) { return W_MIN + (W_MAX - W_MIN) * Math.min(size, SIZE_MAX) / SIZE_MAX; }
   function ensure() {
     if (cv) return;
@@ -171,8 +198,18 @@
     ctx.globalAlpha = 1;
   }
   // The burst on the page plays once the machine is closed, where the pet was swimming.
+  function crumble() {
+    if (!dust) return;
+    var d = dust; dust = null;
+    if (reduce) return;
+    var img = ART.pet(d.kind, 'bone', d.dir < 0), sc = SKEL_W / img.width, P = ART.PETS[d.kind];
+    P.px.forEach(function (row, y) {
+      for (var x = 0; x < row.length; x += 2) if (row[x] === '3') parts.push({ x: d.x + x * sc, y: d.y + y * sc, vx: between(-15, 15), vy: between(-10, 20), c: '#BFB7A3', s: 2, life: DUST_MS / 1000 * between(0.5, 1) });
+    });
+  }
   function explode() {
-    if (!pending) return;
+    crumble();
+    if (!pending) { wake(); return; }
     var b = pending; pending = null;
     if (reduce) { wake(); return; }
     var P = ART.PETS[b.kind], w = widthFor(b.size), sc = w / P.px[0].length;
@@ -186,12 +223,34 @@
     document.dispatchEvent(new CustomEvent('pet:burst', { detail: { kind: b.kind } }));
     wake();
   }
-  document.addEventListener('arcade:close', function () { setTimeout(explode, 350); });
+  document.addEventListener('arcade:close', function () { setTimeout(function () { explode(); board(); }, 350); });
 
+  /* ---------------------------------------------------------------- Remembered, and the welcome back */
+  function cards() {
+    return S.gone.slice().reverse().map(function (c) {
+      return { kind: c.kind, creature: KINDS[c.kind], name: c.name, born: c.born, lost: c.lost, fed: c.fed, how: c.how, img: ART.pet(c.kind, 'live').toDataURL() };
+    });
+  }
+  function board() { if (window.drunkwizBoard && window.drunkwizBoard.remember) window.drunkwizBoard.remember(cards()); }
+  function welcome() {
+    var w = S.welcome; if (!w) return;
+    delete S.welcome; save();
+    var msg = 'While you were away, ' + w.name + ' the ' + KINDS[w.kind] + " faded. There's a slip for it on the board.";
+    var t = document.createElement('a');
+    t.className = 'snap-toast pet-welcome'; t.href = '#remembered'; t.textContent = msg; t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+    setTimeout(function () { t.classList.add('out'); }, WELCOME_MS);
+    setTimeout(function () { t.remove(); }, WELCOME_MS + 600);
+  }
+
+  neglect(Date.now());
   place(true); syncSkel(); wake();
+  board();
+  welcome();
 
   window.drunkwizPet = {
     get: function () { return JSON.parse(JSON.stringify(S)); },
+    cards: cards,
     hatch: hatch,
     feed: feed,
     WARN_AT: WARN_AT, SIZE_MAX: SIZE_MAX, FEED: FEED,
