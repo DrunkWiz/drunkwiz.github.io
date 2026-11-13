@@ -200,9 +200,10 @@
   }
 
   /* ---------------------------------------------------------------- 4. Closing time */
-  var now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
   var OPEN_LATE = 3 * 60 + 33, CLOSE_LATE = 5 * 60 + 55;   // 3:33am to 5:55am on the visitor's own clock
-  if (mins >= OPEN_LATE && mins <= CLOSE_LATE) {
+  function closing(d) { var m = d.getHours() * 60 + d.getMinutes(); return m >= OPEN_LATE && m <= CLOSE_LATE; }
+  window.drunkwizClosing = closing;   // the arcade's night fish keep the same hours
+  if (closing(new Date())) {
     document.documentElement.classList.add('after-hours');
     var where = P && P.receipt.querySelector('.r-head > span');
     if (where) where.textContent = 'LAST ORDER';

@@ -755,3 +755,43 @@ h3[tabindex="-1"]:focus{outline:none}
 .catch.new{animation:pin .55s cubic-bezier(.2,.9,.3,1.2) both}
 @media (max-width:620px){ .catches{grid-template-columns:repeat(3,minmax(0,1fr))} .plank{min-height:110px} }
 @media (prefers-reduced-motion:reduce){ .catch.new{animation:none} .mach{transition:none} .mach:hover:not(:disabled),.mach:focus-visible{transform:none} }
+
+/* ---------- arcade: a machine opened from the shelf ---------- */
+.arc{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:16px;border:0;background:transparent;color:var(--chalk);
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;overflow:auto;overscroll-behavior:contain}
+.arc[open]{display:flex}
+.arc::backdrop{background:rgba(4,12,10,.95)}
+.arc.fade[open]{animation:arcfade .15s ease-out}
+@keyframes arcfade{from{opacity:0}}
+::view-transition-group(arc-mach){animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.arc-stage{display:flex;justify-content:center}
+.arc-shell{position:relative;padding:26px 28px 18px;border-radius:26px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.arc-bezel{position:relative;padding:0}
+.arc-cv{display:block;image-rendering:pixelated;image-rendering:crisp-edges;outline:none}
+.arc-cv:focus-visible{outline:3px solid var(--chalk);outline-offset:4px}
+.arc-led{position:absolute;left:-17px;top:30%;width:7px;height:7px;border-radius:50%;background:#E8483A;box-shadow:0 0 6px #E8483A}
+.arc-brand{margin:.7rem 0 0;font:700 .9rem/1 var(--mono);letter-spacing:.32em}
+.arc-ctl{display:flex;justify-content:space-between;align-items:center;height:132px;padding:0 6px}
+.arc-ctl button{-webkit-tap-highlight-color:transparent;cursor:pointer;touch-action:none}
+.arc-dpad{position:relative;width:108px;height:108px}
+.arc-dpad button{position:absolute;width:36px;height:36px;border:0;padding:0;background:#2B2622;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.arc-dpad i{position:absolute;left:36px;top:36px;width:36px;height:36px;background:#2B2622}
+.arc-dpad [data-k=up]{left:36px;top:0;border-radius:5px 5px 0 0}
+.arc-dpad [data-k=down]{left:36px;top:72px;border-radius:0 0 5px 5px}
+.arc-dpad [data-k=left]{left:0;top:36px;border-radius:5px 0 0 5px}
+.arc-dpad [data-k=right]{left:72px;top:36px;border-radius:0 5px 5px 0}
+.arc-ab{display:flex;flex-direction:column;align-items:flex-end;gap:10px;transform:rotate(-24deg)}
+.arc-ab button{width:58px;height:58px;border-radius:50%;border:0;font:700 1rem/1 var(--mono);box-shadow:0 4px 0 rgba(0,0,0,.35)}
+.arc-ctl button.down{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.arc-keys{margin:0;font:500 .74rem/1.4 var(--mono);letter-spacing:.04em;color:var(--muted);text-align:center;max-width:60ch}
+.arc-close{position:fixed;top:14px;right:14px;font:600 .85rem/1 var(--sans);color:var(--chalk);background:rgba(0,0,0,.35);border:2px solid var(--rule);border-radius:999px;padding:.6rem 1rem;cursor:pointer}
+.arc-close:hover,.arc-close:focus-visible{border-color:var(--chalk)}
+@media (hover:none){ .arc-keys{display:none} }
+/* pocket: brick-red handheld, cream buttons, dark bezel */
+.arc-shell[data-m=pocket]{background:linear-gradient(#D2674E,#AE4B36);box-shadow:inset -8px -8px 0 rgba(0,0,0,.12),inset 6px 6px 0 rgba(255,255,255,.12),0 24px 60px rgba(0,0,0,.55)}
+.arc-shell[data-m=pocket] .arc-bezel{background:#2B2622;padding:18px 26px;border-radius:14px}
+.arc-shell[data-m=pocket] .arc-led{left:9px}
+.arc-shell[data-m=pocket] .arc-brand{color:#F3E3C3;text-align:left;padding-left:4px}
+.arc-shell[data-m=pocket] .arc-ab button{background:#F3E3C3;color:#7A3324}
+@media (max-width:620px){ .arc{padding:10px} .arc-shell{padding:16px 14px 10px} .arc-shell[data-m=pocket] .arc-bezel{padding:12px 14px} .arc-close{top:8px;right:8px} }
+@media (prefers-reduced-motion:reduce){ .arc.fade[open]{animation-duration:.12s} ::view-transition-group(arc-mach){animation:none} }
