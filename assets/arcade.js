@@ -68,14 +68,18 @@
   }
   var log = loadLog();
   function saveLog() { try { localStorage.setItem(LOG_KEY, JSON.stringify(log)); } catch (e) {} }
-  function caughtIn(pond) { return ART.FISH[pond].filter(function (f) { return log.fish[f.id]; }).length; }
+  function caughtIn(pond) { return (ART.FISH[pond] || []).filter(function (f) { return log.fish[f.id]; }).length; }
+  // The four ponds, in shelf order. A pond with no fish yet shows empty slots in the log.
+  var PONDS = [{ id: 'pocket', name: 'Pocket' }, { id: 'tv', name: 'TV game' }, { id: 'desk', name: 'Desktop' }, { id: 'term', name: 'Terminal' }];
+  function caughtAll() { return PONDS.reduce(function (n, p) { return n + caughtIn(p.id); }, 0); }
 
   /* ---------------------------------------------------------------- Shelf */
   var shelf = document.querySelector('.arcade');
   function labelShelf() {
     if (!shelf) return;
     shelf.querySelectorAll('.mach').forEach(function (b) {
-      var m = MACHINES[b.getAttribute('data-mach')];
+      var id = b.getAttribute('data-mach'), m = MACHINES[id];
+      if (id === 'log') { b.setAttribute('aria-label', 'Fish log. ' + caughtAll() + ' of ' + PONDS.length * 8 + ' caught.'); return; }
       if (!m) return;
       b.disabled = false;
       b.setAttribute('aria-label', m.label + '. Pond: ' + caughtIn(b.getAttribute('data-mach')) + ' of ' + ART.FISH[b.getAttribute('data-mach')].length + ' caught.');
@@ -84,7 +88,7 @@
   labelShelf();
   if (shelf) shelf.addEventListener('click', function (e) {
     var b = e.target.closest('.mach');
-    if (b && !b.disabled && MACHINES[b.getAttribute('data-mach')]) open(b.getAttribute('data-mach'), b);
+    if (b && !b.disabled) open(b.getAttribute('data-mach'), b);
   });
 
   /* ---------------------------------------------------------------- The dialog around a machine */
@@ -163,6 +167,7 @@
 
   var M = null, PAL = null;
   function open(id, btn) {
+    if (id === 'log') { openLog(btn); return; }
     if (isOpen || !MACHINES[id]) return;
     if (!dlg) build();
     cur = id; M = MACHINES[id]; PAL = ART.PAL[M.pal]; from = btn || shelf.querySelector('[data-mach="' + id + '"]');
@@ -207,6 +212,7 @@
     dlg.classList.remove('fade');
     labelShelf();
     if (from) from.focus({ preventScroll: true });
+    document.dispatchEvent(new CustomEvent('arcade:close'));
   }
 
   /* ---------------------------------------------------------------- Input */
@@ -337,9 +343,11 @@
     if (!e) e = log.fish[f.id] = { c: 0, best: 0, first: d.getTime() };
     e.c++; e.best = Math.max(e.best, len); e.last = d.getTime();
     log.n++; log.feed++;
+    var time = pad(d.getHours()) + ':' + pad(d.getMinutes());
+    log.last = { id: f.id, name: f.name, pond: M.name, len: len.toFixed(1), time: time, no: log.n, at: d.getTime() };   // the slip on the shelf
     saveLog();
     G.state = 'card'; G.c0 = now;
-    G.card = { f: f, len: len.toFixed(1), time: pad(d.getHours()) + ':' + pad(d.getMinutes()), fresh: fresh, no: log.n };
+    G.card = { f: f, len: len.toFixed(1), time: time, fresh: fresh, no: log.n };
     tstat.textContent = '';
     announce('Caught a ' + f.name + ', ' + len.toFixed(1) + ' cm.' + (fresh ? ' New in the log.' : '') + ' ' + f.desc);
     var img = ART.sheet(f.id, f.px, PAL).toDataURL();
@@ -471,6 +479,102 @@
       drawPocket(now);
       raf = requestAnimationFrame(frame);
     });
+  }
+
+  /* ---------------------------------------------------------------- Catch outputs: slip, pin, log book */
+  var SLIP_BARS = 30;          // bars in the decorative stripe at the foot of a slip
+  var esc = function (v) { return String(v).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var printer = document.querySelector('.mini-printer'), slipBox = null, pendingSlip = null;
+  // A barcode-like stripe, decoration only: bar widths come from the catch number, so each slip differs.
+  function stripe(no) {
+    var x = 2, r = (no * 2654435761) >>> 0, out = '';
+    for (var i = 0; i < SLIP_BARS; i++) {
+      r = (Math.imul(r, 1103515245) + 12345) >>> 0;
+      var w = 1 + ((r >>> 16) % 3);
+      out += '<rect x="' + x + '" width="' + w + '" height="1"/>';
+      x += w + 1 + ((r >>> 20) % 2);
+    }
+    return '<svg viewBox="0 0 ' + (x + 2) + ' 1" preserveAspectRatio="none" aria-hidden="true">' + out + '</svg>';
+  }
+  function slip(c, animate) {
+    if (!printer) return;
+    if (!slipBox) {
+      slipBox = document.createElement('div'); slipBox.className = 'mini-slip';
+      slipBox.setAttribute('role', 'img');
+      printer.appendChild(slipBox);
+      printer.closest('.plank').classList.add('has-slip');
+    }
+    slipBox.innerHTML = '<div class="ms-paper' + (animate && !reduce ? ' printing' : '') + '">' +
+      '<b>CATCH #' + String(c.no).padStart(3, '0') + '</b><span>Pond: ' + esc(c.pond) + '</span>' +
+      '<span>' + esc(c.name) + ' ' + esc(c.len) + ' cm</span><span>' + esc(c.time) + '</span>' + stripe(c.no) + '</div>';
+    slipBox.setAttribute('aria-label', 'Catch slip ' + c.no + ': ' + c.name + ', ' + c.len + ' cm, ' + c.pond + ' pond, ' + c.time);
+  }
+  if (log.last) slip(log.last, false);
+  // The pin goes up straight away; the slip prints once the machine closes, so it is seen printing.
+  document.addEventListener('arcade:catch', function (e) {
+    var c = e.detail;
+    if (window.drunkwizBoard && window.drunkwizBoard.pinCatch) window.drunkwizBoard.pinCatch(c);
+    if (isOpen) pendingSlip = c; else slip(c, true);
+  });
+  document.addEventListener('arcade:close', function () { if (pendingSlip) { slip(pendingSlip, true); pendingSlip = null; } });
+
+  /* The fish log: a book on the shelf. 32 slots, silhouettes until caught, then the sprite, best length and count. */
+  var SIL = ['#BDB6A6', '#BDB6A6', '#BDB6A6', '#A69F8F'];   // an uncaught fish is a grey shape on the page
+  var book = null, bookFrom = null;
+  function rarityWord(r) { return { common: 'Common', uncommon: 'Uncommon', rare: 'Rare', night: 'Night fish, 3:33 to 5:55am' }[r]; }
+  function day(t) { var d = new Date(t); return d.getDate() + ' ' + 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ')[d.getMonth()] + ' ' + d.getFullYear(); }
+  function buildBook() {
+    book = document.createElement('dialog');
+    book.className = 'flog';
+    book.setAttribute('aria-labelledby', 'flog-h');
+    book.innerHTML = '<div class="flog-head"><h2 id="flog-h">Fish log</h2><span class="flog-count"></span><button type="button" class="flog-close">Close</button></div>' +
+      '<div class="flog-ponds"></div><p class="flog-detail" aria-live="polite"></p>';
+    document.body.appendChild(book);
+    book.querySelector('.flog-close').addEventListener('click', function () { book.close(); });
+    book.addEventListener('click', function (e) {
+      if (e.target === book) { book.close(); return; }   // a click on the backdrop
+      var b = e.target.closest('.flog-slot'); if (b) detail(b.getAttribute('data-id'));
+    });
+    book.addEventListener('focusin', function (e) { var b = e.target.closest('.flog-slot'); if (b) detail(b.getAttribute('data-id')); });
+    // keep keys pressed in here from reaching the page's own key eggs underneath
+    book.addEventListener('keydown', function (e) { if (e.key !== 'Escape') e.stopPropagation(); });
+    book.addEventListener('close', function () { if (bookFrom) bookFrom.focus({ preventScroll: true }); });
+  }
+  function findFish(id) {
+    for (var i = 0; i < PONDS.length; i++) {
+      var l = ART.FISH[PONDS[i].id] || [];
+      for (var j = 0; j < l.length; j++) if (l[j].id === id) return { f: l[j], pond: PONDS[i] };
+    }
+    return null;
+  }
+  function detail(id) {
+    var out = book.querySelector('.flog-detail'), hit = id && findFish(id), e = hit && log.fish[id];
+    if (!hit) { out.textContent = 'Nothing here yet. That machine is not plugged in.'; return; }
+    if (!e) { out.textContent = 'Not caught yet. ' + rarityWord(hit.f.rarity) + ', ' + hit.pond.name + ' pond, ' + (hit.f.where === 'any' ? 'anywhere' : hit.f.where + ' cast') + '.'; return; }
+    out.innerHTML = '<b>' + esc(hit.f.name) + '.</b> ' + esc(hit.f.desc) + ' <span>' + esc(rarityWord(hit.f.rarity)) + ' &middot; best ' + e.best.toFixed(1) + ' cm &middot; caught ' + e.c + '&times; &middot; first on ' + day(e.first) + '</span>';
+  }
+  function paintBook() {
+    book.querySelector('.flog-count').textContent = caughtAll() + ' of ' + PONDS.length * 8;
+    book.querySelector('.flog-ponds').innerHTML = PONDS.map(function (p) {
+      var list = ART.FISH[p.id], slots = '';
+      for (var i = 0; i < 8; i++) {
+        var f = list && list[i], e = f && log.fish[f.id];
+        if (!f) { slots += '<li><button type="button" class="flog-slot empty" aria-label="Empty slot"><span class="flog-img"></span><span class="flog-name">&mdash;</span></button></li>'; continue; }
+        var src = ART.sheet(f.id, f.px, e ? ART.PAL[p.id] : SIL).toDataURL();
+        slots += '<li><button type="button" class="flog-slot' + (e ? ' got r-' + f.rarity : '') + '" data-id="' + f.id + '" aria-label="' +
+          (e ? esc(f.name) + ', best ' + e.best.toFixed(1) + ' cm, caught ' + e.c + ' times' : 'Not caught yet') + '">' +
+          '<span class="flog-img"><img alt="" src="' + src + '"></span><span class="flog-name">' + (e ? esc(f.name) : '???') + '</span>' +
+          (e ? '<span class="flog-best">' + e.best.toFixed(1) + ' cm &middot; &times;' + e.c + '</span>' : '') + '</button></li>';
+      }
+      return '<section class="flog-pond"><h3>' + esc(p.name) + ' <small>' + caughtIn(p.id) + '/8' + (list ? '' : ' &middot; not plugged in yet') + '</small></h3><ol class="flog-grid">' + slots + '</ol></section>';
+    }).join('');
+    book.querySelector('.flog-detail').textContent = 'Pick a fish.';
+  }
+  function openLog(btn) {
+    if (!book) buildBook();
+    bookFrom = btn || null;
+    paintBook();
+    book.showModal();
   }
 
   window.drunkwizArcade = {

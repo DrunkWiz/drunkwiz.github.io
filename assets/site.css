@@ -749,7 +749,7 @@ h3[tabindex="-1"]:focus{outline:none}
 .catch{position:relative;transform:rotate(var(--r,0deg));background:var(--paper) var(--grain-ink);color:var(--ink);border-radius:2px;padding:20px 6px 8px;text-align:center;box-shadow:0 6px 8px rgba(0,0,0,.3)}
 .catch img{display:block;margin:0 auto 6px;width:64px;height:32px;object-fit:contain;image-rendering:pixelated}
 .catch-tag{display:block;font:400 .6rem/1.35 var(--mono)}
-.catch-tag b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catch-tag b{display:block;font-weight:600;overflow-wrap:anywhere}
 .catch .tack{top:5px}
 .catch.r-rare .catch-tag b,.catch.r-night .catch-tag b{color:var(--stamp)}
 .catch.new{animation:pin .55s cubic-bezier(.2,.9,.3,1.2) both}
@@ -795,3 +795,50 @@ h3[tabindex="-1"]:focus{outline:none}
 .arc-shell[data-m=pocket] .arc-ab button{background:#F3E3C3;color:#7A3324}
 @media (max-width:620px){ .arc{padding:10px} .arc-shell{padding:16px 14px 10px} .arc-shell[data-m=pocket] .arc-bezel{padding:12px 14px} .arc-close{top:8px;right:8px} }
 @media (prefers-reduced-motion:reduce){ .arc.fade[open]{animation-duration:.12s} ::view-transition-group(arc-mach){animation:none} }
+
+/* ---------- catch slips: the mini printer prints one per catch, out of its top slot ---------- */
+.plank-low{align-items:flex-end}
+.plank-low.has-slip{min-height:206px}
+.mini-printer{width:120px;flex:none}
+.mini-slip{position:absolute;left:10px;right:10px;bottom:calc(100% - 11px);height:160px;overflow:hidden;pointer-events:none;z-index:1}
+.ms-paper{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:1px;padding:8px 7px 12px;
+  background:var(--paper) var(--grain-ink);color:var(--ink);font:400 .56rem/1.35 var(--mono);
+  -webkit-mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) 50%/10px 100%;mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) 50%/10px 100%;
+  filter:drop-shadow(0 -2px 3px rgba(0,0,0,.2))}
+.ms-paper b{font-weight:600;letter-spacing:.06em;padding-top:4px}
+.ms-paper svg{display:block;width:100%;height:14px;margin-top:5px;fill:var(--ink)}
+.ms-paper.printing{animation:slipup 1.6s steps(16,end) both}
+@keyframes slipup{from{transform:translateY(102%)}to{transform:none}}
+.mini-printer .mp-slot{z-index:2}
+
+/* the fish log, a book standing on the shelf */
+.mini-log{width:54px;height:78px;flex:none}
+.mini-log .ml-book{left:4px;bottom:0;width:26px;height:78px;border-radius:2px 3px 3px 2px;background:linear-gradient(90deg,#2F4F6B,#3E6587 40%,#2F4F6B);box-shadow:inset 0 6px 0 rgba(255,255,255,.08),inset 0 -6px 0 rgba(0,0,0,.15)}
+.mini-log .ml-book::after{content:"FISH LOG";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);font:700 .5rem/1 var(--mono);letter-spacing:.14em;color:#E9D9A8;white-space:nowrap}
+.mini-log .ml-flat{left:32px;bottom:0;width:20px;height:60px;border-radius:2px;background:linear-gradient(90deg,#7A3A2C,#93493A 50%,#7A3A2C)}
+
+.flog{border:0;border-radius:6px;padding:1.4rem 1.4rem 1.2rem;width:min(860px,calc(100% - 24px));max-height:calc(100% - 24px);
+  background:var(--paper) var(--grain-ink);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.6),inset 14px 0 0 #E8E3D3}
+.flog::backdrop{background:rgba(4,12,10,.8)}
+.flog-head{display:flex;align-items:baseline;gap:1rem;border-bottom:1.5px dashed #B9B7BE;padding:0 0 .8rem 14px}
+.flog-head h2{margin:0;font:700 1.2rem/1 var(--mono);letter-spacing:.04em}
+.flog-count{font:500 .72rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.flog-close{margin-left:auto;font:600 .82rem/1 var(--sans);background:none;border:1.5px solid #B9B7BE;border-radius:999px;padding:.5rem .9rem;color:var(--ink);cursor:pointer}
+.flog-close:hover,.flog-close:focus-visible{border-color:var(--ink)}
+.flog-pond{padding:0 0 0 14px}
+.flog-pond h3{margin:1rem 0 .5rem;font:600 .72rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.flog-pond h3 small{font-size:inherit;font-weight:400;color:var(--ink-soft);letter-spacing:.06em;margin-left:.4rem}
+.flog-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.4rem}
+.flog-slot{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;gap:3px;padding:.5rem .25rem .45rem;border:1.5px dashed #CFCBC0;border-radius:4px;background:transparent;color:var(--ink-soft);font:400 .56rem/1.25 var(--mono);cursor:pointer;text-align:center}
+.flog-slot.got{border-style:solid;border-color:#C9C3B4;color:var(--ink);background:rgba(255,255,255,.5)}
+.flog-slot:hover,.flog-slot:focus-visible{border-color:var(--ink);outline:none}
+.flog-slot.empty{cursor:default;opacity:.5}
+.flog-img{display:grid;place-items:center;height:30px}
+.flog-img img{display:block;max-width:56px;height:auto;max-height:30px;image-rendering:pixelated;transform:scale(1.5)}
+.flog-name{font-weight:600;min-height:2.5em}
+.flog-best{color:var(--ink-soft)}
+.flog-slot.r-rare .flog-name,.flog-slot.r-night .flog-name{color:var(--stamp)}
+.flog-detail{margin:1rem 0 0 14px;padding-top:.8rem;border-top:1.5px dashed #B9B7BE;font-size:.9rem;min-height:3em}
+.flog-detail span{display:block;margin-top:.25rem;font:400 .72rem/1.4 var(--mono);color:var(--ink-soft)}
+@media (max-width:620px){ .flog{padding:1rem .8rem 1rem;box-shadow:0 30px 80px rgba(0,0,0,.6)} .flog-head,.flog-pond{padding-left:0} .flog-detail{margin-left:0} .flog-grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (prefers-reduced-motion:reduce){ .ms-paper.printing{animation:none} }
