@@ -81,7 +81,7 @@
       pins.appendChild(el);
     });
     empty.hidden = saved.length > 0; clear.hidden = saved.length === 0;
-    board.hidden = saved.length === 0;   // the corkboard only appears once something is pinned
+    // The board is always shown now: the arcade shelf sits beside it, and catches pin here too.
   }
   document.addEventListener('receipt:posted', function (e) {
     if (!board) return;
@@ -98,7 +98,35 @@
   if (clear) clear.addEventListener('click', function () { saved = []; store('dw-pins', '[]'); renderBoard(); });
 
   // Digicam snapshots (eggs.js) are pinned here too. Keep at most 6 of them, so they can't fill the browser's storage.
+  /* ---- Catch strip: fish from the arcade shelf, newest first. Kept apart from the 12 pins above,
+     so catches never push out snapshots or receipt scraps. The fish log (dw-fish) keeps everything. ---- */
+  var CATCH_MAX = 8;   // one row of pins across the board; the oldest falls off
+  var catchesEl = board && board.querySelector('.catches'), catchEmpty = board && board.querySelector('.catch-empty');
+  var catches = [];
+  try { var cs = JSON.parse(store('dw-catch-pins') || 'null'); catches = cs && cs.v === 1 && Array.isArray(cs.pins) ? cs.pins : []; } catch (e) { catches = []; }
+  function renderCatches(fresh) {
+    if (!catchesEl) return;
+    catchesEl.innerHTML = '';
+    catches.forEach(function (f, i) {
+      var li = document.createElement('li');
+      li.className = 'catch' + (fresh && i === 0 && !reduce ? ' new' : '') + (f.rarity ? ' r-' + f.rarity : '');
+      li.style.setProperty('--r', ((((f.no || 1) * 53) % 9) - 4) + 'deg');
+      li.innerHTML = '<img alt="" src="' + esc(f.img || '') + '"><span class="catch-tag"><b>' + esc(f.name) + '</b>' + esc(f.len) + ' cm</span><i class="tack" aria-hidden="true"></i>';
+      li.setAttribute('aria-label', 'Catch ' + (f.no || '') + ': ' + f.name + ', ' + f.len + ' cm, ' + f.pond + ' pond');
+      catchesEl.appendChild(li);
+    });
+    catchEmpty.hidden = catches.length > 0;
+  }
+
   window.drunkwizBoard = {
+    pinCatch: function (f) {
+      if (!catchesEl || !f || !f.name) return false;
+      catches.unshift({ id: f.id, name: f.name, len: f.len, pond: f.pond, rarity: f.rarity, img: f.img, no: f.no, at: f.at || Date.now() });
+      catches = catches.slice(0, CATCH_MAX);
+      try { localStorage.setItem('dw-catch-pins', JSON.stringify({ v: 1, pins: catches })); } catch (e) {}
+      renderCatches(true);
+      return true;
+    },
     pinPhoto: function (img, cap) {
       if (!board) return false;
       saved.push({ type: 'photo', img: img, cap: cap, at: Date.now() });
@@ -112,6 +140,39 @@
     }
   };
   renderBoard();
+  renderCatches();
+
+  /* ---- Arcade shelf: its code (arcade-art.js, arcade.js) loads only when the shelf scrolls near,
+     so the hero stays fast. A click before then loads it and opens the machine. ---- */
+  var shelf = document.querySelector('.arcade');
+  if (shelf) {
+    var LOAD_MARGIN = '600px 0px';   // start loading about a screen before the shelf is in view
+    var loading = null;
+    var loadArcade = function () {
+      if (loading) return loading;
+      var v = shelf.getAttribute('data-v') || '';
+      var add = function (src) {
+        return new Promise(function (res, rej) {
+          var sc = document.createElement('script'); sc.src = src + '?v=' + v; sc.onload = res; sc.onerror = rej;
+          document.head.appendChild(sc);
+        });
+      };
+      loading = add('/assets/arcade-art.js').then(function () { return add('/assets/arcade.js'); });
+      loading.catch(function () { loading = null; });
+      return loading;
+    };
+    shelf.addEventListener('click', function (e) {
+      var b = e.target.closest('.mach');
+      if (!b || b.disabled || window.drunkwizArcade) return;   // once loaded, arcade.js handles clicks itself
+      loadArcade().then(function () { if (window.drunkwizArcade) window.drunkwizArcade.open(b.getAttribute('data-mach'), b); });
+    });
+    if ('IntersectionObserver' in window) {
+      var lo = new IntersectionObserver(function (es) {
+        if (es.some(function (x) { return x.isIntersecting; })) { lo.disconnect(); loadArcade(); }
+      }, { rootMargin: LOAD_MARGIN });
+      lo.observe(shelf);
+    } else loadArcade();
+  }
 
   /* ---- Tall screens scroll with the page, like a screen recording.
      The top of each screen holds still first, so it gets read. ---- */

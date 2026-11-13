@@ -463,8 +463,8 @@ h3[tabindex="-1"]:focus{outline:none}
 .board .sec-head{margin-bottom:1.4rem}
 .board-clear{font:500 .78rem/1 var(--mono);letter-spacing:.06em;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:.3rem 0}
 .board-empty{color:var(--muted);margin:0;max-width:52ch}
-.pins{list-style:none;margin:0;padding:1.6rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1.8rem 1.4rem;
-  background:#6E5236 radial-gradient(rgba(0,0,0,.12) 1px,transparent 1.4px) 0 0/7px 7px;border-radius:14px;box-shadow:inset 0 0 0 6px #4E3A25,inset 0 4px 14px rgba(0,0,0,.4)}
+.cork{padding:1.6rem;background:#6E5236 radial-gradient(rgba(0,0,0,.12) 1px,transparent 1.4px) 0 0/7px 7px;border-radius:14px;box-shadow:inset 0 0 0 6px #4E3A25,inset 0 4px 14px rgba(0,0,0,.4)}
+.pins{list-style:none;margin:0;padding:1.2rem 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1.8rem 1.4rem}
 .pins:empty{display:none}
 .pin{position:relative;transform:rotate(var(--r,0deg));filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}
 .pin.new{animation:pin .55s cubic-bezier(.2,.9,.3,1.2) both}
@@ -486,7 +486,8 @@ h3[tabindex="-1"]:focus{outline:none}
 
 @media (max-width:620px){
   .lt-grade{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .pins{padding:1rem;gap:1.2rem 1rem;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cork{padding:1rem}
+  .pins{gap:1.2rem 1rem;grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (prefers-reduced-motion:reduce){
   @view-transition{navigation:none}
@@ -692,3 +693,65 @@ h3[tabindex="-1"]:focus{outline:none}
 .k-trail span{font:700 .9rem/1 var(--mono);color:rgba(246,242,232,.3);min-width:1.1em;text-align:center}
 .k-trail span.on{color:#F0A49E}
 @media (prefers-reduced-motion:reduce){ .snap-toast{animation:none} .k-trail{transition:none} }
+
+/* ---------- the shelf and the board: arcade shelf beside the corkboard ---------- */
+.sb{display:grid;grid-template-columns:minmax(300px,370px) minmax(0,1fr);gap:2rem;align-items:start}
+.board-side{min-width:0}
+.board-empty{color:var(--chalk);font-size:.92rem}
+.board .cork > .board-empty{margin-top:1.2rem;opacity:.85}
+@media (max-width:960px){ .sb{grid-template-columns:minmax(0,1fr)} .arcade{max-width:440px;width:100%;justify-self:center} }
+
+/* the wooden shelf; machines are original shapes drawn in CSS */
+.arcade{display:grid;gap:1.4rem;padding:.6rem 0 0}
+.plank{position:relative;display:flex;align-items:flex-end;justify-content:space-around;gap:.4rem;padding:0 .6rem 14px;min-height:118px}
+.plank::after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;border-radius:3px;
+  background:linear-gradient(#A77A4C,#7E5733 60%,#5E4026);box-shadow:0 10px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,235,200,.35)}
+.plank-low{justify-content:flex-start;gap:1.2rem;min-height:96px}
+.mach{position:relative;display:block;border:0;padding:0;background:none;cursor:pointer;color:inherit;font:inherit;transform-origin:50% 100%;transition:transform .18s ease}
+.mach:hover:not(:disabled),.mach:focus-visible{transform:translateY(-4px)}
+.mach:focus-visible{outline:3px solid var(--chalk);outline-offset:6px;border-radius:8px}
+.mach:disabled{cursor:default;opacity:.45;filter:saturate(.4)}
+.mach i{position:absolute;display:block}
+.mach-tag{position:absolute;left:50%;bottom:-31px;transform:translateX(-50%);white-space:nowrap;font:500 .62rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+/* pocket: a tall handheld with a screen, a cross pad and two buttons */
+.mini-pocket{width:58px;height:90px;border-radius:13px;background:linear-gradient(#D2674E,#AE4B36);box-shadow:inset -3px -3px 0 rgba(0,0,0,.12),0 4px 0 rgba(0,0,0,.18)}
+.mini-pocket .mini-screen{left:6px;right:6px;top:7px;height:38px;border-radius:7px;background:#2B2622}
+.mini-pocket .mini-screen::after{content:"";position:absolute;inset:5px 6px;background:#A9C47F;border-radius:1px}
+.mini-pocket .mini-pad{left:10px;top:57px;width:14px;height:14px;background:linear-gradient(#2B2622,#2B2622) 50%/5px 100% no-repeat,linear-gradient(#2B2622,#2B2622) 50%/100% 5px no-repeat}
+.mini-pocket .mini-ab{right:9px;top:58px;width:8px;height:8px;border-radius:50%;background:#F3E3C3;box-shadow:0 10px 0 #F3E3C3}
+/* tv game: a small round-cornered set on a flat box */
+.mini-tv{width:78px;height:96px}
+.mini-tv .mini-crt{left:4px;right:4px;top:0;height:66px;border-radius:10px;background:linear-gradient(#5B4A3A,#3F3329);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}
+.mini-tv .mini-crt::after{content:"";position:absolute;left:7px;top:7px;width:46px;height:44px;border-radius:12px/16px;background:radial-gradient(#3D6F8A,#1B2F3D)}
+.mini-tv .mini-box{left:0;right:0;bottom:0;height:24px;border-radius:3px;background:linear-gradient(#B9B5AE,#8F8B84);box-shadow:inset 0 3px 0 rgba(255,255,255,.25)}
+.mini-tv .mini-box::after{content:"";position:absolute;left:8px;top:9px;width:20px;height:4px;background:#2E2E33;border-radius:2px}
+/* desktop: a compact all-in-one with a slot under the screen */
+.mini-desk{width:70px;height:80px;border-radius:4px;background:linear-gradient(#9DAAA6,#7D8A86);box-shadow:inset -3px -3px 0 rgba(0,0,0,.12)}
+.mini-desk .mini-screen{left:6px;top:7px;width:44px;height:40px;background:#F2F2EE;border:3px solid #39403E;border-radius:2px}
+.mini-desk .mini-screen::after{content:"";position:absolute;right:-17px;top:-1px;width:9px;height:36px;background:repeating-linear-gradient(#5F6B68 0 2px,transparent 2px 5px)}
+.mini-desk .mini-slot{left:8px;width:26px;top:60px;height:4px;background:#2E3331;border-radius:1px}
+/* terminal: a dark box with an amber screen and a keyboard */
+.mini-term{width:72px;height:88px}
+.mini-term .mini-screen{left:4px;right:4px;top:0;height:62px;border-radius:6px;background:#2B2A28;box-shadow:inset 0 -4px 0 rgba(0,0,0,.3)}
+.mini-term .mini-screen::after{content:"";position:absolute;inset:7px 8px 11px;border-radius:5px;background:repeating-linear-gradient(#1A0E02 0 3px,#3A2203 3px 4px);box-shadow:0 0 8px rgba(255,170,40,.25)}
+.mini-term .mini-keys{left:0;right:0;bottom:0;height:18px;border-radius:3px 3px 5px 5px;background:repeating-linear-gradient(90deg,#3A3936 0 6px,#2A2927 6px 8px)}
+/* mini thermal printer at the end of the shelf */
+.mini-printer{position:relative;width:96px;height:46px;border-radius:7px 7px 4px 4px;background:linear-gradient(#ECECE6,#C9C8C1);box-shadow:inset -3px -3px 0 rgba(0,0,0,.1)}
+.mini-printer .mp-slot{position:absolute;left:12px;right:12px;top:8px;height:6px;border-radius:3px;background:#2C2C30}
+.mini-printer .mach-tag{bottom:-31px}
+
+/* catch strip: one row of fish across the top of the corkboard */
+.catch-row{position:relative;min-height:84px;border-bottom:1.5px dashed rgba(0,0,0,.28);padding-bottom:1rem}
+.catch-empty{margin:0;font:500 .82rem/1.4 var(--mono);letter-spacing:.04em;color:var(--chalk);opacity:.85;padding-top:1.6rem}
+.catch-empty[hidden]{display:none}
+.catches{list-style:none;margin:0;padding:.4rem 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:1rem .8rem}
+.catches:empty{display:none}
+.catch{position:relative;transform:rotate(var(--r,0deg));background:var(--paper) var(--grain-ink);color:var(--ink);border-radius:2px;padding:20px 6px 8px;text-align:center;box-shadow:0 6px 8px rgba(0,0,0,.3)}
+.catch img{display:block;margin:0 auto 6px;width:64px;height:32px;object-fit:contain;image-rendering:pixelated}
+.catch-tag{display:block;font:400 .6rem/1.35 var(--mono)}
+.catch-tag b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catch .tack{top:5px}
+.catch.r-rare .catch-tag b,.catch.r-night .catch-tag b{color:var(--stamp)}
+.catch.new{animation:pin .55s cubic-bezier(.2,.9,.3,1.2) both}
+@media (max-width:620px){ .catches{grid-template-columns:repeat(3,minmax(0,1fr))} .plank{min-height:110px} }
+@media (prefers-reduced-motion:reduce){ .catch.new{animation:none} .mach{transition:none} .mach:hover:not(:disabled),.mach:focus-visible{transform:none} }

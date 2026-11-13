@@ -24,12 +24,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;700;800;900&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;700;800;900&display=swap"></noscript>
-<link rel="stylesheet" href="/assets/site.css?v=202611100012">
+<link rel="stylesheet" href="/assets/site.css?v=202611130001">
 <script>document.documentElement.classList.add('js')</script>
-<script src="/assets/site.js?v=202611100012" defer></script>
-<script src="/assets/receipt.js?v=202611100012" defer></script>
-<script src="/assets/extras.js?v=202611100012" defer></script>
-<script src="/assets/eggs.js?v=202611100012" defer></script>
+<script src="/assets/site.js?v=202611130001" defer></script>
+<script src="/assets/receipt.js?v=202611130001" defer></script>
+<script src="/assets/extras.js?v=202611130001" defer></script>
+<script src="/assets/eggs.js?v=202611130001" defer></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -309,8 +309,23 @@
     </section>
   </main>
 
-  <section class="board" id="board" aria-labelledby="board-h" hidden>
-    <div class="sec-head"><h2 id="board-h">Posted receipts</h2><button type="button" class="board-clear" hidden>Unpin all</button></div>
+  <section class="board" id="board" aria-labelledby="board-h">
+    <div class="sec-head"><h2 id="board-h">The shelf and the board</h2><button type="button" class="board-clear" hidden>Unpin all</button></div>
+    <div class="sb">
+    <!-- The arcade shelf. assets/arcade.js and arcade-art.js load when this scrolls near (extras.js),
+         with the same ?v= as below. Each machine is an original design: no real names, logos or sounds. -->
+    <div class="arcade" data-v="202611130001" aria-label="Arcade shelf" role="group">
+      <div class="plank">
+        <button type="button" class="mach mini-pocket" data-mach="pocket" aria-label="Pocket console. Pond: 0 of 8 caught."><i class="mini-screen"></i><i class="mini-pad"></i><i class="mini-ab"></i><span class="mach-tag">Pocket</span></button>
+        <button type="button" class="mach mini-tv" data-mach="tv" aria-label="TV game. Not plugged in yet." disabled><i class="mini-crt"></i><i class="mini-box"></i><span class="mach-tag">TV game</span></button>
+        <button type="button" class="mach mini-desk" data-mach="desk" aria-label="Desktop. Not plugged in yet." disabled><i class="mini-screen"></i><i class="mini-slot"></i><span class="mach-tag">Desktop</span></button>
+        <button type="button" class="mach mini-term" data-mach="term" aria-label="Terminal. Not plugged in yet." disabled><i class="mini-screen"></i><i class="mini-keys"></i><span class="mach-tag">Terminal</span></button>
+      </div>
+      <div class="plank plank-low">
+        <div class="mini-printer" aria-hidden="true"><i class="mp-slot"></i><span class="mach-tag">Catch slips</span></div>
+      </div>
+    </div>
+    <div class="board-side">
     <div class="kopi-card" role="group" aria-label="Kopi card" hidden>
       <div class="kc-head"><strong>Kopi card</strong><span class="kc-count">0 of 10</span></div>
       <p class="kc-sub">You found it. One stamp for every receipt posted in Hard mode.</p>
@@ -324,8 +339,16 @@
         </div>
       </div>
     </div>
-    <p class="board-empty">Nothing pinned yet. Tear the receipt at the top in the slot&rsquo;s shape, and the piece you post ends up here.</p>
-    <ol class="pins"></ol>
+    <div class="cork">
+      <div class="catch-row">
+        <p class="catch-empty">Catches pin here.</p>
+        <ol class="catches" aria-label="Latest catches"></ol>
+      </div>
+      <p class="board-empty">Nothing pinned yet. Tear the receipt at the top in the slot&rsquo;s shape, and the piece you post ends up here.</p>
+      <ol class="pins"></ol>
+    </div>
+    </div>
+    </div>
   </section>
 
   <footer class="end">
