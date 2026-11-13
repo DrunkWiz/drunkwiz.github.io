@@ -35,6 +35,8 @@
   var DESK_NARROW = 600;       // below this the desktop draws at half resolution: shrinking 512 px dithers to mush
   var PAGE_MARGIN = 16;        // gap kept between the machine and the window edge
   var CHROME_H = 36;           // room for the key help line under the machine (the close button floats)
+  var TOAST_MS = 4200;         // an unlock toast stays this long: long enough to read twice
+  var SPARKLE_MS = 160;        // the shiny rod's glints move on this often
 
   // How each rarity fights. speed/dashSpeed: bar heights per second. dash, pause: chance per second / per stop.
   // weight: how often it bites, against the others it shares the water with.
@@ -114,7 +116,7 @@
   labelShelf();
   if (shelf) shelf.addEventListener('click', function (e) {
     var b = e.target.closest('.mach');
-    if (b && !b.disabled) open(b.getAttribute('data-mach'), b);
+    if (b && !b.disabled && b.getAttribute('data-mach') !== 'egg') open(b.getAttribute('data-mach'), b);
   });
 
   /* ---------------------------------------------------------------- The dialog around a machine */
@@ -363,6 +365,7 @@
     var time = pad(d.getHours()) + ':' + pad(d.getMinutes());
     log.last = { id: f.id, name: f.name, pond: M.name, len: len.toFixed(1), time: time, no: log.n, at: d.getTime() };   // the slip on the shelf
     saveLog();
+    checkUnlocks(true);
     G.state = 'card'; G.c0 = now;
     G.card = { f: f, len: len.toFixed(1), time: time, fresh: fresh, no: log.n };
     tstat.textContent = '';
@@ -388,6 +391,15 @@
   function txt(s, x, y, c, al) { ART.text(ctx, s, Math.round(x) * K, Math.round(y) * K, PALR[c], al, K); }
   function spr(c, x, y, s) { s = (s || 1) * K; ctx.drawImage(c, Math.round(x) * K, Math.round(y) * K, c.width * s, c.height * s); }
   function blink(ms) { return ((performance.now() / (ms || 500)) | 0) % 2 === 0; }
+  // The shiny rod: a couple of glints that run up the rod, once every fish is in the log.
+  function shiny() { return !!(log.unlocks && log.unlocks.rod); }
+  function glints(x0, y0, x1, y1, c) {
+    if (!shiny()) return;
+    var step = (performance.now() / SPARKLE_MS) | 0, q = (step % 5) / 4;
+    px(x0 + (x1 - x0) * q, y0 + (y1 - y0) * q, 1, 1, c);   // a glint running up the rod
+    var arm = [1, 2, 3, 2][step % 4];                      // and a star at the tip that breathes
+    px(x1 - arm, y1 - 1, arm * 2 + 1, 1, c); px(x1, y1 - 1 - arm, 1, arm * 2 + 1, c);
+  }
   function castT() { return G.state === 'cast' ? G.q : 1; }
   function ripples(now, draw) { G.ripple = G.ripple.filter(function (t) { var a = (now - t) / 700; if (a > 1) return false; draw(a); return true; }); }
   // A shared tension bar for the pixel machines. c: [frame, ground, zone, zone edge, fish, meter].
@@ -427,6 +439,7 @@
     for (var pl = VH - 29; pl < VH; pl += 5) px(0, pl, VW, 1, 3);
     spr(ART.sheet('angler', ART.ANGLER, PAL), cx - 6, NEAR + 2);
     line(cx + 4, NEAR + 7, tip.x, tip.y, 3);
+    glints(cx + 4, NEAR + 7, tip.x, tip.y, 0);
     // the top bar: dark on the pocket, a white menu bar on the desktop
     if (one) { px(0, 0, VW, 9, 0); px(0, 9, VW, 1, 3); } else px(0, 0, VW, 9, 3);
     txt(M.name + ' pond', 3, 2, one ? 3 : 0);
@@ -515,6 +528,7 @@
     spr(ART.sheet('angler-tv', ART.ANGLER_TV, PAL), PIER - 18, SURF - 24);
     var tip = { x: PIER + 6, y: SURF - 44 };
     line(PIER - 9, SURF - 16, tip.x, tip.y, 10);
+    glints(PIER - 9, SURF - 16, tip.x, tip.y, 12);
     txt(M.name + ' pond', 4, 4, 0); txt(caughtIn(cur) + '/' + ART.FISH[cur].length, W - 4, 4, 0, 'right');
     var lx = G.to ? tvLand(G.to.d) : tvLand(0);
     ripples(now, function (a) { var rr = 2 + a * 9; px(lx - rr, SURF, rr * 2, 1, 1); });
@@ -582,6 +596,7 @@
     });
     at(0, 19, new Array(C + 1).join('='), 1);
     at(mid, 20, '@', 0); at(mid, 19, '|', 0);
+    if (shiny() && blink(SPARKLE_MS * 2)) at(mid + 1, 18, '*', 0);
     var ac = Math.round(G.aimX * (C - 1));
     var tc = G.to ? Math.round(G.to.x * (C - 1)) : ac, tr = G.to ? row(G.to.d) : NEAR;
     function dots(c1, r1) {   // the line, as dots from the rod to the float
@@ -739,10 +754,74 @@
     book.showModal();
   }
 
+  /* ---------------------------------------------------------------- Unlocks
+     Every pond's rare: the egg appears on the shelf. All 32: the shiny rod, and a stamp on the footer receipt.
+     Kept in dw-fish (unlocks), so the chime and toast happen once. */
+  var CHIME = [784, 988, 1319];   // three rising notes for the egg (Hz)
+  var eggBtn = document.querySelector('.mini-egg'), master = document.querySelector('.r-master'), toastQ = [];
+  function sound() { try { return localStorage.getItem('dw-sound') !== '0'; } catch (e) { return true; } }
+  var actx = null;
+  function chime(notes) {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC || !sound()) return;
+    try {
+      actx = actx || new AC(); if (actx.state === 'suspended') actx.resume();
+      notes.forEach(function (f, i) {
+        var t = actx.currentTime + i * 0.12, o = actx.createOscillator(), g = actx.createGain();
+        o.type = 'square'; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+        o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.25);
+      });
+    } catch (e) {}
+  }
+  function toast(text) {
+    var t = document.createElement('a');
+    t.className = 'snap-toast'; t.href = '#board'; t.textContent = text;
+    document.body.appendChild(t);
+    setTimeout(function () { t.classList.add('out'); }, TOAST_MS);
+    setTimeout(function () { t.remove(); }, TOAST_MS + 600);
+  }
+  // Toasts wait until the machine closes: the open machine covers the page.
+  function tell(text) { if (isOpen) toastQ.push(text); else toast(text); }
+  document.addEventListener('arcade:close', function () { toastQ.splice(0).forEach(function (t, i) { setTimeout(function () { toast(t); }, 700 + i * 1600); }); });
+  function paintUnlocks() {
+    var u = log.unlocks || {};
+    if (eggBtn) eggBtn.hidden = !u.egg;
+    if (master) master.hidden = !u.rod;
+  }
+  function checkUnlocks(live) {
+    log.unlocks = log.unlocks || {};
+    var rares = PONDS.every(function (p) { return (ART.FISH[p.id] || []).some(function (f) { return f.rarity === 'rare' && log.fish[f.id]; }); });
+    var fresh = [];
+    if (rares && !log.unlocks.egg) { log.unlocks.egg = Date.now(); fresh.push('egg'); }
+    if (caughtAll() === PONDS.length * 8 && !log.unlocks.rod) { log.unlocks.rod = Date.now(); fresh.push('rod'); }
+    if (fresh.length) saveLog();
+    paintUnlocks();
+    if (!live) return;
+    if (fresh.indexOf('egg') >= 0) {
+      chime(CHIME);
+      announce('Every rare caught. Something has appeared on the shelf.');
+      tell('An egg has appeared on the shelf.');
+      if (eggBtn && !reduce) eggBtn.classList.add('new');
+    }
+    if (fresh.indexOf('rod') >= 0) {
+      chime(CHIME.concat([1568]));
+      announce('All thirty-two caught. Your rod is shiny now.');
+      tell('All 32. The rod shines now. The receipt says so too.');
+    }
+  }
+  checkUnlocks(false);
+  if (eggBtn) eggBtn.addEventListener('click', function () {
+    // The egg's own machine comes in the next stage; for now it only wobbles.
+    eggBtn.classList.remove('wobble'); void eggBtn.offsetWidth; if (!reduce) eggBtn.classList.add('wobble');
+    toast('It is warm. Something is moving inside.');
+  });
+
   window.drunkwizArcade = {
     open: open,
     close: requestClose,
     seed: function (n) { seed = n >>> 0; },   // for tests: makes bites and fights repeatable
+    pick: function (pond, zone) { var c = cur; cur = pond; var f = pickFish(zone); cur = c; return f.id; },   // for tests: what would bite
     state: function () { return { open: isOpen, machine: cur, state: G.state, fish: G.fish && G.fish.id, zy: G.zy, fy: G.fy, zone: M && M.zone, progress: G.progress, power: G.power, msg: G.msg }; }
   };
 })();

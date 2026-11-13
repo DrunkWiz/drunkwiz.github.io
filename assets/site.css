@@ -883,3 +883,18 @@ h3[tabindex="-1"]:focus{outline:none}
 .arc-keyrow button{height:44px;flex:1;border:0;border-radius:5px;background:#3A3936;color:#D9C8A6;font:600 1.05rem/1 var(--mono);box-shadow:0 4px 0 #1C1B19}
 .arc-keyrow [aria-label^=Space]{flex:4}
 @media (max-width:620px){ .arc-shell[data-m=tv] .arc-bezel{padding:10px} .arc-shell[data-m=term] .arc-bezel{padding:10px} .arc-shell[data-m=desk] .arc-bezel{padding:6px} }
+
+/* the egg: appears once every pond's rare is caught. An original shape: a pebble on a loop, three buttons */
+.mini-egg{width:46px;height:58px;flex:none;align-self:flex-end}
+.mini-egg[hidden]{display:none}
+.mini-egg .me-shell{inset:6px 0 0;border-radius:50% 50% 46% 46%/58% 58% 42% 42%;background:radial-gradient(circle at 34% 30%,#FFE3A3,#F2A93B 55%,#C9781F);box-shadow:inset -3px -4px 0 rgba(0,0,0,.12)}
+.mini-egg .me-lcd{left:13px;right:13px;top:20px;height:14px;border-radius:3px;background:#B9C4A0;box-shadow:inset 0 0 0 2px #7A5A2A}
+.mini-egg .me-btns{left:14px;top:40px;width:4px;height:4px;border-radius:50%;background:#7A3A2C;box-shadow:7px 1px 0 #7A3A2C,14px 0 0 #7A3A2C}
+.mini-egg.new{animation:eggin .9s cubic-bezier(.2,.9,.3,1.3) both}
+.mini-egg.wobble{animation:eggwob .6s ease-in-out}
+@keyframes eggin{from{opacity:0;transform:translateY(-30px) scale(.6)}to{opacity:1;transform:none}}
+@keyframes eggwob{25%{transform:rotate(-9deg)}50%{transform:rotate(7deg)}75%{transform:rotate(-4deg)}}
+/* the footer receipt's second stamp, once all 32 are caught */
+.end .r-master{position:static;display:table;margin:.2rem auto .9rem;transform:rotate(-6deg);font-size:.72rem;padding:.25rem .5rem;text-transform:uppercase}
+.r-master[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){ .mini-egg.new,.mini-egg.wobble{animation:none} }
