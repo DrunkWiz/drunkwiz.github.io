@@ -935,7 +935,7 @@ h3[tabindex="-1"]:focus{outline:none}
 @media (max-width:620px){ .remembered{padding:1rem} .rm-slips{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem .8rem} }
 .pet-welcome{max-width:min(520px,calc(100% - 32px));white-space:normal;text-align:center;line-height:1.4;width:max-content}
 
-/* The kerbau's clue: a paper slip over the page, beside the kerbau flying behind it (pet.js). */
+/* Appa's clue: a paper slip over the page, beside Appa flying behind it (pet.js). */
 .kb-say{position:fixed;left:0;top:0;z-index:95;width:min(300px,calc(100vw - 32px));background:var(--paper) var(--grain-ink);color:var(--ink);
   font:400 .78rem/1.5 var(--mono);padding:.8rem .95rem;border-radius:4px;box-shadow:0 10px 26px rgba(0,0,0,.45);animation:kbin .25s ease-out both}
 @keyframes kbin{from{opacity:0}}   /* opacity only: the slip is placed with transform */

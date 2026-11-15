@@ -1,6 +1,6 @@
 /* index.html only. Loaded by extras.js once the page is idle, or by the egg machine when it opens. Needs arcade-art.js first.
-   The kerbau: a winged water buffalo that flies behind the page from the first visit. Click it (or the hidden
-   "Ask the kerbau" button, for keyboards) and it says exactly what unlocks the next animal. It never eats or fades.
+   Appa, the sky bison, flies behind the page from the first visit. Click him (or the hidden "Ask Appa" button,
+   for keyboards) and he says exactly what unlocks the next animal. He never eats or fades.
    The pet: hatched from the egg on the shelf, fed with catches, it swims across the page behind the content.
    It grows from 1 to 100; past 80 it struggles; at 100 it bursts and leaves a skeleton, and a new egg waits.
    Skeletons drift too, at most 10; older ones crumble to dust. Left unfed it shrinks a little each day and,
@@ -38,10 +38,10 @@
   var LATER = { fish: 3, cat: 3, lion: 3, kraken: 3, dragon: 1, phoenix: 1 };   // after that, at random; dragon and phoenix are rare
   var NAMES = ['Kopi', 'Kaya', 'Teh', 'Milo', 'Bandung', 'Tiger', 'Botak', 'Ah Boy', 'Lobang', 'Blur', 'Siao', 'Kiasu'];
   var KEY = 'dw-pet';
-  var GUIDE_W = 72;            // the kerbau's width on the page: big enough to spot and to click
-  var GUIDE_W_NARROW = 56;     // on phones, so it covers less of the text
+  var GUIDE_W = 84;            // Appa's width on the page: big enough to spot and to click
+  var GUIDE_W_NARROW = 62;     // on phones, so he covers less of the text
   var GUIDE_SPEED = 26;        // px per second: an unhurried flier, slower than a new pet
-  var FLAP_MS = 280;           // one wingbeat
+  var FLAP_MS = 420;           // one beat of his tail: slow, he's big
   var GUIDE_HIT = 10;          // px of slack around it for a click or tap
   var SAY_MS = 12000;          // a clue stays this long: two or three lines, read at leisure
   var MACHINE = { pocket: 'Pocket', tv: 'TV game', desk: 'Desktop', term: 'Terminal' };
@@ -114,7 +114,7 @@
   /* ---------------------------------------------------------------- The page canvas, behind everything */
   var cv = null, ctx = null, dpr = 1, vw = window.innerWidth, vh = window.innerHeight, raf = 0, lastT = 0, running = false;   // known before the canvas exists, so the first placing is on screen
   var E = { x: 40, y: 200, dir: 1, lane: 200, laneAt: 0 }, SK = [], parts = [], pending = null, dust = null;
-  var K = { x: Math.min(120, vw * 0.2), y: vh * 0.3, dir: 1, lane: vh * 0.3, laneAt: 0, t: 0, talk: false };   // the kerbau
+  var K = { x: vw * 0.55, y: vh * 0.6, dir: 1, lane: vh * 0.6, laneAt: performance.now() + 8000, t: 0, talk: false };   // Appa: starts in the open, not behind the white headline
   function widthFor(size) { return W_MIN + (W_MAX - W_MIN) * Math.min(size, SIZE_MAX) / SIZE_MAX; }
   function ensure() {
     if (cv) return;
@@ -139,7 +139,7 @@
   }
   function guideW() { return vw < 600 ? GUIDE_W_NARROW : GUIDE_W; }
   function guideRect() {
-    var w = guideW(), h = w * ART.KERBAU.px[0].length / ART.KERBAU.px[0][0].length;
+    var w = guideW(), h = w * ART.APPA.px[0].length / ART.APPA.px[0][0].length;
     return { x: K.x, y: K.y + (reduce ? 0 : Math.sin(K.t * 1.2) * BOB_PX), w: w, h: h };
   }
   function syncSkel() {
@@ -147,7 +147,7 @@
     while (SK.length > S.skel.length) SK.shift();
     if (reduce) SK.forEach(function (k, i) { k.x = 24 + i * (SKEL_W + 12); k.y = vh - 70; k.dir = 1; });
   }
-  function wake() {   // the kerbau is always there, so the canvas always runs (paused while the tab is hidden)
+  function wake() {   // Appa is always there, so the canvas always runs (paused while the tab is hidden)
     ensure(); syncSkel();
     if (reduce) { draw(performance.now()); return; }
     if (running) return;
@@ -175,7 +175,7 @@
       E.y += (E.lane - E.y) * Math.min(1, 0.25 * dt);
     }
     K.t = now / 1000;
-    if (!K.talk) {   // it hovers in place while it talks
+    if (!K.talk) {   // he hovers in place while he talks
       var gw = guideW();
       K.x += K.dir * GUIDE_SPEED * dt;
       if (K.x < EDGE) { K.x = EDGE; K.dir = 1; }
@@ -196,9 +196,9 @@
       ctx.drawImage(img, Math.round(k.x), Math.round(k.y + (reduce ? 0 : Math.sin(t * 0.7 + k.ph) * 4)), Math.round(img.width * sc), Math.round(img.height * sc));
     });
     ctx.globalAlpha = 1;
-    // the kerbau first, so a pet swims in front of it
+    // Appa first, so a pet swims in front of him
     var g = guideRect(), flap = reduce ? 0 : Math.floor(now / FLAP_MS) % 2;
-    ctx.drawImage(ART.kerbau(flap, K.dir < 0), Math.round(g.x), Math.round(g.y), Math.round(g.w), Math.round(g.h));
+    ctx.drawImage(ART.appa(flap, K.dir < 0), Math.round(g.x), Math.round(g.y), Math.round(g.w), Math.round(g.h));
     if (sayEl && !sayEl.hidden) sayAt(g);
     var p = S.pet;
     if (p) {
@@ -268,7 +268,7 @@
     setTimeout(function () { t.remove(); }, WELCOME_MS + 600);
   }
 
-  /* ---------------------------------------------------------------- The kerbau's clues */
+  /* ---------------------------------------------------------------- Appa's clues */
   function fishLog() {
     try { var l = JSON.parse(localStorage.getItem('dw-fish') || 'null'); return l && l.v === 1 ? l : null; } catch (e) { return null; }
   }
@@ -314,14 +314,14 @@
       sayEl.className = 'kb-say'; sayEl.setAttribute('role', 'status');
       document.body.appendChild(sayEl);
     }
-    sayEl.innerHTML = '<b>The kerbau says</b>' + clue().map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('');
+    sayEl.innerHTML = '<b>Appa says</b>' + clue().map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('');
     sayEl.hidden = false; K.talk = true;
     ensure(); sayAt(guideRect());
     clearTimeout(sayT); sayT = setTimeout(hush, SAY_MS);
     if (reduce) draw(performance.now());
   }
   function hush() { if (sayEl) sayEl.hidden = true; K.talk = false; clearTimeout(sayT); }
-  // Clicks reach the kerbau only through the page's empty parts: never through links, buttons, the receipt or the digicam.
+  // Clicks reach Appa only through the page's empty parts: never through links, buttons, the receipt or the digicam.
   var BUSY = 'a,button,input,textarea,select,label,summary,dialog,[role="button"],[tabindex],.receipt,.printer,.kb-say';
   function onGuide(e) {
     if (document.documentElement.classList.contains('in-digicam')) return false;
@@ -332,7 +332,7 @@
   document.addEventListener('click', function (e) {
     if (e.defaultPrevented) return;
     var sel = window.getSelection && window.getSelection();
-    if (sel && !sel.isCollapsed) return;   // selecting text, not clicking the kerbau
+    if (sel && !sel.isCollapsed) return;   // selecting text, not clicking Appa
     if (onGuide(e)) { if (sayEl && !sayEl.hidden) hush(); else say(); }
     else if (sayEl && !sayEl.hidden && !(e.target.closest && e.target.closest('.kb-say, .kb-ask'))) hush();
   });

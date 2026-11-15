@@ -182,7 +182,7 @@
 
   /* ---- Arcade shelf and pet: their code loads late, so the hero stays fast.
      arcade-art.js + arcade.js when the shelf scrolls near (or on a click before then);
-     arcade-art.js + pet.js once the page is idle: the kerbau, and the pet if there is one. ---- */
+     arcade-art.js + pet.js once the page is idle: Appa, and the pet if there is one. ---- */
   var shelf = document.querySelector('.arcade');
   var V = shelf ? shelf.getAttribute('data-v') || '' : '';
   var scripts = {};
@@ -210,7 +210,7 @@
       }, { rootMargin: LOAD_MARGIN });
       lo.observe(shelf);
     } else loadArcade();
-    // pet.js always loads once the page is idle: the kerbau flies behind the page from the first visit.
+    // pet.js always loads once the page is idle: Appa flies behind the page from the first visit.
     var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 1200); };
     idle(function () { window.drunkwizLoad('pet').catch(function () {}); }, { timeout: 4000 });
   }

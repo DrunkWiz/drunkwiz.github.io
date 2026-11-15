@@ -706,8 +706,16 @@
     txt('THE POND', g.WX + g.WW / 2, g.WY + 3, 3, 'center');
     px(g.PX, g.PY, g.PW, g.PH, 1);                                         // the water
     for (var i = 0; i < 14; i++) px(g.PX + ((i * 47 + t * (3 + i % 3)) % g.PW), g.PY + 3 + (i * 31) % (g.PH - 6), 4 + (i % 3), 1, 0);
-    G.shadows.forEach(function (f) { var p = P(f.x, f.y); px(p.x - 4, p.y, 9, 3, 2); px(f.v > 0 ? p.x - 6 : p.x + 5, p.y + 1, 2, 1, 2); });
-    function fishAt(x, y, dark) { px(x - 5, y - 1, 11, 4, dark ? 3 : 2); px(x - 7, y, 2, 2, dark ? 3 : 2); px(x + 3, y, 1, 1, 0); }
+    // Pond fish: a small silhouette with an oval body and a forked tail, so it reads as a fish and nothing else.
+    function fishShape(x, y, shade, right, eye) {
+      for (var r = 0; r < POND_FISH.length; r++) for (var c = 0; c < POND_FISH[r].length; c++) {
+        if (POND_FISH[r][c] !== '#') continue;
+        px(x + (right ? c - 6 : 6 - c), y + r - 2, 1, 1, shade);
+      }
+      if (eye) px(x + (right ? 4 : -4), y - 1, 1, 1, 0);
+    }
+    G.shadows.forEach(function (f) { var p = P(f.x, f.y); fishShape(p.x, p.y, 2, f.v > 0, false); });
+    function fishAt(x, y, dark, right) { fishShape(x, y, dark ? 3 : 2, right !== false, dark); }
     if (s === 'wait' || s === 'bite') {
       var lp = P(G.lure.x, G.lure.y), sp2 = P(G.sx, G.sy);
       fishAt(sp2.x, sp2.y, s === 'bite');
@@ -717,7 +725,9 @@
     }
     if (s === 'reel') {   // the net: a ring and a handle on the pointer, and the meter in the title bar
       var fp = P(G.fx, G.fyy), cp = P(G.cx, G.cy), r = NET.r * g.PH;
-      fishAt(fp.x, fp.y, true);
+      if (G.lastFx != null && Math.abs(G.fx - G.lastFx) > 1e-4) G.faceR = G.fx > G.lastFx;   // it faces the way it swims
+      G.lastFx = G.fx;
+      fishAt(fp.x, fp.y, true, G.faceR);
       for (var a2 = 0; a2 < 40; a2++) { var an = a2 / 40 * Math.PI * 2; px(cp.x + Math.cos(an) * r, cp.y + Math.sin(an) * r, 1, 1, 3); }
       line(cp.x + r * 0.7, cp.y + r * 0.7, cp.x + r * 1.4, cp.y + r * 1.4, 3);
       var mx = g.WX + g.WW - 56;
@@ -736,6 +746,8 @@
   /* ---------------------------------------------------------------- Side view: the TV game, 16 colours.
      0 black, 1 white, 2 grey, 3 dark grey, 4 navy, 5 blue, 6 sky, 7 dark green, 8 green, 9 lime,
      10 brown, 11 orange, 12 yellow, 13 red, 14 pink, 15 purple. */
+  // The desktop pond's fish, facing right: 13 by 5, forked tail on the left.
+  var POND_FISH = ['#....#####...', '##.#########.', '.############', '##.#########.', '#....#####...'];
   var TV_SURF = 110, TV_PIER = 60;
   function tvLand(d) { return TV_PIER + 18 + d * (M.W - TV_PIER - 68); }
   function drawSide(now) {
