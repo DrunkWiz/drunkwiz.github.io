@@ -15,7 +15,7 @@
   var FRAME_MS = 1000 / 30;    // the page canvas draws at 30 fps at most: it's background, not the show
   var SIZE_MAX = 100;          // bursts here
   var WARN_AT = 80;            // from here it sweats, wobbles and swims like it's tired
-  var FEED = { common: 1, uncommon: 2, rare: 3, night: 5 };   // size per feed; uncommon sits between common and rare
+  var FEED = { common: 1, uncommon: 3, rare: 10, night: 15 };   // size per feed: a rare is a real meal, ten commons; night fish are rarer still
   var W_MIN = 24;              // sprite width on the page at size 1, in CSS px
   var W_MAX = 160;             // and at size 100
   var SWIM = 36;               // px per second at size 1
@@ -296,7 +296,7 @@
     var p = S.pet, size = Math.floor(p.size);
     lines.push(p.name + ' the ' + KINDS[p.kind] + ' is size ' + size + ' of ' + SIZE_MAX + '.');
     lines.push('1. Click the egg on the shelf.');
-    lines.push('2. Press A to pick a fish you caught, then B to feed it. Rare fish count for more.');
+    lines.push('2. Press A to pick a fish you caught, then B to feed it. A common is +' + FEED.common + ', a rare +' + FEED.rare + '.');
     lines.push('3. At ' + SIZE_MAX + ' it bursts and a new egg appears. ' +
       (S.hatched < FIRST_RUN.length ? 'Next: a ' + KINDS[FIRST_RUN[S.hatched]] + '.' : 'Next: a surprise.'));
     lines.push('Feed it once a day, or it shrinks.');

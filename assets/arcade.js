@@ -39,7 +39,7 @@
   var CRACK_MS = 1100;         // the egg cracking before it hatches
   var EAT_MS = 650;            // a fish going down
   var POP_MS = 1400;           // the pet bursting on the little screen
-  var LCD_MAX_SCALE = 10;      // the egg's 32x16 screen stops growing here; bigger would just be blocks
+  var LCD_MAX_SCALE = 7;       // the egg's 32x16 screen stops growing here, so it sits well inside the egg's curve
 
   // How each rarity behaves, on the relaxed side: most fish land first or second try; rares take a few.
   // weight: how often it bites, against the others in the same water. speed/dashSpeed: per second.
@@ -69,6 +69,12 @@
     grace: 1500,               // ms at an empty meter before the fish gets away
     key: 0.7,                  // pond widths per second the net moves on the arrow keys
     pace: 0.9                  // fish speed, as a share of its rarity's speed
+  };
+  var LOOK = {                 // desktop: how a fish comes over to the lure before it bites
+    approach: 0.4,             // share of the wait spent swimming over; the rest it circles
+    r: 0.14,                   // the circle's radius, in pond heights, when it starts circling
+    tighten: 0.65,             // the circle shrinks by this share before the bite
+    turns: 1.3                 // laps of the lure while it makes up its mind
   };
   var TYPE = {                 // terminal: type the keys shown
     base: 2.2, per: 0.6,       // seconds to type a prompt: base plus this per key
@@ -125,6 +131,13 @@
     return { v: 1, n: 0, feed: 0, fish: {} };   // n: catches ever (numbers the slips); feed: stock for the pet
   }
   var log = loadLog();
+  // The bag: the catches not yet fed, by id, newest last, so the egg feeds the fish you actually caught.
+  // Logs from before the bag only had a count; fill it with the species caught most recently.
+  if (!Array.isArray(log.bag)) {
+    var seen = Object.keys(log.fish).sort(function (a, b) { return (log.fish[b].last || 0) - (log.fish[a].last || 0); });
+    log.bag = [];
+    for (var bi = 0; bi < (log.feed || 0) && seen.length; bi++) log.bag.unshift(seen[bi % seen.length]);
+  }
   function saveLog() { try { localStorage.setItem(LOG_KEY, JSON.stringify(log)); } catch (e) {} }
   function caughtIn(pond) { return (ART.FISH[pond] || []).filter(function (f) { return log.fish[f.id]; }).length; }
   // The four ponds, in shelf order.
@@ -313,7 +326,7 @@
   /* ---------------------------------------------------------------- Game state, all from 0 to 1 */
   var G = {};
   function reset() {
-    if (M.draw === 'lcd') { G = { state: window.drunkwizPet.get().pet ? 'pet' : 'egg', sel: eggSel, info: false, px: 2, dir: 1, t0: performance.now() }; held = {}; hit = {}; caption(); return; }
+    if (M.draw === 'lcd') { G = { state: window.drunkwizPet.get().pet ? 'pet' : 'egg', sel: 0, info: false, px: 2, dir: 1, t0: performance.now() }; held = {}; hit = {}; caption(); return; }
     G = { state: 'boot', t0: performance.now(), aimX: 0.5, power: 0, msg: '', nibbles: [], ripple: [], shadows: [], cx: 0.5, cy: 0.5 };
     var pool = ART.FISH[cur].filter(function (f) { return f.rarity === 'common'; });
     for (var i = 0; i < SHADOWS; i++) G.shadows.push({ x: between(0.05, 0.95), y: between(0.05, 0.95), v: (rnd() < 0.5 ? -1 : 1) * between(0.02, 0.06), f: pool[i % pool.length] });
@@ -524,14 +537,29 @@
         G.state = 'wait'; G.c0 = now; G.biteAt = now + wait; G.nibbles = [];
         for (var n = 0; n < NIBBLES_MAX; n++) if (rnd() < NIBBLE_CHANCE) G.nibbles.push(now + between(600, Math.max(700, wait - 700)));
         G.from = { x: clamp(G.lure.x + Math.cos(a) * 0.45, 0.05, 0.95), y: clamp(G.lure.y + Math.sin(a) * 0.45, 0.05, 0.95) };
+        G.sx = G.from.x; G.sy = G.from.y; G.spin = rnd() < 0.5 ? -1 : 1;
+        var gg = deskGeo(); G.asp = gg.PW / gg.PH;
+        G.ang0 = Math.atan2(G.from.y - G.lure.y, (G.from.x - G.lure.x) * G.asp);   // where on the circle it arrives
+        G.sface = G.lure.x > G.from.x;
       }
     } else if (s === 'wait') {
       G.nib = G.nibbles.some(function (nt) { return now >= nt && now < nt + NIBBLE_MS; });
-      var q = Math.min(1, (now - G.c0) / (G.biteAt - G.c0) * 0.85 + (G.nib ? 0.1 : 0));   // a fish comes over, with a look or two
-      G.sx = G.from.x + (G.lure.x - G.from.x) * q; G.sy = G.from.y + (G.lure.y - G.from.y) * q;
+      // A fish swims over, circles the lure a lap or so, closing in, and darts at it on a nibble.
+      var T = G.biteAt - G.c0, e = now - G.c0, nx, ny, r0 = LOOK.r;
+      if (e < T * LOOK.approach) {
+        var q = e / (T * LOOK.approach); q = q * q * (3 - 2 * q);
+        var ax = G.lure.x + Math.cos(G.ang0) * r0 / G.asp, ay = G.lure.y + Math.sin(G.ang0) * r0;
+        nx = G.from.x + (ax - G.from.x) * q; ny = G.from.y + (ay - G.from.y) * q;
+      } else {
+        var u = (e - T * LOOK.approach) / (T * (1 - LOOK.approach)), an = G.ang0 + G.spin * u * LOOK.turns * Math.PI * 2;
+        var rr = r0 * (1 - LOOK.tighten * u) * (G.nib ? 0.5 : 1);
+        nx = G.lure.x + Math.cos(an) * rr / G.asp; ny = G.lure.y + Math.sin(an) * rr;
+      }
+      if (Math.abs(nx - G.sx) > 1e-4) G.sface = nx > G.sx;   // it faces the way it swims
+      G.sx = nx; G.sy = ny;
       if (hit.a) lose('TOO EARLY.', 'Too early. It swam off.');
       else if (hit.b) G.state = 'aim';
-      else if (now >= G.biteAt) { G.fish = pickFish(G.zone); G.state = 'bite'; G.c0 = now; G.sx = G.lure.x; G.sy = G.lure.y; sfx('plip'); announce('It took the lure. Click!'); }
+      else if (now >= G.biteAt) { G.fish = pickFish(G.zone); G.state = 'bite'; G.c0 = now; G.sface = G.sx < G.lure.x; G.sx = G.lure.x; G.sy = G.lure.y; sfx('plip'); announce('It took the lure. Click!'); }
     } else if (s === 'bite') {
       if (hit.a) startReel(now);
       else if (hit.b) G.state = 'aim';
@@ -544,7 +572,7 @@
     var e = log.fish[f.id], fresh = !e;
     if (!e) e = log.fish[f.id] = { c: 0, best: 0, first: d.getTime() };
     e.c++; e.best = Math.max(e.best, len); e.last = d.getTime();
-    log.n++; log.feed++;
+    log.n++; log.bag.push(f.id); log.feed = log.bag.length;
     var time = pad(d.getHours()) + ':' + pad(d.getMinutes());
     log.last = { id: f.id, name: f.name, pond: M.name, len: len.toFixed(1), time: time, no: log.n, at: d.getTime() };   // the slip on the shelf
     saveLog();
@@ -711,7 +739,8 @@
     function fishAt(x, y, dark, right) { pondFish(x, y, dark ? 3 : 2, right !== false, dark ? 0 : null); }
     if (s === 'wait' || s === 'bite') {
       var lp = P(G.lure.x, G.lure.y), sp2 = P(G.sx, G.sy);
-      fishAt(sp2.x, sp2.y, s === 'bite');
+      if (s === 'bite') sp2.x += G.sface ? -7 : 7;   // its mouth on the lure, not its middle
+      fishAt(sp2.x, sp2.y, s === 'bite', G.sface);
       px(lp.x - 1, lp.y - 1, 3, 3, 3); px(lp.x, lp.y, 1, 1, 0);
       ripples(now, function (a) { var rr = 2 + a * 8; px(lp.x - rr, lp.y + 3, rr * 2, 1, 0); });
       if (s === 'bite' && blink(90)) txt('!', lp.x, lp.y - 9, 3, 'center');
@@ -903,16 +932,26 @@
   }
   /* ---------------------------------------------------------------- The egg: a 32x16 two-tone LCD.
      A picks the next fish from the log, B feeds it (one catch from the stock), C shows its name and size. */
-  var eggSel = 0;   // the fish picked last time, kept between visits
   var KINDS = { fish: 'koi', cat: 'cat', lion: 'lion', dragon: 'dragon', kraken: 'kraken', phoenix: 'phoenix' };
-  function food() { var l = []; PONDS.forEach(function (p) { (ART.FISH[p.id] || []).forEach(function (f) { if (log.fish[f.id]) l.push(f); }); }); return l; }
+  // What can be fed: each kind in the bag once, newest catch first, with how many of it are left.
+  function byId(id) { var hit2 = null; PONDS.forEach(function (p) { (ART.FISH[p.id] || []).forEach(function (f) { if (f.id === id) hit2 = f; }); }); return hit2; }
+  function food() {
+    var l = [], at = {};
+    for (var i = log.bag.length - 1; i >= 0; i--) {
+      var id = log.bag[i];
+      if (at[id] != null) { l[at[id]].n++; continue; }
+      var f = byId(id); if (!f) continue;
+      at[id] = l.length; l.push({ f: f, n: 1 });
+    }
+    return l;
+  }
   function caption() {
     var cap = ctl.querySelector('.arc-cap'); if (!cap) return;
-    var P = window.drunkwizPet.get(), l = food(), f = l[G.sel % Math.max(1, l.length)], stock = log.feed || 0;
+    var P = window.drunkwizPet.get(), l = food(), it = l[G.sel % Math.max(1, l.length)], f = it && it.f, stock = log.bag.length;
     if (!P.pet) { cap.textContent = G.state === 'crack' ? 'It is hatching.' : 'An egg. Press any button.'; return; }
     var p = P.pet;
     cap.innerHTML = '<b>' + esc(p.name) + ' the ' + KINDS[p.kind] + '</b> &middot; size ' + Math.min(p.size, 100) + (p.size >= window.drunkwizPet.WARN_AT ? ' &middot; too full' : '') + '<br>' +
-      (stock > 0 && f ? 'Next: ' + esc(f.name) + ' (+' + window.drunkwizPet.FEED[f.rarity] + ') &middot; ' + stock + ' catch' + (stock === 1 ? '' : 'es') + ' to feed' : 'Nothing to feed. Go fishing.');
+      (f ? 'Next: ' + esc(f.name) + (it.n > 1 ? ' x' + it.n : '') + ' (+' + window.drunkwizPet.FEED[f.rarity] + ') &middot; ' + stock + ' catch' + (stock === 1 ? '' : 'es') + ' in all' : 'Nothing to feed. Go fishing.');
   }
   function eggUpdate(now, dt) {
     var Pet = window.drunkwizPet, s = G.state, l = food();
@@ -925,13 +964,14 @@
       }
     } else if (s === 'pet') {
       G.px += G.dir * 6 * dt; if (G.px < 1) { G.px = 1; G.dir = 1; } if (G.px > 17) { G.px = 17; G.dir = -1; }
-      if (l.length && hit.a) { G.sel = eggSel = (G.sel + 1) % l.length; caption(); announce('Next: ' + l[G.sel].name + '.'); }
-      if (l.length && hit.prev) { G.sel = eggSel = (G.sel + l.length - 1) % l.length; caption(); announce('Next: ' + l[G.sel].name + '.'); }
+      if (l.length && hit.a) { G.sel = (G.sel + 1) % l.length; caption(); announce('Next: ' + l[G.sel].f.name + '.'); }
+      if (l.length && hit.prev) { G.sel = (G.sel + l.length - 1) % l.length; caption(); announce('Next: ' + l[G.sel].f.name + '.'); }
       if (hit.c) { G.info = !G.info; }
       if (hit.b) {
-        var f = l[G.sel % Math.max(1, l.length)];
-        if (!f || (log.feed || 0) <= 0) { announce('Nothing to feed. Go fishing.'); G.nofood = now; return; }
-        log.feed--; saveLog(); sfx('feed');
+        var it = l[G.sel % Math.max(1, l.length)], f = it && it.f;
+        if (!f) { announce('Nothing to feed. Go fishing.'); G.nofood = now; return; }
+        log.bag.splice(log.bag.lastIndexOf(f.id), 1); log.feed = log.bag.length; saveLog(); sfx('feed');
+        if (it.n === 1) G.sel = G.sel % Math.max(1, l.length - 1);
         var r = Pet.feed(f.rarity);
         G.state = 'eat'; G.c0 = now; G.pop = r.burst; G.info = false;
         caption();
@@ -944,6 +984,7 @@
       if (now - G.c0 > POP_MS) { G.state = 'egg'; G.c0 = now; caption(); announce('It burst. Only bones left. A new egg is waiting.'); }
     }
   }
+  var FOOD = ['.11.1', '11111', '.11.1'];   // a tiny fish, head left, swimming to the pet
   function drawLcd(now) {
     var W = M.W, H = M.H, s = G.state, Pet = window.drunkwizPet.get(), p = Pet.pet;
     ctx.fillStyle = ART.LCD[0]; ctx.fillRect(0, 0, W, H);
@@ -951,7 +992,7 @@
     function sp(c, x, y) { ctx.drawImage(c, Math.round(x), Math.round(y)); }
     if (s === 'egg' || s === 'crack') {
       var shake = s === 'crack' ? ((now / 60) | 0) % 3 - 1 : (((now / 450) | 0) % 4 === 0 ? 1 : 0);
-      sp(ART.sheet('lcd-egg' + (s === 'crack' ? 'c' : ''), s === 'crack' ? ART.EGG_CRACK : ART.EGG, ART.LCD), 12 + shake, 4);
+      sp(ART.sheet('lcd-egg' + (s === 'crack' ? 'c' : ''), s === 'crack' ? ART.EGG_CRACK : ART.EGG, ART.LCD), 10 + shake, 1);
       return;
     }
     if (s === 'pop') {
@@ -971,7 +1012,7 @@
     sp(img, x, y);
     if (s === 'eat') {   // a fish flies in from the right
       var e = Math.min(1, (now - G.c0) / EAT_MS), fx = 30 - e * (30 - x - img.width + 2);
-      ctx.fillStyle = ink; ctx.fillRect(Math.round(fx), 7, 3, 1); ctx.fillRect(Math.round(fx) + 3, 6, 1, 3);
+      ctx.fillStyle = ink; FOOD.forEach(function (r, ry) { for (var rx = 0; rx < r.length; rx++) if (r[rx] === '1') ctx.fillRect(Math.round(fx) + rx, 6 + ry, 1, 1); });
     }
     if (p.size >= window.drunkwizPet.WARN_AT && ((now / 300) | 0) % 2 === 0) ART.text(ctx, '!!', W - 8, 1, ink);
     if (G.nofood && now - G.nofood < 900) ART.text(ctx, '0', W - 4, 9, ink);
