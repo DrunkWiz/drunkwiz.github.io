@@ -37,7 +37,10 @@
 
   /* ---- Pinboard: every piece that fits the slot is pinned, showing what it carried ---- */
   var board = document.querySelector('.board'), pins = board && board.querySelector('.pins');
-  var empty = board && board.querySelector('.board-empty'), clear = board && board.querySelector('.board-clear');
+  var empty = board && board.querySelector('.board-empty');
+  // One unpin button per kind, so receipts, photos and catches come off separately.
+  function clearBtn(kind) { return board && board.querySelector('.board-clear[data-clear="' + kind + '"]'); }
+  function isPhoto(p) { return p.type === 'photo'; }
   var note = document.querySelector('.pinned-note');
   var saved = [];
   try { saved = JSON.parse(store('dw-pins') || '[]') || []; } catch (e) { saved = []; }
@@ -80,7 +83,10 @@
       if (fresh && i === saved.length - 1 && !reduce) el.classList.add('new');
       pins.appendChild(el);
     });
-    empty.hidden = saved.length > 0; clear.hidden = saved.length === 0;
+    empty.hidden = saved.length > 0;
+    var hasPhoto = saved.some(isPhoto);
+    if (clearBtn('receipts')) clearBtn('receipts').hidden = !saved.some(function (p) { return !isPhoto(p); });
+    if (clearBtn('photos')) clearBtn('photos').hidden = !hasPhoto;
     // The board is always shown now: the arcade shelf sits beside it, and catches pin here too.
   }
   document.addEventListener('receipt:posted', function (e) {
@@ -95,7 +101,9 @@
       clearTimeout(note._t); note._t = setTimeout(function () { note.hidden = true; }, 7000);
     }
   });
-  if (clear) clear.addEventListener('click', function () { saved = []; store('dw-pins', '[]'); renderBoard(); });
+  function unpin(keep) { saved = saved.filter(keep); store('dw-pins', JSON.stringify(saved)); renderBoard(); }
+  if (clearBtn('receipts')) clearBtn('receipts').addEventListener('click', function () { unpin(isPhoto); });
+  if (clearBtn('photos')) clearBtn('photos').addEventListener('click', function () { unpin(function (p) { return !isPhoto(p); }); });
 
   // Digicam snapshots (eggs.js) are pinned here too. Keep at most 6 of them, so they can't fill the browser's storage.
   /* ---- Catch strip: fish from the arcade shelf, newest first. Kept apart from the 12 pins above,
@@ -116,7 +124,14 @@
       catchesEl.appendChild(li);
     });
     catchEmpty.hidden = catches.length > 0;
+    if (clearBtn('catches')) clearBtn('catches').hidden = !catches.length;
   }
+  // The fish log (dw-fish) keeps every catch; this only takes the pins off the board.
+  if (clearBtn('catches')) clearBtn('catches').addEventListener('click', function () {
+    catches = [];
+    try { localStorage.setItem('dw-catch-pins', JSON.stringify({ v: 1, pins: [] })); } catch (e) {}
+    renderCatches();
+  });
 
   /* ---- Remembered: a strip of the board for pets that burst and crumbled, or faded. pet.js keeps the list
      (dw-pet); this prints a slip for each, newest first, older ones fainter. Hidden until there is one. ---- */
@@ -167,7 +182,7 @@
 
   /* ---- Arcade shelf and pet: their code loads late, so the hero stays fast.
      arcade-art.js + arcade.js when the shelf scrolls near (or on a click before then);
-     arcade-art.js + pet.js once the page is idle, only if there is a pet or skeletons to show. ---- */
+     arcade-art.js + pet.js once the page is idle: the kerbau, and the pet if there is one. ---- */
   var shelf = document.querySelector('.arcade');
   var V = shelf ? shelf.getAttribute('data-v') || '' : '';
   var scripts = {};
@@ -195,12 +210,9 @@
       }, { rootMargin: LOAD_MARGIN });
       lo.observe(shelf);
     } else loadArcade();
-    var petSaved = null;
-    try { petSaved = JSON.parse(localStorage.getItem('dw-pet') || 'null'); } catch (e) {}
-    if (petSaved && (petSaved.pet || (petSaved.skel && petSaved.skel.length) || (petSaved.gone && petSaved.gone.length))) {
-      var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 1200); };
-      idle(function () { window.drunkwizLoad('pet').catch(function () {}); }, { timeout: 4000 });
-    }
+    // pet.js always loads once the page is idle: the kerbau flies behind the page from the first visit.
+    var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 1200); };
+    idle(function () { window.drunkwizLoad('pet').catch(function () {}); }, { timeout: 4000 });
   }
 
   /* ---- Tall screens scroll with the page, like a screen recording.

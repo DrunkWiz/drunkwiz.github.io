@@ -326,7 +326,7 @@ h1 em{font-style:normal;color:var(--paper);background:linear-gradient(transparen
 .pinned-note[hidden]{display:none}
 .pinned-note:hover{background:var(--chalk);color:var(--table)}
 .sound-btn[aria-pressed="true"]{border-color:var(--rule)}
-.sound-btn[aria-pressed="true"] .mode-state{background:var(--rim);color:var(--table)}
+.sound-btn[aria-pressed="true"] .mode-state{background:var(--muted);color:var(--table)}   /* --rim was 4.2:1 here; --muted is 5.9:1 */
 .mode{gap:.5rem;flex-wrap:wrap}
 .lit{animation:lit 1.6s ease-out}
 @keyframes lit{0%,25%{box-shadow:0 0 0 3px var(--win)}100%{box-shadow:0 0 0 3px transparent}}
@@ -461,6 +461,7 @@ h3[tabindex="-1"]:focus{outline:none}
 /* pinboard of posted tears */
 .board{margin:0 0 3.5rem}
 .board .sec-head{margin-bottom:1.4rem}
+.board-clears{display:inline-flex;flex-wrap:wrap;gap:.4rem 1.1rem}
 .board-clear{font:500 .78rem/1 var(--mono);letter-spacing:.06em;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:.3rem 0}
 .board-empty{color:var(--muted);margin:0;max-width:52ch}
 .cork{padding:1.6rem;background:#6E5236 radial-gradient(rgba(0,0,0,.12) 1px,transparent 1.4px) 0 0/7px 7px;border-radius:14px;box-shadow:inset 0 0 0 6px #4E3A25,inset 0 4px 14px rgba(0,0,0,.4)}
@@ -933,3 +934,17 @@ h3[tabindex="-1"]:focus{outline:none}
 .rm-slip .tack{top:6px}
 @media (max-width:620px){ .remembered{padding:1rem} .rm-slips{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem .8rem} }
 .pet-welcome{max-width:min(520px,calc(100% - 32px));white-space:normal;text-align:center;line-height:1.4;width:max-content}
+
+/* The kerbau's clue: a paper slip over the page, beside the kerbau flying behind it (pet.js). */
+.kb-say{position:fixed;left:0;top:0;z-index:95;width:min(300px,calc(100vw - 32px));background:var(--paper) var(--grain-ink);color:var(--ink);
+  font:400 .78rem/1.5 var(--mono);padding:.8rem .95rem;border-radius:4px;box-shadow:0 10px 26px rgba(0,0,0,.45);animation:kbin .25s ease-out both}
+@keyframes kbin{from{opacity:0}}   /* opacity only: the slip is placed with transform */
+.kb-say[hidden]{display:none}
+.kb-say b{display:block;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.7rem;color:var(--stamp-deep);margin-bottom:.35rem}
+.kb-say p{margin:0 0 .4rem}
+.kb-say p:last-child{margin:0}
+html.kb-hover, html.kb-hover body{cursor:pointer}
+.kb-ask{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.kb-ask:focus-visible{position:fixed;left:16px;bottom:16px;width:auto;height:auto;clip-path:none;z-index:96;background:var(--chalk);color:var(--table);
+  font:600 .8rem/1 var(--mono);padding:.7rem 1rem;border:0;border-radius:999px}
+@media (prefers-reduced-motion:reduce){ .kb-say{animation:none} }

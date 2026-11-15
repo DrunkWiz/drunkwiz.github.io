@@ -1,5 +1,6 @@
-/* index.html only. Loaded by extras.js once the page is idle (when there is a pet to show), or by the egg
-   machine when it opens. Needs arcade-art.js first.
+/* index.html only. Loaded by extras.js once the page is idle, or by the egg machine when it opens. Needs arcade-art.js first.
+   The kerbau: a winged water buffalo that flies behind the page from the first visit. Click it (or the hidden
+   "Ask the kerbau" button, for keyboards) and it says exactly what unlocks the next animal. It never eats or fades.
    The pet: hatched from the egg on the shelf, fed with catches, it swims across the page behind the content.
    It grows from 1 to 100; past 80 it struggles; at 100 it bursts and leaves a skeleton, and a new egg waits.
    Skeletons drift too, at most 10; older ones crumble to dust. Left unfed it shrinks a little each day and,
@@ -37,6 +38,13 @@
   var LATER = { fish: 3, cat: 3, lion: 3, kraken: 3, dragon: 1, phoenix: 1 };   // after that, at random; dragon and phoenix are rare
   var NAMES = ['Kopi', 'Kaya', 'Teh', 'Milo', 'Bandung', 'Tiger', 'Botak', 'Ah Boy', 'Lobang', 'Blur', 'Siao', 'Kiasu'];
   var KEY = 'dw-pet';
+  var GUIDE_W = 72;            // the kerbau's width on the page: big enough to spot and to click
+  var GUIDE_W_NARROW = 56;     // on phones, so it covers less of the text
+  var GUIDE_SPEED = 26;        // px per second: an unhurried flier, slower than a new pet
+  var FLAP_MS = 280;           // one wingbeat
+  var GUIDE_HIT = 10;          // px of slack around it for a click or tap
+  var SAY_MS = 12000;          // a clue stays this long: two or three lines, read at leisure
+  var MACHINE = { pocket: 'Pocket', tv: 'TV game', desk: 'Desktop', term: 'Terminal' };
 
   /* ---------------------------------------------------------------- State */
   function fresh() { return { v: 1, pet: null, egg: true, hatched: 0, skel: [], gone: [] }; }
@@ -106,6 +114,7 @@
   /* ---------------------------------------------------------------- The page canvas, behind everything */
   var cv = null, ctx = null, dpr = 1, vw = window.innerWidth, vh = window.innerHeight, raf = 0, lastT = 0, running = false;   // known before the canvas exists, so the first placing is on screen
   var E = { x: 40, y: 200, dir: 1, lane: 200, laneAt: 0 }, SK = [], parts = [], pending = null, dust = null;
+  var K = { x: Math.min(120, vw * 0.2), y: vh * 0.3, dir: 1, lane: vh * 0.3, laneAt: 0, t: 0, talk: false };   // the kerbau
   function widthFor(size) { return W_MIN + (W_MAX - W_MIN) * Math.min(size, SIZE_MAX) / SIZE_MAX; }
   function ensure() {
     if (cv) return;
@@ -125,16 +134,20 @@
   function between(a, b) { return a + Math.random() * (b - a); }
   // Reduced motion: still sprites in fixed spots. Otherwise a starting place and a height to drift to.
   function place(fresh) {
-    if (reduce) { E.x = vw - widthFor(S.pet ? S.pet.size : 1) - 24; E.y = vh * 0.7; E.dir = -1; return; }
+    if (reduce) { E.x = vw - widthFor(S.pet ? S.pet.size : 1) - 24; E.y = vh * 0.7; E.dir = -1; K.x = 24; K.y = vh * 0.22; K.dir = 1; return; }
     if (fresh) { E.x = between(EDGE, Math.max(EDGE, vw - 80)); E.y = E.lane = between(vh * 0.2, vh * 0.8); E.dir = Math.random() < 0.5 ? -1 : 1; }
+  }
+  function guideW() { return vw < 600 ? GUIDE_W_NARROW : GUIDE_W; }
+  function guideRect() {
+    var w = guideW(), h = w * ART.KERBAU.px[0].length / ART.KERBAU.px[0][0].length;
+    return { x: K.x, y: K.y + (reduce ? 0 : Math.sin(K.t * 1.2) * BOB_PX), w: w, h: h };
   }
   function syncSkel() {
     while (SK.length < S.skel.length) SK.push({ x: between(0, vw), y: between(vh * 0.15, vh * 0.85), dir: Math.random() < 0.5 ? -1 : 1, v: between(SKEL_SPEED[0], SKEL_SPEED[1]), ph: Math.random() * 6 });
     while (SK.length > S.skel.length) SK.shift();
     if (reduce) SK.forEach(function (k, i) { k.x = 24 + i * (SKEL_W + 12); k.y = vh - 70; k.dir = 1; });
   }
-  function wake() {
-    if (!S.pet && !S.skel.length && !parts.length && !pending) { if (cv) ctx.clearRect(0, 0, vw, vh); return; }
+  function wake() {   // the kerbau is always there, so the canvas always runs (paused while the tab is hidden)
     ensure(); syncSkel();
     if (reduce) { draw(performance.now()); return; }
     if (running) return;
@@ -147,7 +160,6 @@
       var dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
       step(now, dt); draw(now);
     }
-    if (!S.pet && !S.skel.length && !parts.length) { running = false; ctx.clearRect(0, 0, vw, vh); return; }
     raf = requestAnimationFrame(frame);
   }
   function step(now, dt) {
@@ -162,6 +174,15 @@
       if (now > E.laneAt) { E.lane = between(vh * 0.15, vh * 0.85 - w); E.laneAt = now + between(LANE_EVERY[0], LANE_EVERY[1]) * 1000; }
       E.y += (E.lane - E.y) * Math.min(1, 0.25 * dt);
     }
+    K.t = now / 1000;
+    if (!K.talk) {   // it hovers in place while it talks
+      var gw = guideW();
+      K.x += K.dir * GUIDE_SPEED * dt;
+      if (K.x < EDGE) { K.x = EDGE; K.dir = 1; }
+      if (K.x > vw - gw - EDGE) { K.x = vw - gw - EDGE; K.dir = -1; }
+      if (now > K.laneAt) { K.lane = between(vh * 0.12, vh * 0.8 - gw / 2); K.laneAt = now + between(LANE_EVERY[0], LANE_EVERY[1]) * 1000; }
+      K.y += (K.lane - K.y) * Math.min(1, 0.25 * dt);
+    }
     SK.forEach(function (k) { k.x += k.dir * k.v * dt; if (k.x < -SKEL_W) k.x = vw; if (k.x > vw) k.x = -SKEL_W; });
     parts = parts.filter(function (q) { q.x += q.vx * dt; q.y += q.vy * dt; q.vy += 260 * dt; q.life -= dt; return q.life > 0; });
   }
@@ -175,6 +196,10 @@
       ctx.drawImage(img, Math.round(k.x), Math.round(k.y + (reduce ? 0 : Math.sin(t * 0.7 + k.ph) * 4)), Math.round(img.width * sc), Math.round(img.height * sc));
     });
     ctx.globalAlpha = 1;
+    // the kerbau first, so a pet swims in front of it
+    var g = guideRect(), flap = reduce ? 0 : Math.floor(now / FLAP_MS) % 2;
+    ctx.drawImage(ART.kerbau(flap, K.dir < 0), Math.round(g.x), Math.round(g.y), Math.round(g.w), Math.round(g.h));
+    if (sayEl && !sayEl.hidden) sayAt(g);
     var p = S.pet;
     if (p) {
       var img = ART.pet(p.kind, 'live', E.dir < 0), w = widthFor(p.size), sc = w / img.width, h = img.height * sc;
@@ -243,6 +268,83 @@
     setTimeout(function () { t.remove(); }, WELCOME_MS + 600);
   }
 
+  /* ---------------------------------------------------------------- The kerbau's clues */
+  function fishLog() {
+    try { var l = JSON.parse(localStorage.getItem('dw-fish') || 'null'); return l && l.v === 1 ? l : null; } catch (e) { return null; }
+  }
+  // Exactly what unlocks the next animal, from where the visitor is now. Plain, short lines.
+  function clue() {
+    var log = fishLog(), got = (log && log.fish) || {}, eggIn = !!(log && log.unlocks && log.unlocks.egg), lines = [];
+    if (!eggIn) {
+      var missing = [];
+      Object.keys(MACHINE).forEach(function (m) {
+        (ART.FISH[m] || []).forEach(function (f) { if (f.rarity === 'rare' && !got[f.id]) missing.push(f.name + ' on the ' + MACHINE[m]); });
+      });
+      if (!Object.keys(got).length) lines.push('The shelf is under the projects. Pick a machine, cast, and strike when it bites.');
+      lines.push('An egg turns up on the shelf once you land the rare fish from all four machines.');
+      lines.push('Still out: ' + missing.join(', ') + '.');
+      lines.push('Rares only bite far out. Hold the cast longer, or on the Desktop, click the top half of the pond. They take a few tries.');
+      return lines;
+    }
+    if (!S.pet) {
+      lines.push(S.hatched ? 'A new egg is waiting on the shelf.' : 'The egg is on the shelf, next to the fish log.');
+      lines.push('Open it and press any button. It hatches a ' + KINDS[nextKind()] + '.');
+      return lines;
+    }
+    var p = S.pet, size = Math.floor(p.size);
+    lines.push(p.name + ' the ' + KINDS[p.kind] + ' is ' + size + ' of ' + SIZE_MAX + '.');
+    lines.push('Feed it at the egg machine: A picks a fish from your log, B feeds it. Common ' + FEED.common + ', uncommon ' + FEED.uncommon + ', rare ' + FEED.rare + ', night ' + FEED.night + '.');
+    lines.push('At ' + SIZE_MAX + ' it bursts and a new egg comes' +
+      (S.hatched < FIRST_RUN.length ? ': a ' + KINDS[FIRST_RUN[S.hatched]] + '.' : '. From here the egg picks at random; dragons and phoenixes are rare.') +
+      ' ' + Math.max(0, SIZE_MAX - size) + ' to go.');
+    lines.push('Feed it every day or it shrinks by ' + SHRINK + '. Night fish bite 3:33 to 5:55am.');
+    return lines;
+  }
+  var sayEl = null, sayT = 0;
+  function sayAt(g) {
+    var w = sayEl.offsetWidth, h = sayEl.offsetHeight;
+    var x = Math.max(8, Math.min(vw - w - 8, g.x + g.w / 2 - w / 2)), y = g.y - h - 10;
+    if (y < 8) y = g.y + g.h + 10;   // no room above: under it instead
+    sayEl.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(Math.max(8, Math.min(y, vh - h - 8))) + 'px)';
+  }
+  function esc(t) { return t.replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function say() {
+    if (!sayEl) {
+      sayEl = document.createElement('div');
+      sayEl.className = 'kb-say'; sayEl.setAttribute('role', 'status');
+      document.body.appendChild(sayEl);
+    }
+    sayEl.innerHTML = '<b>The kerbau says</b>' + clue().map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('');
+    sayEl.hidden = false; K.talk = true;
+    ensure(); sayAt(guideRect());
+    clearTimeout(sayT); sayT = setTimeout(hush, SAY_MS);
+    if (reduce) draw(performance.now());
+  }
+  function hush() { if (sayEl) sayEl.hidden = true; K.talk = false; clearTimeout(sayT); }
+  // Clicks reach the kerbau only through the page's empty parts: never through links, buttons, the receipt or the digicam.
+  var BUSY = 'a,button,input,textarea,select,label,summary,dialog,[role="button"],[tabindex],.receipt,.printer,.kb-say';
+  function onGuide(e) {
+    if (document.documentElement.classList.contains('in-digicam')) return false;
+    if (e.target && e.target.closest && e.target.closest(BUSY)) return false;
+    var g = guideRect();
+    return e.clientX >= g.x - GUIDE_HIT && e.clientX <= g.x + g.w + GUIDE_HIT && e.clientY >= g.y - GUIDE_HIT && e.clientY <= g.y + g.h + GUIDE_HIT;
+  }
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented) return;
+    var sel = window.getSelection && window.getSelection();
+    if (sel && !sel.isCollapsed) return;   // selecting text, not clicking the kerbau
+    if (onGuide(e)) { if (sayEl && !sayEl.hidden) hush(); else say(); }
+    else if (sayEl && !sayEl.hidden && !(e.target.closest && e.target.closest('.kb-say, .kb-ask'))) hush();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && sayEl && !sayEl.hidden) hush(); });
+  var hoverRaf = 0;
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'mouse' || hoverRaf) return;
+    hoverRaf = requestAnimationFrame(function () { hoverRaf = 0; document.documentElement.classList.toggle('kb-hover', onGuide(e)); });
+  }, { passive: true });
+  var ask = document.querySelector('.kb-ask');
+  if (ask) { ask.hidden = false; ask.addEventListener('click', function (e) { e.preventDefault(); say(); }); }
+
   neglect(Date.now());
   place(true); syncSkel(); wake();
   board();
@@ -254,6 +356,8 @@
     hatch: hatch,
     feed: feed,
     WARN_AT: WARN_AT, SIZE_MAX: SIZE_MAX, FEED: FEED,
-    where: function () { return { x: E.x, y: E.y, dir: E.dir, w: S.pet ? widthFor(S.pet.size) : 0, skel: SK.length, parts: parts.length }; }   // for tests
+    clue: clue,
+    say: say,
+    where: function () { return { x: E.x, y: E.y, dir: E.dir, w: S.pet ? widthFor(S.pet.size) : 0, skel: SK.length, parts: parts.length, guide: guideRect(), talk: K.talk }; }   // for tests
   };
 })();
