@@ -272,32 +272,34 @@
   function fishLog() {
     try { var l = JSON.parse(localStorage.getItem('dw-fish') || 'null'); return l && l.v === 1 ? l : null; } catch (e) { return null; }
   }
-  // Exactly what unlocks the next animal, from where the visitor is now. Plain, short lines.
+  // Exactly what unlocks the next animal, in plain steps, from where the visitor is now.
+  // Each line is a paragraph; lines starting with a digit and a dot are shown as steps.
   function clue() {
     var log = fishLog(), got = (log && log.fish) || {}, eggIn = !!(log && log.unlocks && log.unlocks.egg), lines = [];
     if (!eggIn) {
-      var missing = [];
-      Object.keys(MACHINE).forEach(function (m) {
-        (ART.FISH[m] || []).forEach(function (f) { if (f.rarity === 'rare' && !got[f.id]) missing.push(f.name + ' on the ' + MACHINE[m]); });
-      });
-      if (!Object.keys(got).length) lines.push('The shelf is under the projects. Pick a machine, cast, and strike when it bites.');
-      lines.push('An egg turns up on the shelf once you land the rare fish from all four machines.');
-      lines.push('Still out: ' + missing.join(', ') + '.');
-      lines.push('Rares only bite far out. Hold the cast longer, or on the Desktop, click the top half of the pond. They take a few tries.');
+      var left = Object.keys(MACHINE).filter(function (m) {
+        return !(ART.FISH[m] || []).some(function (f) { return f.rarity === 'rare' && got[f.id]; });
+      }).map(function (m) { return MACHINE[m]; });
+      lines.push('Want an animal of your own? Catch one rare fish on each of the four machines. Then an egg appears on the shelf.');
+      lines.push('1. Scroll down to the shelf, next to the board, and click a machine.');
+      lines.push('2. Cast far: hold the cast button down longer before you let go. On the Desktop, click near the top of the water.');
+      lines.push('3. Keep going. Rare fish only bite now and then.');
+      lines.push(left.length === 4 ? 'Machines left: all four.' : 'Machines left: ' + left.join(', ') + '.');
       return lines;
     }
     if (!S.pet) {
-      lines.push(S.hatched ? 'A new egg is waiting on the shelf.' : 'The egg is on the shelf, next to the fish log.');
-      lines.push('Open it and press any button. It hatches a ' + KINDS[nextKind()] + '.');
+      lines.push('Your egg is on the shelf, next to the fish log.');
+      lines.push('1. Click the egg.');
+      lines.push('2. Press any button. It hatches a ' + KINDS[nextKind()] + '.');
       return lines;
     }
     var p = S.pet, size = Math.floor(p.size);
-    lines.push(p.name + ' the ' + KINDS[p.kind] + ' is ' + size + ' of ' + SIZE_MAX + '.');
-    lines.push('Feed it at the egg machine: A picks a fish from your log, B feeds it. Common ' + FEED.common + ', uncommon ' + FEED.uncommon + ', rare ' + FEED.rare + ', night ' + FEED.night + '.');
-    lines.push('At ' + SIZE_MAX + ' it bursts and a new egg comes' +
-      (S.hatched < FIRST_RUN.length ? ': a ' + KINDS[FIRST_RUN[S.hatched]] + '.' : '. From here the egg picks at random; dragons and phoenixes are rare.') +
-      ' ' + Math.max(0, SIZE_MAX - size) + ' to go.');
-    lines.push('Feed it every day or it shrinks by ' + SHRINK + '. Night fish bite 3:33 to 5:55am.');
+    lines.push(p.name + ' the ' + KINDS[p.kind] + ' is size ' + size + ' of ' + SIZE_MAX + '.');
+    lines.push('1. Click the egg on the shelf.');
+    lines.push('2. Press A to pick a fish you caught, then B to feed it. Rare fish count for more.');
+    lines.push('3. At ' + SIZE_MAX + ' it bursts and a new egg appears. ' +
+      (S.hatched < FIRST_RUN.length ? 'Next: a ' + KINDS[FIRST_RUN[S.hatched]] + '.' : 'Next: a surprise.'));
+    lines.push('Feed it once a day, or it shrinks.');
     return lines;
   }
   var sayEl = null, sayT = 0;
@@ -314,7 +316,7 @@
       sayEl.className = 'kb-say'; sayEl.setAttribute('role', 'status');
       document.body.appendChild(sayEl);
     }
-    sayEl.innerHTML = '<b>Appa says</b>' + clue().map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('');
+    sayEl.innerHTML = '<b>Appa says</b>' + clue().map(function (l) { return /^\d\. /.test(l) ? '<p class="kb-step">' + esc(l) + '</p>' : '<p>' + esc(l) + '</p>'; }).join('');
     sayEl.hidden = false; K.talk = true;
     ensure(); sayAt(guideRect());
     clearTimeout(sayT); sayT = setTimeout(hush, SAY_MS);

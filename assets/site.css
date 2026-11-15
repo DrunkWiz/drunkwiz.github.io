@@ -942,6 +942,7 @@ h3[tabindex="-1"]:focus{outline:none}
 .kb-say[hidden]{display:none}
 .kb-say b{display:block;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.7rem;color:var(--stamp-deep);margin-bottom:.35rem}
 .kb-say p{margin:0 0 .4rem}
+.kb-say .kb-step{padding-left:1.1rem;text-indent:-1.1rem;margin-bottom:.25rem}
 .kb-say p:last-child{margin:0}
 html.kb-hover, html.kb-hover body{cursor:pointer}
 .kb-ask{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}

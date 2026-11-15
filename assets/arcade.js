@@ -591,7 +591,7 @@
     var zh = Math.round(M.zone * h), zy = y + h - Math.round(G.zy * h) - zh;
     px(x + 1, zy, w - 2, zh, c[2]); px(x + 1, zy, w - 2, 1, c[3]); px(x + 1, zy + zh - 1, w - 2, 1, c[3]);
     var fy = y + h - Math.round(G.fy * h) - 3, fx = x + Math.round(w / 2) - 4;
-    px(fx + 2, fy, 7, 5, c[4]); px(fx, fy + 1, 2, 3, c[4]); px(fx + 7, fy + 1, 1, 1, c[1]);
+    pondFish(fx + 4, fy + 2, c[4], true, c[1], true);
     px(x - 8, y - 1, 5, h + 2, c[0]); px(x - 7, y, 3, h, c[1]);
     var mh = Math.round(G.progress * h); px(x - 7, y + h - mh, 3, mh, c[5]);
   }
@@ -613,7 +613,7 @@
     for (var i = 0; i < 16; i++) px(((i * 41 + t * (4 + i % 3)) % (VW + 10)) - 5, 20 + (i * 29) % (NEAR - 14), 3 + (i % 3), 1, 0);
     G.shadows.forEach(function (f) {
       var x = f.x * VW, y = TOP + 4 + f.y * (NEAR - TOP - 8);
-      px(x - 3, y, 7, 2, 2); px(x - 2, y - 1, 5, 1, 2); px(f.v > 0 ? x - 5 : x + 4, y, 2, 2, 2);
+      pondFish(x, y, 2, f.v > 0, null, true);
     });
     // far bank and reeds; the jetty and the angler
     px(0, 10, VW, 6, 2);
@@ -707,15 +707,8 @@
     px(g.PX, g.PY, g.PW, g.PH, 1);                                         // the water
     for (var i = 0; i < 14; i++) px(g.PX + ((i * 47 + t * (3 + i % 3)) % g.PW), g.PY + 3 + (i * 31) % (g.PH - 6), 4 + (i % 3), 1, 0);
     // Pond fish: a small silhouette with an oval body and a forked tail, so it reads as a fish and nothing else.
-    function fishShape(x, y, shade, right, eye) {
-      for (var r = 0; r < POND_FISH.length; r++) for (var c = 0; c < POND_FISH[r].length; c++) {
-        if (POND_FISH[r][c] !== '#') continue;
-        px(x + (right ? c - 6 : 6 - c), y + r - 2, 1, 1, shade);
-      }
-      if (eye) px(x + (right ? 4 : -4), y - 1, 1, 1, 0);
-    }
-    G.shadows.forEach(function (f) { var p = P(f.x, f.y); fishShape(p.x, p.y, 2, f.v > 0, false); });
-    function fishAt(x, y, dark, right) { fishShape(x, y, dark ? 3 : 2, right !== false, dark); }
+    G.shadows.forEach(function (f) { var p = P(f.x, f.y); pondFish(p.x, p.y, 2, f.v > 0); });
+    function fishAt(x, y, dark, right) { pondFish(x, y, dark ? 3 : 2, right !== false, dark ? 0 : null); }
     if (s === 'wait' || s === 'bite') {
       var lp = P(G.lure.x, G.lure.y), sp2 = P(G.sx, G.sy);
       fishAt(sp2.x, sp2.y, s === 'bite');
@@ -748,6 +741,16 @@
      10 brown, 11 orange, 12 yellow, 13 red, 14 pink, 15 purple. */
   // The desktop pond's fish, facing right: 13 by 5, forked tail on the left.
   var POND_FISH = ['#....#####...', '##.#########.', '.############', '##.#########.', '#....#####...'];
+  var POND_FISH_S = ['#..####..', '##.#####.', '.########', '##.#####.', '#..####..'];   // 9 by 5, for the small screens
+  // Every machine's swimming fish: an oval body and a forked tail, centred on x, y, facing right or left.
+  function pondFish(x, y, shade, right, eye, small) {
+    var rows = small ? POND_FISH_S : POND_FISH, half = (rows[0].length - 1) / 2;
+    x = Math.round(x); y = Math.round(y);
+    for (var r = 0; r < rows.length; r++) for (var c = 0; c < rows[r].length; c++) {
+      if (rows[r][c] === '#') px(x + (right ? c - half : half - c), y + r - 2, 1, 1, shade);
+    }
+    if (eye != null) px(x + (right ? half - 2 : 2 - half), y - 1, 1, 1, eye);
+  }
   var TV_SURF = 110, TV_PIER = 60;
   function tvLand(d) { return TV_PIER + 18 + d * (M.W - TV_PIER - 68); }
   function drawSide(now) {
@@ -771,7 +774,7 @@
     for (var i2 = 0; i2 < 12; i2++) px(((i2 * 53 + t * 12) % (W + 10)) - 5, SURF + 3 + (i2 * 7) % 44, 6, 1, 6);
     G.shadows.forEach(function (f) {
       var x = f.x * W, y = SURF + 14 + f.y * (H - SURF - 34), c = y > SURF + 54 ? 3 : 4;
-      px(x - 5, y, 11, 3, c); px(f.v > 0 ? x - 8 : x + 6, y - 1, 3, 5, c);
+      pondFish(x, y, c, f.v > 0);
     });
     [8, 30, 52].forEach(function (p) { px(p, SURF - 6, 3, H - 14 - SURF + 6, 3); });
     px(0, SURF - 8, PIER, 4, 10); px(0, SURF - 8, PIER, 1, 11);
