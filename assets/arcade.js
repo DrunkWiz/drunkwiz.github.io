@@ -932,7 +932,7 @@
   }
   /* ---------------------------------------------------------------- The egg: a 32x16 two-tone LCD.
      A picks the next fish from the log, B feeds it (one catch from the stock), C shows its name and size. */
-  var KINDS = { fish: 'koi', cat: 'cat', lion: 'lion', dragon: 'dragon', kraken: 'kraken', phoenix: 'phoenix' };
+  var KINDS = { fish: 'koi', cat: 'cat', lion: 'lion', dragon: 'Toa Payoh Dragon', kraken: 'kraken', phoenix: 'phoenix', merlion: 'Merlion' };
   // What can be fed: each kind in the bag once, newest catch first, with how many of it are left.
   function byId(id) { var hit2 = null; PONDS.forEach(function (p) { (ART.FISH[p.id] || []).forEach(function (f) { if (f.id === id) hit2 = f; }); }); return hit2; }
   function food() {
@@ -963,7 +963,8 @@
         announce('It hatched: ' + p.name + ' the ' + KINDS[p.kind] + '. Feed it fish from your log with B.');
       }
     } else if (s === 'pet') {
-      G.px += G.dir * 6 * dt; if (G.px < 1) { G.px = 1; G.dir = 1; } if (G.px > 17) { G.px = 17; G.dir = -1; }
+      var pw2 = Pet.get().pet ? ART.pet(Pet.get().pet.kind, 'lcd').width : 12, edge = M.W - pw2 - 1;   // walks the width of the screen, whatever its size
+      G.px += G.dir * 6 * dt; if (G.px < 1) { G.px = 1; G.dir = 1; } if (G.px > edge) { G.px = edge; G.dir = -1; }
       if (l.length && hit.a) { G.sel = (G.sel + 1) % l.length; caption(); announce('Next: ' + l[G.sel].f.name + '.'); }
       if (l.length && hit.prev) { G.sel = (G.sel + l.length - 1) % l.length; caption(); announce('Next: ' + l[G.sel].f.name + '.'); }
       if (hit.c) { G.info = !G.info; }

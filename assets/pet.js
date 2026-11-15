@@ -34,8 +34,8 @@
   var WELCOME_MS = 9000;       // the welcome-back note stays this long: it's sad news, give it time
   var DUST_MS = 1600;          // a crumbling skeleton's dust
   var BURST_MS = 1400;         // the explosion on the page
-  var FIRST_RUN = ['fish', 'cat', 'lion', 'dragon', 'kraken', 'phoenix'];   // the first six hatch in this order
-  var LATER = { fish: 3, cat: 3, lion: 3, kraken: 3, dragon: 1, phoenix: 1 };   // after that, at random; dragon and phoenix are rare
+  var FIRST_RUN = ['dragon', 'merlion'];   // the first two hatch in this order
+  var LATER = { dragon: 1, merlion: 1 };    // after that, either, at random. Old kinds stay drawable for pets already hatched.
   var NAMES = ['Kopi', 'Kaya', 'Teh', 'Milo', 'Bandung', 'Tiger', 'Botak', 'Ah Boy', 'Lobang', 'Blur', 'Siao', 'Kiasu'];
   var KEY = 'dw-pet';
   var GUIDE_W = 84;            // Appa's width on the page: big enough to spot and to click
@@ -59,11 +59,11 @@
     var total = 0, k; for (k in LATER) total += LATER[k];
     var r = Math.random() * total;
     for (k in LATER) { r -= LATER[k]; if (r <= 0) return k; }
-    return 'fish';
+    return 'dragon';
   }
   function card(p, how, at) { return { kind: p.kind, name: p.name, born: p.born, lost: at, fed: p.fed, how: how }; }
   function remember(c) { S.gone.push(c); if (S.gone.length > GONE_MAX) S.gone.shift(); setTimeout(board, 0); }   // the board shows it straight away
-  var KINDS = { fish: 'koi', cat: 'cat', lion: 'lion', dragon: 'dragon', kraken: 'kraken', phoenix: 'phoenix' };
+  var KINDS = { fish: 'koi', cat: 'cat', lion: 'lion', dragon: 'Toa Payoh Dragon', kraken: 'kraken', phoenix: 'phoenix', merlion: 'Merlion' };
 
   // Neglect: 3 smaller for every full day since the last feed. At nothing it fades: no skeleton, a slip on the
   // board dated the day it ran out, a new egg, and a note for when the visitor comes back.
